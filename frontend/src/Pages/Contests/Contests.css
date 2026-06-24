@@ -1,0 +1,422 @@
+
+
+.contests-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* -------------------------------------------------- */
+/* Section                                            */
+/* -------------------------------------------------- */
+
+.contests-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.section-count {
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* -------------------------------------------------- */
+/* Upcoming Cards Grid                                */
+/* -------------------------------------------------- */
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.contest-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #4f46e5;     /* indigo left accent */
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.contest-card:hover {
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.1);
+  transform: translateY(-2px);
+}
+
+/* live contest gets amber accent */
+.contest-card--live {
+  border-left-color: #f59e0b;
+  background: #fffbeb;
+}
+
+/* -------------------------------------------------- */
+/* Live Badge                                         */
+/* -------------------------------------------------- */
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  align-self: flex-start;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  background: #f59e0b;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* -------------------------------------------------- */
+/* Card Content                                       */
+/* -------------------------------------------------- */
+
+.contest-card__name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.contest-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.meta-label {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.meta-value {
+  color: #334155;
+  font-weight: 500;
+}
+
+/* -------------------------------------------------- */
+/* Countdown Timer                                    */
+/* -------------------------------------------------- */
+
+.contest-card__countdown {
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.countdown-heading {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.countdown {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.countdown-unit {
+  display: flex;
+  align-items: baseline;
+  gap: 0.1rem;
+}
+
+.countdown-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #4f46e5;
+  line-height: 1;
+}
+
+.countdown-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.countdown-started {
+  font-family: 'JetBrains Mono', monospace;
+  color: #f59e0b;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* -------------------------------------------------- */
+/* Card Footer / Buttons                              */
+/* -------------------------------------------------- */
+
+.contest-card__footer {
+  margin-top: auto;
+}
+
+.btn {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+  box-sizing: border-box;
+}
+
+.btn--primary {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background: #4338ca;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: #4f46e5;
+  border: 1.5px solid #4f46e5;
+}
+
+.btn--ghost:hover {
+  background: #eef2ff;
+}
+
+/* -------------------------------------------------- */
+/* Login Nudge                                        */
+/* -------------------------------------------------- */
+
+.login-nudge {
+  font-size: 0.875rem;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+}
+
+.login-nudge a {
+  color: #4f46e5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-nudge a:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------- */
+/* Past Contests Table                                */
+/* -------------------------------------------------- */
+
+.table-wrapper {
+  overflow-x: auto;          /* scroll on mobile */
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.contests-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.contests-table thead tr {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.contests-table th {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.contests-table td {
+  padding: 0.875rem 1rem;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.contests-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.contests-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* participated row gets a subtle left indicator */
+.row--participated td:first-child {
+  border-left: 3px solid #22c55e;
+  padding-left: calc(1rem - 3px);
+}
+
+.td--index {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  width: 3rem;
+}
+
+.td--name {
+  min-width: 200px;
+}
+
+.td--date {
+  white-space: nowrap;
+  color: #64748b;
+}
+
+.td--duration {
+  white-space: nowrap;
+  color: #64748b;
+}
+
+.td--solved,
+.td--rank {
+  text-align: center;
+  color: #334155;
+}
+
+.contest-link {
+  color: #0f172a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.contest-link:hover {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------- */
+/* Badges                                             */
+/* -------------------------------------------------- */
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge--participated {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.badge--missed {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+/* -------------------------------------------------- */
+/* Empty State                                        */
+/* -------------------------------------------------- */
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px dashed #e2e8f0;
+  border-radius: 8px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.empty-sub {
+  margin-top: 0.4rem !important;
+  font-size: 0.85rem !important;
+  color: #94a3b8 !important;
+}
+
+/* -------------------------------------------------- */
+/* Responsive                                         */
+/* -------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contests-page {
+    padding: 1.5rem 1rem;
+    gap: 2.5rem;
+  }
+
+  .countdown-value {
+    font-size: 1.1rem;
+  }
+}

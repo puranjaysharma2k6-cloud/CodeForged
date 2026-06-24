@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+enum Verdict {
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  COMPILATION_ERROR
+  RUNTIME_ERROR
+}
+
+model User { 
+  id String @id @default(uuid()) 
+  email        String  @unique
+  username     String  @unique
+  passwordHash String
+  name         String?
+  submission   Submission[]
+  contest ContestRegistration[]
+
+} 
+
+
+model Problem { 
+  id String @id @default(uuid())
+  title     String
+  content   String?
+  published Boolean @default(false) 
+  submission Submission[]
+  contest   Contest @relation(fields: [contestId], references: [id])
+  contestId String 
+   
+} 
+//many to one mapping
+model Contest{
+  id String @id @default(uuid())
+  title String
+  startTime DateTime
+  editorial String
+  problems Problem[] 
+  participants ContestRegistration[]
+}
+
+model Submission {
+  id         String   @id @default(uuid()) 
+  code       String   @db.Text             
+  language   String                        
+  status     Verdict                       
+  runtime    Int?                          
+  memory     Int?                          
+  createdAt  DateTime @default(now())      
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  problem    Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId  String
+
+  @@index([userId, status, problemId])
+}
+
+model ContestRegistration {
+  userId       String
+  contestId    String
+  registeredAt DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contest      Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  
+  @@id([userId, contestId]) 
+}
