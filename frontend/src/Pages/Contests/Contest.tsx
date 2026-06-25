@@ -1,243 +1,223 @@
+import { useState } from 'react'
 import { useLoaderData, Link } from 'react-router-dom'
 import CountdownTimer from '../../components/CountdownTimer'
 import type { ContestsLoaderData, Contest, Participation } from './Contests.loader.tsx'
 import './Contests.css'
-
-
-
+import bg from '../../assets/bg.jpg'
+// ─── helpers ────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-IN', {
-    day:   '2-digit',
-    month: 'short',
-    year:  'numeric',
-    hour:  '2-digit',
-    minute:'2-digit',
+    weekday: 'short',
+    day:     '2-digit',
+    month:   'short',
+    hour:    '2-digit',
+    minute:  '2-digit',
+    timeZoneName: 'short',
   })
 }
 
 function formatDuration(minutes: number) {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}m`
+  return m === 0 ? `${h}h` : `${h}h ${m}m`
 }
 
-// --------------------- Upcoming Contest Card
-
+// ─── upcoming card ───────────────────────────────────────────────────────────
 
 function UpcomingCard({
   contest,
-  isAuthenticated
+  isAuthenticated,
+  accent,
 }: {
   contest: Contest
   isAuthenticated: boolean
+  accent: 'orange' | 'purple'
 }) {
   const isOngoing = contest.status === 'ongoing'
 
   return (
-    <div className={`contest-card ${isOngoing ? 'contest-card--live' : ''}`}>
+    <div className={`card card--${accent} ${isOngoing ? 'card--live' : ''}`}>
 
-      {/* live badge — only for ongoing */}
-      {isOngoing && (
-        <span className="live-badge">
-          <span className="live-dot" />
-          Live
+      {/* banner — drop your SVG inside .card-banner */}
+      <div className="card-banner">
+        {/* SVG placeholder */}
+        {isOngoing && (
+          <span className="live-pill">
+            <span className="live-dot" /> LIVE
+          </span>
+        )}
+        <span className="countdown-pill">
+          <span className="countdown-icon">⏳</span>
+          <CountdownTimer targetDate={contest.startDate} />
         </span>
-      )}
-
-      <h3 className="contest-card__name">{contest.name}</h3>
-
-      <div className="contest-card__meta">
-        <div className="meta-row">
-          <span className="meta-label">Starts</span>
-          <span className="meta-value">{formatDate(contest.startDate)}</span>
-        </div>
-        <div className="meta-row">
-          <span className="meta-label">Duration</span>
-          <span className="meta-value mono">{formatDuration(contest.duration)}</span>
-        </div>
       </div>
 
-      {/* countdown — only for upcoming, not ongoing */}
-      {contest.status === 'upcoming' && (
-        <div className="contest-card__countdown">
-          <span className="countdown-heading">Starts in</span>
-          <CountdownTimer targetDate={contest.startDate} />
+      <div className="card-footer">
+        <div className="card-meta">
+          <h3 className="card-title">{contest.name}</h3>
+          <p className="card-date">{formatDate(contest.startDate)}</p>
         </div>
-      )}
-
-      {/* action button */}
-      <div className="contest-card__footer">
-        {isAuthenticated ? (
-          <Link to={`/contests/${contest.id}`} className="btn btn--primary">
-            {isOngoing ? 'Enter Contest' : 'Register'}
-          </Link>
-        ) : (
-          <Link to="/auth/login" className="btn btn--ghost">
-            Login to Register
-          </Link>
-        )}
+        <div className="card-cta">
+          {isAuthenticated ? (
+            <Link to={`/contests/${contest.id}`} className="btn-register">
+              {isOngoing ? 'Enter' : 'Register'}
+            </Link>
+          ) : (
+            <Link to="/auth/login" className="btn-ghost">Login</Link>
+          )}
+          <button className="btn-bell" title="Set reminder">🔔</button>
+        </div>
       </div>
 
     </div>
   )
 }
 
-// Past Contest Table Row
+// ─── past contest row ────────────────────────────────────────────────────────
 
-function PastContestRow({
+const PROBLEMS_PER_CONTEST = 4   // adjust or derive from API if available
+
+function PastRow({
   contest,
   participation,
   isAuthenticated,
-  index
+  accent,
 }: {
   contest: Contest
   participation: Participation | undefined
   isAuthenticated: boolean
-  index: number
+  accent: 'orange' | 'purple'
 }) {
   const participated = !!participation
 
   return (
-    <tr className={participated ? 'row--participated' : ''}>
-      <td className="td--index mono">{index + 1}</td>
+    <div className={`past-row ${participated ? 'past-row--done' : ''}`}>
 
-      <td className="td--name">
-        <Link to={`/contests/${contest.id}`} className="contest-link">
+      {/* thumbnail — drop your SVG inside .past-thumb */}
+      <div className={`past-thumb past-thumb--${accent}`} />
+
+      <div className="past-info">
+        <Link to={`/contests/${contest.id}`} className="past-name">
           {contest.name}
         </Link>
-      </td>
+        <span className="past-date">{formatDate(contest.startDate)}</span>
+      </div>
 
-      <td className="td--date">{formatDate(contest.startDate)}</td>
-
-      <td className="td--duration mono">{formatDuration(contest.duration)}</td>
-
-      {/* only render participation columns if logged in */}
       {isAuthenticated && (
-        <>
-          <td className="td--status">
-            {participated ? (
-              <span className="badge badge--participated">Participated</span>
-            ) : (
-              <span className="badge badge--missed">Not participated</span>
-            )}
-          </td>
-
-          <td className="td--solved mono">
-            {participated ? participation.problemsSolved : '—'}
-          </td>
-
-          <td className="td--rank mono">
-            {participated ? `#${participation.rank}` : '—'}
-          </td>
-        </>
+        <span className={`score-badge ${participated ? 'score-badge--done' : 'score-badge--miss'}`}>
+          {participated ? participation.problemsSolved : '—'} / {PROBLEMS_PER_CONTEST}
+        </span>
       )}
-    </tr>
+
+      <Link to={`/contests/${contest.id}`} className="btn-virtual">
+        Virtual
+      </Link>
+
+    </div>
   )
 }
 
+// ─── page ────────────────────────────────────────────────────────────────────
 
-// Main Page
-
+type PastTab = 'all' | 'mine'
 
 export default function ContestsPage() {
   const { contests, participations, isAuthenticated } = useLoaderData() as ContestsLoaderData
+  const [tab, setTab] = useState<PastTab>('all')
 
-  // split into sections
-  const upcomingContests = contests.filter(
-    c => c.status === 'upcoming' || c.status === 'ongoing'
-  )
-  // sort ongoing first, then by startDate
-  .sort((a, b) => {
-    if (a.status === 'ongoing') return -1
-    if (b.status === 'ongoing') return 1
-    return new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-  })
+  const upcoming = contests
+    .filter(c => c.status === 'upcoming' || c.status === 'ongoing')
+    .sort((a, b) => {
+      if (a.status === 'ongoing') return -1
+      if (b.status === 'ongoing') return  1
+      return new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    })
 
-  const pastContests = contests
+  const past = contests
     .filter(c => c.status === 'past')
-    .sort((a, b) =>
-      new Date(b.startDate).getTime() - new Date(a.startDate).getTime()  // newest first
-    )
+    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
+
+  const displayed = tab === 'mine'
+    ? past.filter(c => !!participations[c.id])
+    : past
+
+  const accents: Array<'orange' | 'purple'> = ['orange', 'purple']
 
   return (
     <div className="contests-page">
 
-      {/* ---- UPCOMING SECTION ---- */}
-      <section className="contests-section">
-        <div className="section-header">
-          <h2 className="section-title">Upcoming Contests</h2>
-          <span className="section-count">{upcomingContests.length}</span>
-        </div>
-
-        {upcomingContests.length === 0 ? (
+      {/* ── upcoming ── */}
+      <section className="upcoming-section">
+        <h2 className="section-heading">Upcoming Contests</h2>
+        {upcoming.length === 0 ? (
           <div className="empty-state">
-            <p>No upcoming contests right now.</p>
+            <p>No upcoming contests.</p>
             <p className="empty-sub">Check back soon — new contests are added regularly.</p>
           </div>
         ) : (
           <div className="cards-grid">
-            {upcomingContests.map(contest => (
+            {upcoming.map((c, i) => (
               <UpcomingCard
-                key={contest.id}
-                contest={contest}
+                key={c.id}
+                contest={c}
                 isAuthenticated={isAuthenticated}
+                accent={accents[i % 2]}
               />
             ))}
           </div>
         )}
       </section>
 
-      {/* ---- PAST SECTION ---- */}
-      <section className="contests-section">
-        <div className="section-header">
-          <h2 className="section-title">Past Contests</h2>
-          <span className="section-count">{pastContests.length}</span>
-        </div>
+      {/* ── past contests panel ── */}
+      <section className="past-section">
+        <h2 className="section-heading">Past Contests</h2>
+        <div className="panel">
 
-        {!isAuthenticated && (
-          <div className="login-nudge">
-            <Link to="/auth/login">Login</Link> to see your participation history
+          <div className="tab-bar">
+            <button
+              className={`tab ${tab === 'all' ? 'tab--active' : ''}`}
+              onClick={() => setTab('all')}
+            >
+              Past Contests
+            </button>
+            {isAuthenticated && (
+              <button
+                className={`tab ${tab === 'mine' ? 'tab--active' : ''}`}
+                onClick={() => setTab('mine')}
+              >
+                My Contests
+              </button>
+            )}
           </div>
-        )}
 
-        {pastContests.length === 0 ? (
-          <div className="empty-state">
-            <p>No past contests yet.</p>
-          </div>
-        ) : (
-          <div className="table-wrapper">
-            <table className="contests-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Contest</th>
-                  <th>Date</th>
-                  <th>Duration</th>
-                  {isAuthenticated && (
-                    <>
-                      <th>Status</th>
-                      <th>Solved</th>
-                      <th>Rank</th>
-                    </>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {pastContests.map((contest, index) => (
-                  <PastContestRow
-                    key={contest.id}
-                    contest={contest}
-                    participation={participations[contest.id]}
+          {!isAuthenticated && (
+            <div className="login-nudge">
+              <Link to="/auth/login">Login</Link> to track your participation history
+            </div>
+          )}
+
+          <div className="past-list-wrapper">
+            <div className="past-list">
+              {displayed.length === 0 ? (
+                <div className="empty-state">
+                  <p>{tab === 'mine' ? "You haven't participated in any contests yet." : 'No past contests.'}</p>
+                </div>
+              ) : (
+                displayed.map((c, i) => (
+                  <PastRow
+                    key={c.id}
+                    contest={c}
+                    participation={participations[c.id]}
                     isAuthenticated={isAuthenticated}
-                    index={index}
+                    accent={accents[i % 2]}
                   />
-                ))}
-              </tbody>
-            </table>
+                ))
+              )}
+            </div>
           </div>
-        )}
+
+        </div>
       </section>
 
     </div>

@@ -9,7 +9,13 @@
 * 🟢 You can import this file directly.
 */
 
+export const Verdict = {
+  ACCEPTED: 'ACCEPTED',
+  WRONG_ANSWER: 'WRONG_ANSWER',
+  TIME_LIMIT_EXCEEDED: 'TIME_LIMIT_EXCEEDED',
+  MEMORY_LIMIT_EXCEEDED: 'MEMORY_LIMIT_EXCEEDED',
+  COMPILATION_ERROR: 'COMPILATION_ERROR',
+  RUNTIME_ERROR: 'RUNTIME_ERROR'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type Verdict = (typeof Verdict)[keyof typeof Verdict]

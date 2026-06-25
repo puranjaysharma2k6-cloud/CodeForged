@@ -27,27 +27,31 @@ export type AggregateUser = {
 }
 
 export type UserAvgAggregateOutputType = {
-  id: number | null
+  currentRating: number | null
 }
 
 export type UserSumAggregateOutputType = {
-  id: number | null
+  currentRating: number | null
 }
 
 export type UserMinAggregateOutputType = {
-  id: number | null
+  id: string | null
   email: string | null
   username: string | null
   passwordHash: string | null
   name: string | null
+  currentRating: number | null
+  avatarUrl: string | null
 }
 
 export type UserMaxAggregateOutputType = {
-  id: number | null
+  id: string | null
   email: string | null
   username: string | null
   passwordHash: string | null
   name: string | null
+  currentRating: number | null
+  avatarUrl: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -56,16 +60,18 @@ export type UserCountAggregateOutputType = {
   username: number
   passwordHash: number
   name: number
+  currentRating: number
+  avatarUrl: number
   _all: number
 }
 
 
 export type UserAvgAggregateInputType = {
-  id?: true
+  currentRating?: true
 }
 
 export type UserSumAggregateInputType = {
-  id?: true
+  currentRating?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -74,6 +80,8 @@ export type UserMinAggregateInputType = {
   username?: true
   passwordHash?: true
   name?: true
+  currentRating?: true
+  avatarUrl?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -82,6 +90,8 @@ export type UserMaxAggregateInputType = {
   username?: true
   passwordHash?: true
   name?: true
+  currentRating?: true
+  avatarUrl?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -90,6 +100,8 @@ export type UserCountAggregateInputType = {
   username?: true
   passwordHash?: true
   name?: true
+  currentRating?: true
+  avatarUrl?: true
   _all?: true
 }
 
@@ -180,11 +192,13 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 }
 
 export type UserGroupByOutputType = {
-  id: number
+  id: string
   email: string
   username: string
   passwordHash: string
   name: string | null
+  currentRating: number
+  avatarUrl: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -211,12 +225,16 @@ export type UserWhereInput = {
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  id?: Prisma.IntFilter<"User"> | number
+  id?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   username?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringNullableFilter<"User"> | string | null
-  posts?: Prisma.PostListRelationFilter
+  currentRating?: Prisma.IntFilter<"User"> | number
+  avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  submission?: Prisma.SubmissionListRelationFilter
+  contest?: Prisma.ContestRegistrationListRelationFilter
+  ratingHistory?: Prisma.ContestResultListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -225,11 +243,15 @@ export type UserOrderByWithRelationInput = {
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
-  posts?: Prisma.PostOrderByRelationAggregateInput
+  currentRating?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  submission?: Prisma.SubmissionOrderByRelationAggregateInput
+  contest?: Prisma.ContestRegistrationOrderByRelationAggregateInput
+  ratingHistory?: Prisma.ContestResultOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   email?: string
   username?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -237,7 +259,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   passwordHash?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringNullableFilter<"User"> | string | null
-  posts?: Prisma.PostListRelationFilter
+  currentRating?: Prisma.IntFilter<"User"> | number
+  avatarUrl?: Prisma.StringNullableFilter<"User"> | string | null
+  submission?: Prisma.SubmissionListRelationFilter
+  contest?: Prisma.ContestRegistrationListRelationFilter
+  ratingHistory?: Prisma.ContestResultListRelationFilter
 }, "id" | "email" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -246,6 +272,8 @@ export type UserOrderByWithAggregationInput = {
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentRating?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -257,68 +285,95 @@ export type UserScalarWhereWithAggregatesInput = {
   AND?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"User"> | number
+  id?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   username?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
   name?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  currentRating?: Prisma.IntWithAggregatesFilter<"User"> | number
+  avatarUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
+  id?: string
   email: string
   username: string
   passwordHash: string
   name?: string | null
-  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
-  id?: number
+  id?: string
   email: string
   username: string
   passwordHash: string
   name?: string | null
-  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
-  id?: number
+  id?: string
   email: string
   username: string
   passwordHash: string
   name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -327,10 +382,12 @@ export type UserCountOrderByAggregateInput = {
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  currentRating?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
+  currentRating?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -339,6 +396,8 @@ export type UserMaxOrderByAggregateInput = {
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  currentRating?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -347,10 +406,12 @@ export type UserMinOrderByAggregateInput = {
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  currentRating?: Prisma.SortOrder
+  avatarUrl?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
+  currentRating?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -374,64 +435,238 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type UserCreateNestedOneWithoutPostsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostsInput
+export type UserCreateNestedOneWithoutSubmissionInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubmissionInput, Prisma.UserUncheckedCreateWithoutSubmissionInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubmissionInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutPostsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostsInput
-  upsert?: Prisma.UserUpsertWithoutPostsInput
+export type UserUpdateOneRequiredWithoutSubmissionNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubmissionInput, Prisma.UserUncheckedCreateWithoutSubmissionInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubmissionInput
+  upsert?: Prisma.UserUpsertWithoutSubmissionInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPostsInput, Prisma.UserUpdateWithoutPostsInput>, Prisma.UserUncheckedUpdateWithoutPostsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubmissionInput, Prisma.UserUpdateWithoutSubmissionInput>, Prisma.UserUncheckedUpdateWithoutSubmissionInput>
 }
 
-export type UserCreateWithoutPostsInput = {
+export type UserCreateNestedOneWithoutContestInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContestInput, Prisma.UserUncheckedCreateWithoutContestInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContestInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutContestNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContestInput, Prisma.UserUncheckedCreateWithoutContestInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContestInput
+  upsert?: Prisma.UserUpsertWithoutContestInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContestInput, Prisma.UserUpdateWithoutContestInput>, Prisma.UserUncheckedUpdateWithoutContestInput>
+}
+
+export type UserCreateNestedOneWithoutRatingHistoryInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRatingHistoryInput, Prisma.UserUncheckedCreateWithoutRatingHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRatingHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRatingHistoryNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRatingHistoryInput, Prisma.UserUncheckedCreateWithoutRatingHistoryInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRatingHistoryInput
+  upsert?: Prisma.UserUpsertWithoutRatingHistoryInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRatingHistoryInput, Prisma.UserUpdateWithoutRatingHistoryInput>, Prisma.UserUncheckedUpdateWithoutRatingHistoryInput>
+}
+
+export type UserCreateWithoutSubmissionInput = {
+  id?: string
   email: string
   username: string
   passwordHash: string
   name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutPostsInput = {
-  id?: number
+export type UserUncheckedCreateWithoutSubmissionInput = {
+  id?: string
   email: string
   username: string
   passwordHash: string
   name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
 }
 
-export type UserCreateOrConnectWithoutPostsInput = {
+export type UserCreateOrConnectWithoutSubmissionInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubmissionInput, Prisma.UserUncheckedCreateWithoutSubmissionInput>
 }
 
-export type UserUpsertWithoutPostsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutPostsInput, Prisma.UserUncheckedUpdateWithoutPostsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
+export type UserUpsertWithoutSubmissionInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSubmissionInput, Prisma.UserUncheckedUpdateWithoutSubmissionInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubmissionInput, Prisma.UserUncheckedCreateWithoutSubmissionInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutPostsInput = {
+export type UserUpdateToOneWithWhereWithoutSubmissionInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutPostsInput, Prisma.UserUncheckedUpdateWithoutPostsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSubmissionInput, Prisma.UserUncheckedUpdateWithoutSubmissionInput>
 }
 
-export type UserUpdateWithoutPostsInput = {
+export type UserUpdateWithoutSubmissionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutPostsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+export type UserUncheckedUpdateWithoutSubmissionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutContestInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutContestInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutContestInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContestInput, Prisma.UserUncheckedCreateWithoutContestInput>
+}
+
+export type UserUpsertWithoutContestInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContestInput, Prisma.UserUncheckedUpdateWithoutContestInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContestInput, Prisma.UserUncheckedCreateWithoutContestInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContestInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContestInput, Prisma.UserUncheckedUpdateWithoutContestInput>
+}
+
+export type UserUpdateWithoutContestInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContestInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutRatingHistoryInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRatingHistoryInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRatingHistoryInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRatingHistoryInput, Prisma.UserUncheckedCreateWithoutRatingHistoryInput>
+}
+
+export type UserUpsertWithoutRatingHistoryInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRatingHistoryInput, Prisma.UserUncheckedUpdateWithoutRatingHistoryInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRatingHistoryInput, Prisma.UserUncheckedCreateWithoutRatingHistoryInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRatingHistoryInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRatingHistoryInput, Prisma.UserUncheckedUpdateWithoutRatingHistoryInput>
+}
+
+export type UserUpdateWithoutRatingHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRatingHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -440,11 +675,15 @@ export type UserUncheckedUpdateWithoutPostsInput = {
  */
 
 export type UserCountOutputType = {
-  posts: number
+  submission: number
+  contest: number
+  ratingHistory: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  posts?: boolean | UserCountOutputTypeCountPostsArgs
+  submission?: boolean | UserCountOutputTypeCountSubmissionArgs
+  contest?: boolean | UserCountOutputTypeCountContestArgs
+  ratingHistory?: boolean | UserCountOutputTypeCountRatingHistoryArgs
 }
 
 /**
@@ -460,8 +699,22 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PostWhereInput
+export type UserCountOutputTypeCountSubmissionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SubmissionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountContestArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContestRegistrationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRatingHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContestResultWhereInput
 }
 
 
@@ -471,7 +724,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   username?: boolean
   passwordHash?: boolean
   name?: boolean
-  posts?: boolean | Prisma.User$postsArgs<ExtArgs>
+  currentRating?: boolean
+  avatarUrl?: boolean
+  submission?: boolean | Prisma.User$submissionArgs<ExtArgs>
+  contest?: boolean | Prisma.User$contestArgs<ExtArgs>
+  ratingHistory?: boolean | Prisma.User$ratingHistoryArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -481,6 +738,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   username?: boolean
   passwordHash?: boolean
   name?: boolean
+  currentRating?: boolean
+  avatarUrl?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -489,6 +748,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   username?: boolean
   passwordHash?: boolean
   name?: boolean
+  currentRating?: boolean
+  avatarUrl?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -497,11 +758,15 @@ export type UserSelectScalar = {
   username?: boolean
   passwordHash?: boolean
   name?: boolean
+  currentRating?: boolean
+  avatarUrl?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "passwordHash" | "name", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "username" | "passwordHash" | "name" | "currentRating" | "avatarUrl", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  posts?: boolean | Prisma.User$postsArgs<ExtArgs>
+  submission?: boolean | Prisma.User$submissionArgs<ExtArgs>
+  contest?: boolean | Prisma.User$contestArgs<ExtArgs>
+  ratingHistory?: boolean | Prisma.User$ratingHistoryArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -510,14 +775,18 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    posts: Prisma.$PostPayload<ExtArgs>[]
+    submission: Prisma.$SubmissionPayload<ExtArgs>[]
+    contest: Prisma.$ContestRegistrationPayload<ExtArgs>[]
+    ratingHistory: Prisma.$ContestResultPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
+    id: string
     email: string
     username: string
     passwordHash: string
     name: string | null
+    currentRating: number
+    avatarUrl: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -912,7 +1181,9 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  posts<T extends Prisma.User$postsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  submission<T extends Prisma.User$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$submissionArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contest<T extends Prisma.User$contestArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contestArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContestRegistrationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ratingHistory<T extends Prisma.User$ratingHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ratingHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContestResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -942,11 +1213,13 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  * Fields of the User model
  */
 export interface UserFieldRefs {
-  readonly id: Prisma.FieldRef<"User", 'Int'>
+  readonly id: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly username: Prisma.FieldRef<"User", 'String'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
+  readonly currentRating: Prisma.FieldRef<"User", 'Int'>
+  readonly avatarUrl: Prisma.FieldRef<"User", 'String'>
 }
     
 
@@ -1340,27 +1613,75 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * User.posts
+ * User.submission
  */
-export type User$postsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$submissionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Post
+   * Select specific fields to fetch from the Submission
    */
-  select?: Prisma.PostSelect<ExtArgs> | null
+  select?: Prisma.SubmissionSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Post
+   * Omit specific fields from the Submission
    */
-  omit?: Prisma.PostOmit<ExtArgs> | null
+  omit?: Prisma.SubmissionOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PostInclude<ExtArgs> | null
-  where?: Prisma.PostWhereInput
-  orderBy?: Prisma.PostOrderByWithRelationInput | Prisma.PostOrderByWithRelationInput[]
-  cursor?: Prisma.PostWhereUniqueInput
+  include?: Prisma.SubmissionInclude<ExtArgs> | null
+  where?: Prisma.SubmissionWhereInput
+  orderBy?: Prisma.SubmissionOrderByWithRelationInput | Prisma.SubmissionOrderByWithRelationInput[]
+  cursor?: Prisma.SubmissionWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.PostScalarFieldEnum | Prisma.PostScalarFieldEnum[]
+  distinct?: Prisma.SubmissionScalarFieldEnum | Prisma.SubmissionScalarFieldEnum[]
+}
+
+/**
+ * User.contest
+ */
+export type User$contestArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContestRegistration
+   */
+  select?: Prisma.ContestRegistrationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContestRegistration
+   */
+  omit?: Prisma.ContestRegistrationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContestRegistrationInclude<ExtArgs> | null
+  where?: Prisma.ContestRegistrationWhereInput
+  orderBy?: Prisma.ContestRegistrationOrderByWithRelationInput | Prisma.ContestRegistrationOrderByWithRelationInput[]
+  cursor?: Prisma.ContestRegistrationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContestRegistrationScalarFieldEnum | Prisma.ContestRegistrationScalarFieldEnum[]
+}
+
+/**
+ * User.ratingHistory
+ */
+export type User$ratingHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContestResult
+   */
+  select?: Prisma.ContestResultSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContestResult
+   */
+  omit?: Prisma.ContestResultOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContestResultInclude<ExtArgs> | null
+  where?: Prisma.ContestResultWhereInput
+  orderBy?: Prisma.ContestResultOrderByWithRelationInput | Prisma.ContestResultOrderByWithRelationInput[]
+  cursor?: Prisma.ContestResultWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContestResultScalarFieldEnum | Prisma.ContestResultScalarFieldEnum[]
 }
 
 /**

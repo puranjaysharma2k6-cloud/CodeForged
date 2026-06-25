@@ -1,4 +1,5 @@
-import config from '../../config'
+import config from '../../config';
+import { getAccessToken } from '../../context/AuthContext';  // ← single source
 
 // --------------------------------------------------
 // Types
@@ -21,7 +22,7 @@ export interface Participation {
 
 export interface ContestsLoaderData {
   contests: Contest[]
-  participations: Record<string, Participation>   // contestId → participation
+  participations: Record<string, Participation>   // contestId -> participation
   isAuthenticated: boolean
 }
 
@@ -31,40 +32,41 @@ export interface ContestsLoaderData {
 
 export async function contestsLoader(): Promise<ContestsLoaderData> {
 
-  // public endpoint, no token needed
-  const contestsRes = await fetch(`${config.apiUrl}/api/contests`)
-  if (!contestsRes.ok) throw new Error('Failed to fetch contests')
-  const contests: Contest[] = await contestsRes.json()
+  // public endpoint — no token needed
+  const contestsRes = await fetch(`${config.apiUrl}/api/contests`);
+  if (!contestsRes.ok) throw new Error('Failed to fetch contests');
+  const contests: Contest[] = await contestsRes.json();
 
-  // conditional rendering part -> this component is rendered only if user is logged in
-  const token = localStorage.getItem('token')
+  // Loaders run outside the React tree so they can't call useAuth().
+  // getAccessToken() is a module-level accessor exported by AuthContext that
+  // reads from the same localStorage that AuthContext writes to — one source
+  // of truth, just accessed without a hook.
+  const token = getAccessToken();
 
   if (!token) {
-    // not logged in — return contests with empty participation map
-    return { contests, participations: {}, isAuthenticated: false }
+    return { contests, participations: {}, isAuthenticated: false };
   }
 
-  //  logged in — fetch participation for ALL past contests in parallel
-  //    Promise.allSettled means one failure doesn't crash the whole page
-  const pastContests = contests.filter(c => c.status === 'past')
+  // Logged in — fetch participation for all past contests in parallel.
+  // Promise.allSettled means one failure doesn't crash the whole page.
+  const pastContests = contests.filter(c => c.status === 'past');
 
   const participationResults = await Promise.allSettled(
     pastContests.map(contest =>
       fetch(`${config.apiUrl}/api/contests/${contest.id}/participation`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .then(res => res.ok ? res.json() : null)  // null means didn't participate
+      .then(res => res.ok ? res.json() : null)  // null = didn't participate
     )
-  )
+  );
 
-  // 4. build a contestId to participtn map
-  const participations: Record<string, Participation> = {}
+  const participations: Record<string, Participation> = {};
   pastContests.forEach((contest, index) => {
-    const result = participationResults[index]
+    const result = participationResults[index];
     if (result.status === 'fulfilled' && result.value) {
-      participations[contest.id] = result.value
+      participations[contest.id] = result.value;
     }
-  })
+  });
 
-  return { contests, participations, isAuthenticated: true }
+  return { contests, participations, isAuthenticated: true };
 }

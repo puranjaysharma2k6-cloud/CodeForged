@@ -13,7 +13,7 @@ const router = Router();
 router.get("/", listContests);
 router.get("/:id", getContestById);
 
-// Protected — require valid JWT
+// Protected - require valid JWT
 router.get("/:id/participation", authenticate, getParticipation);
 router.post("/:id/register", authenticate, registerForContest);
 

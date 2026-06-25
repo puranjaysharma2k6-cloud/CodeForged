@@ -9,7 +9,7 @@ import {
 
 const SALT_ROUNDS = 10;
 
-function issueTokens(user: { id: number; email: string }) {
+function issueTokens(user: { id: string; email: string }) {
   const payload = { userId: user.id, email: user.email };
   return {
     token: signAccessToken(payload),
@@ -43,10 +43,10 @@ export async function register(req: Request, res: Response): Promise<void> {
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
   const user = await prisma.user.create({
-    data: {
-      username,
-      email,
-      passwordHash,
+    data: { 
+       email:email,
+      username: username,
+      passwordHash: passwordHash,
       name: username,
     },
     select: { id: true, email: true },

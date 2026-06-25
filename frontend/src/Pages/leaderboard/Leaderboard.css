@@ -1,0 +1,422 @@
+/* ================================================== */
+/* Leaderboard Skeleton Loading                       */
+/* ================================================== */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes shimmerWave {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton-row {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.skeleton-text {
+  height: 14px;
+  background: linear-gradient(
+    90deg,
+    var(--inner-card-bg, #1f232b) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    var(--inner-card-bg, #1f232b) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmerWave 2s infinite;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+}
+
+.skeleton-rank {
+  width: 60px;
+}
+
+.skeleton-avatar-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    var(--inner-card-bg, #1f232b) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    var(--inner-card-bg, #1f232b) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmerWave 2s infinite;
+}
+
+.skeleton-user {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.skeleton-user-info {
+  flex: 1;
+}
+
+.skeleton-username {
+  width: 120px;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-handle {
+  width: 80px;
+}
+
+.skeleton-rating {
+  width: 80px;
+}
+
+/* ================================================== */
+/* Leaderboard Page Layout                           */
+/* ================================================== */
+.leaderboard-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.leaderboard-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.leaderboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text, #ffffff);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.leaderboard-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary, #9ca3af);
+  margin: 0;
+}
+
+.leaderboard-container {
+  background-color: var(--card-bg, #16181d);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  animation: leaderboardEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.leaderboard-table-wrapper {
+  overflow-x: auto;
+}
+
+/* ================================================== */
+/* Leaderboard List Styling                          */
+/* ================================================== */
+
+/* Column header bar — mirrors the row layout */
+.leaderboard-list-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: var(--inner-card-bg, #1f232b);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  font-weight: 600;
+  color: var(--text-secondary, #9ca3af);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.leaderboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.leaderboard-list li {
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.leaderboard-list li:last-child {
+  border-bottom: none;
+}
+
+/* Each row IS a Link — full row is clickable, keyboard and right-click work */
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.leaderboard-row:hover {
+  background-color: var(--inner-card-bg, #1f232b);
+}
+
+.leaderboard-row:focus-visible {
+  outline: 2px solid var(--accent, #22d3ee);
+  outline-offset: -2px;
+}
+
+.rank-col {
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.user-col {
+  flex: 1;
+}
+
+.rating-col {
+  width: 120px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* -- Rank Badge -- */
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background-color: var(--inner-card-bg, #1f232b);
+  border: 2px solid var(--border, rgba(255, 255, 255, 0.08));
+  color: var(--text-secondary, #9ca3af);
+}
+
+/* Special styling for top 3 */
+.rank-1 {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  border-color: #f59e0b;
+  font-weight: 800;
+}
+
+.rank-2 {
+  background: linear-gradient(135deg, #c0c0c0, #808080);
+  color: #ffffff;
+  border-color: #c0c0c0;
+  font-weight: 800;
+}
+
+.rank-3 {
+  background: linear-gradient(135deg, #cd7f32, #8b4513);
+  color: #ffffff;
+  border-color: #cd7f32;
+  font-weight: 800;
+}
+
+/* -- User Info Row -- */
+.user-info-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar-small {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--inner-card-bg, #1f232b);
+  outline: 1px solid var(--accent, #22d3ee);
+  outline-offset: 1px;
+  background-color: var(--inner-card-bg, #1f232b);
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text, #ffffff);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.user-handle {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #9ca3af);
+  font-family: 'JetBrains Mono', monospace;
+  margin: 0;
+}
+
+/* -- Rating Value -- */
+.rating-value {
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--live-accent, #f59e0b);
+  font-size: 1.1rem;
+}
+
+/* ================================================== */
+/* Error & Empty States                              */
+/* ================================================== */
+.error-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: var(--card-bg, #16181d);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 24px;
+  margin-top: 2rem;
+}
+
+.error-message {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 1rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.error-retry-btn,
+.error-back-btn {
+  background-color: var(--accent, #22d3ee);
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.error-retry-btn:hover,
+.error-back-btn:hover {
+  opacity: 0.8;
+}
+
+.empty-state-leaderboard {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: var(--card-bg, #16181d);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 24px;
+  margin-top: 2rem;
+}
+
+.empty-state-leaderboard p {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.empty-sub {
+  font-size: 0.9rem;
+  margin-top: 0.5rem !important;
+}
+
+/* ================================================== */
+/* Animations                                        */
+/* ================================================== */
+@keyframes leaderboardEntry {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================================== */
+/* Responsive Design                                 */
+/* ================================================== */
+@media (max-width: 768px) {
+  .leaderboard-page {
+    padding: 2rem 1rem;
+  }
+
+  .leaderboard-title {
+    font-size: 2rem;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .rank-col {
+    width: 60px;
+  }
+
+  .rating-col {
+    width: 100px;
+  }
+
+  .rank-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+
+  .user-avatar-small {
+    width: 36px;
+    height: 36px;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+  }
+
+  .user-handle {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .leaderboard-title {
+    font-size: 1.5rem;
+  }
+
+  .leaderboard-header {
+    margin-bottom: 2rem;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .rank-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+
+  .user-avatar-small {
+    width: 32px;
+    height: 32px;
+  }
+
+  .user-info-row {
+    gap: 0.5rem;
+  }
+}

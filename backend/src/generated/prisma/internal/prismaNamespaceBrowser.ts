@@ -52,7 +52,11 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Post: 'Post'
+  Problem: 'Problem',
+  Contest: 'Contest',
+  Submission: 'Submission',
+  ContestRegistration: 'ContestRegistration',
+  ContestResult: 'ContestResult'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -76,21 +80,69 @@ export const UserScalarFieldEnum = {
   email: 'email',
   username: 'username',
   passwordHash: 'passwordHash',
-  name: 'name'
+  name: 'name',
+  currentRating: 'currentRating',
+  avatarUrl: 'avatarUrl'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
-export const PostScalarFieldEnum = {
+export const ProblemScalarFieldEnum = {
   id: 'id',
   title: 'title',
   content: 'content',
   published: 'published',
-  authorId: 'authorId'
+  contestId: 'contestId'
 } as const
 
-export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+export type ProblemScalarFieldEnum = (typeof ProblemScalarFieldEnum)[keyof typeof ProblemScalarFieldEnum]
+
+
+export const ContestScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  startTime: 'startTime',
+  editorial: 'editorial'
+} as const
+
+export type ContestScalarFieldEnum = (typeof ContestScalarFieldEnum)[keyof typeof ContestScalarFieldEnum]
+
+
+export const SubmissionScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  language: 'language',
+  status: 'status',
+  runtime: 'runtime',
+  memory: 'memory',
+  createdAt: 'createdAt',
+  userId: 'userId',
+  problemId: 'problemId'
+} as const
+
+export type SubmissionScalarFieldEnum = (typeof SubmissionScalarFieldEnum)[keyof typeof SubmissionScalarFieldEnum]
+
+
+export const ContestRegistrationScalarFieldEnum = {
+  userId: 'userId',
+  contestId: 'contestId',
+  registeredAt: 'registeredAt'
+} as const
+
+export type ContestRegistrationScalarFieldEnum = (typeof ContestRegistrationScalarFieldEnum)[keyof typeof ContestRegistrationScalarFieldEnum]
+
+
+export const ContestResultScalarFieldEnum = {
+  userId: 'userId',
+  contestId: 'contestId',
+  rankAchieved: 'rankAchieved',
+  oldRating: 'oldRating',
+  newRating: 'newRating',
+  createdAt: 'createdAt'
+} as const
+
+export type ContestResultScalarFieldEnum = (typeof ContestResultScalarFieldEnum)[keyof typeof ContestResultScalarFieldEnum]
 
 
 export const SortOrder = {

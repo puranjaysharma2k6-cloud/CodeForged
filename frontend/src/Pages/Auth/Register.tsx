@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useAuth } from "../../context/AuthContext";
 import "./auth.css";
+import config from "../../config";
 
 const RegisterSchema = z
   .object({
@@ -46,7 +47,7 @@ export default function Register() {
     setError("");
 
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch(`${config.apiUrl}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +67,7 @@ export default function Register() {
 
       login(token, refreshToken);
 
-      navigate("/dashboard", {
+      navigate("/contests", {
         replace: true,
       });
     } catch {

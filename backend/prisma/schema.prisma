@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-enum Verdict {
+ enum Verdict {
   ACCEPTED
   WRONG_ANSWER
   TIME_LIMIT_EXCEEDED
@@ -21,10 +21,13 @@ model User {
   username     String  @unique
   passwordHash String
   name         String?
+  currentRating Int @default(0)
   submission   Submission[]
-  contest ContestRegistration[]
+  contest      ContestRegistration[]
+  ratingHistory      ContestResult[]
+  avatarUrl    String?
 
-} 
+}   
 
 
 model Problem { 
@@ -45,6 +48,7 @@ model Contest{
   editorial String
   problems Problem[] 
   participants ContestRegistration[]
+  results ContestResult[]
 }
 
 model Submission {
@@ -74,4 +78,19 @@ model ContestRegistration {
 
   
   @@id([userId, contestId]) 
+}
+
+model ContestResult {
+  userId       String
+  contestId    String
+  rankAchieved Int      
+  oldRating    Int      
+  newRating    Int       
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contest      Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, contestId])
+  @@index([userId,createdAt])
 }

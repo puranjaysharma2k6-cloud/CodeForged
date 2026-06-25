@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useAuth } from "../../context/AuthContext";
 import "./auth.css";
+import config from "../../config";
 
 const LoginSchema = z.object({
   email: z.email("Please enter a valid email"),
@@ -22,10 +23,10 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
+     console.log(location.state);
   const from =
     (location.state as { from?: string })?.from ||
-    "/dashboard";
+    "/";
 
   const {
     register,
@@ -42,13 +43,13 @@ export default function Login() {
     setError("");
 
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+              const response = await fetch(`${config.apiUrl}/api/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
 
       if (!response.ok) {
         throw new Error("Invalid credentials");

@@ -1,0 +1,313 @@
+
+
+/* ================================================== */
+/* Skeleton Loader Animation                          */
+/* ================================================== */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes shimmerWave {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton-card {
+  animation: pulse 2s ease-in-out infinite;
+  background-color: var(--inner-card-bg, #1f232b);
+}
+
+.skeleton-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    var(--inner-card-bg, #1f232b) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    var(--inner-card-bg, #1f232b) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmerWave 2s infinite;
+  border: 2px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.skeleton-text {
+  height: 16px;
+  background: linear-gradient(
+    90deg,
+    var(--inner-card-bg, #1f232b) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    var(--inner-card-bg, #1f232b) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmerWave 2s infinite;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+  width: 200px;
+  height: 28px;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-subtitle {
+  width: 150px;
+  height: 16px;
+  margin-bottom: 0;
+}
+
+.skeleton-name-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.skeleton-stat {
+  background: linear-gradient(
+    90deg,
+    var(--inner-card-bg, #1f232b) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    var(--inner-card-bg, #1f232b) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmerWave 2s infinite;
+  border-radius: 16px;
+  min-height: 100px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+}
+
+.skeleton-graph {
+  width: 100%;
+  height: 350px;
+  background: linear-gradient(
+    90deg,
+    var(--inner-card-bg, #1f232b) 25%,
+    rgba(255, 255, 255, 0.1) 50%,
+    var(--inner-card-bg, #1f232b) 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmerWave 2s infinite;
+  border-radius: 16px;
+  margin-top: 1.5rem;
+}
+
+/* ================================================== */
+/* Profile Page Layout Container                      */
+/* ================================================== */
+.profile-page {
+    max-width: 1000px; /* Slightly narrower than contests for focused reading */
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Exact horizontal spacing between the top and bottom cards */
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ================================================== */
+/* 1. Top Card: Identity & Stats                      */
+/* ================================================== */
+.profile-card-top {
+    background-color: var(--card-bg, #16181d);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 24px;
+    padding: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    
+    /* Smooth entry animation matching the dashboard */
+    animation: profileEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* -- Left Side: Photo & Name -- */
+.profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--inner-card-bg, #1f232b);
+    outline: 2px solid var(--accent, #22d3ee);
+    outline-offset: 2px;
+    background-color: var(--inner-card-bg, #1f232b);
+}
+
+.profile-name-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.profile-username {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text, #ffffff);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.profile-handle {
+    font-size: 0.95rem;
+    color: var(--text-secondary, #9ca3af);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* -- Right Side: Stats Grid -- */
+.profile-stats {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.stat-box {
+    background: var(--inner-card-bg, #1f232b);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    gap: 0.4rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text, #ffffff);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Add accent coloring to specific stats for visual hierarchy */
+.stat-box--rating .stat-value { color: var(--live-accent, #f59e0b); }
+.stat-box--rank .stat-value { color: var(--accent, #22d3ee); }
+.stat-box--solved .stat-value { color: var(--success-accent, #10b981); }
+
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary, #9ca3af);
+    font-weight: 600;
+}
+
+/* ================================================== */
+/* 2. Bottom Card: Rating Graph                       */
+/* ================================================== */
+.profile-card-bottom {
+    background-color: var(--card-bg, #16181d);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    
+    /* Staggered load animation */
+    animation: profileEntry 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: 0.1s;
+}
+
+.graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.graph-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text, #ffffff);
+    margin: 0;
+}
+
+/* Container locking the chart height to prevent layout shifts */
+.graph-container {
+    width: 100%;
+    height: 350px; 
+    position: relative;
+}
+
+/* Override Recharts default tooltip styles to match dark theme */
+.custom-tooltip {
+    background-color: var(--inner-card-bg, #1f232b) !important;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08)) !important;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    color: var(--text, #ffffff);
+}
+
+/* ================================================== */
+/* Animations & Responsiveness                        */
+/* ================================================== */
+@keyframes profileEntry {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Layout Restructuring */
+@media (max-width: 768px) {
+    .profile-card-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 2rem 1.5rem;
+    }
+
+    .profile-identity {
+        flex-direction: column;
+    }
+
+    .profile-stats {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2x2 grid for stats on mobile */
+    }
+    
+    /* Make the third stat box span full width if there are 3 items */
+    .stat-box:nth-child(3) {
+        grid-column: span 2;
+    }
+
+    .profile-card-bottom {
+        padding: 1.5rem;
+    }
+    
+    .graph-container {
+        height: 250px; /* Shorter graph on mobile */
+    }
+}

@@ -6,8 +6,12 @@
 /*
  * This is a barrel export file for all models and their related types.
  *
- *  You can import this file directly.
+ * 🟢 You can import this file directly.
  */
 export type * from './models/User.js'
-export type * from './models/Post.js'
+export type * from './models/Problem.js'
+export type * from './models/Contest.js'
+export type * from './models/Submission.js'
+export type * from './models/ContestRegistration.js'
+export type * from './models/ContestResult.js'
 export type * from './commonInputTypes.js'
