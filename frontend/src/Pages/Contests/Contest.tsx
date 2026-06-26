@@ -3,7 +3,6 @@ import { useLoaderData, Link } from 'react-router-dom'
 import CountdownTimer from '../../components/CountdownTimer'
 import type { ContestsLoaderData, Contest, Participation } from './Contests.loader.tsx'
 import './Contests.css'
-import bg from '../../assets/bg.jpg'
 // ─── helpers ────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string) {
@@ -15,12 +14,6 @@ function formatDate(iso: string) {
     minute:  '2-digit',
     timeZoneName: 'short',
   })
-}
-
-function formatDuration(minutes: number) {
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m === 0 ? `${h}h` : `${h}h ${m}m`
 }
 
 // ─── upcoming card ───────────────────────────────────────────────────────────
