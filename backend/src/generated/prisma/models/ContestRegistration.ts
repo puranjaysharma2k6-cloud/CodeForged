@@ -28,18 +28,21 @@ export type ContestRegistrationMinAggregateOutputType = {
   userId: string | null
   contestId: string | null
   registeredAt: Date | null
+  mode: $Enums.Mode | null
 }
 
 export type ContestRegistrationMaxAggregateOutputType = {
   userId: string | null
   contestId: string | null
   registeredAt: Date | null
+  mode: $Enums.Mode | null
 }
 
 export type ContestRegistrationCountAggregateOutputType = {
   userId: number
   contestId: number
   registeredAt: number
+  mode: number
   _all: number
 }
 
@@ -48,18 +51,21 @@ export type ContestRegistrationMinAggregateInputType = {
   userId?: true
   contestId?: true
   registeredAt?: true
+  mode?: true
 }
 
 export type ContestRegistrationMaxAggregateInputType = {
   userId?: true
   contestId?: true
   registeredAt?: true
+  mode?: true
 }
 
 export type ContestRegistrationCountAggregateInputType = {
   userId?: true
   contestId?: true
   registeredAt?: true
+  mode?: true
   _all?: true
 }
 
@@ -139,6 +145,7 @@ export type ContestRegistrationGroupByOutputType = {
   userId: string
   contestId: string
   registeredAt: Date
+  mode: $Enums.Mode
   _count: ContestRegistrationCountAggregateOutputType | null
   _min: ContestRegistrationMinAggregateOutputType | null
   _max: ContestRegistrationMaxAggregateOutputType | null
@@ -166,6 +173,7 @@ export type ContestRegistrationWhereInput = {
   userId?: Prisma.StringFilter<"ContestRegistration"> | string
   contestId?: Prisma.StringFilter<"ContestRegistration"> | string
   registeredAt?: Prisma.DateTimeFilter<"ContestRegistration"> | Date | string
+  mode?: Prisma.EnumModeFilter<"ContestRegistration"> | $Enums.Mode
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   contest?: Prisma.XOR<Prisma.ContestScalarRelationFilter, Prisma.ContestWhereInput>
 }
@@ -174,6 +182,7 @@ export type ContestRegistrationOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   contest?: Prisma.ContestOrderByWithRelationInput
 }
@@ -186,6 +195,7 @@ export type ContestRegistrationWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.StringFilter<"ContestRegistration"> | string
   contestId?: Prisma.StringFilter<"ContestRegistration"> | string
   registeredAt?: Prisma.DateTimeFilter<"ContestRegistration"> | Date | string
+  mode?: Prisma.EnumModeFilter<"ContestRegistration"> | $Enums.Mode
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   contest?: Prisma.XOR<Prisma.ContestScalarRelationFilter, Prisma.ContestWhereInput>
 }, "userId_contestId">
@@ -194,6 +204,7 @@ export type ContestRegistrationOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
   _count?: Prisma.ContestRegistrationCountOrderByAggregateInput
   _max?: Prisma.ContestRegistrationMaxOrderByAggregateInput
   _min?: Prisma.ContestRegistrationMinOrderByAggregateInput
@@ -206,10 +217,12 @@ export type ContestRegistrationScalarWhereWithAggregatesInput = {
   userId?: Prisma.StringWithAggregatesFilter<"ContestRegistration"> | string
   contestId?: Prisma.StringWithAggregatesFilter<"ContestRegistration"> | string
   registeredAt?: Prisma.DateTimeWithAggregatesFilter<"ContestRegistration"> | Date | string
+  mode?: Prisma.EnumModeWithAggregatesFilter<"ContestRegistration"> | $Enums.Mode
 }
 
 export type ContestRegistrationCreateInput = {
   registeredAt?: Date | string
+  mode: $Enums.Mode
   user: Prisma.UserCreateNestedOneWithoutContestInput
   contest: Prisma.ContestCreateNestedOneWithoutParticipantsInput
 }
@@ -218,10 +231,12 @@ export type ContestRegistrationUncheckedCreateInput = {
   userId: string
   contestId: string
   registeredAt?: Date | string
+  mode: $Enums.Mode
 }
 
 export type ContestRegistrationUpdateInput = {
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
   user?: Prisma.UserUpdateOneRequiredWithoutContestNestedInput
   contest?: Prisma.ContestUpdateOneRequiredWithoutParticipantsNestedInput
 }
@@ -230,22 +245,26 @@ export type ContestRegistrationUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
 }
 
 export type ContestRegistrationCreateManyInput = {
   userId: string
   contestId: string
   registeredAt?: Date | string
+  mode: $Enums.Mode
 }
 
 export type ContestRegistrationUpdateManyMutationInput = {
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
 }
 
 export type ContestRegistrationUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
 }
 
 export type ContestRegistrationListRelationFilter = {
@@ -267,18 +286,21 @@ export type ContestRegistrationCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
 }
 
 export type ContestRegistrationMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
 }
 
 export type ContestRegistrationMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
 }
 
 export type ContestRegistrationCreateNestedManyWithoutUserInput = {
@@ -365,14 +387,20 @@ export type ContestRegistrationUncheckedUpdateManyWithoutContestNestedInput = {
   deleteMany?: Prisma.ContestRegistrationScalarWhereInput | Prisma.ContestRegistrationScalarWhereInput[]
 }
 
+export type EnumModeFieldUpdateOperationsInput = {
+  set?: $Enums.Mode
+}
+
 export type ContestRegistrationCreateWithoutUserInput = {
   registeredAt?: Date | string
+  mode: $Enums.Mode
   contest: Prisma.ContestCreateNestedOneWithoutParticipantsInput
 }
 
 export type ContestRegistrationUncheckedCreateWithoutUserInput = {
   contestId: string
   registeredAt?: Date | string
+  mode: $Enums.Mode
 }
 
 export type ContestRegistrationCreateOrConnectWithoutUserInput = {
@@ -408,16 +436,19 @@ export type ContestRegistrationScalarWhereInput = {
   userId?: Prisma.StringFilter<"ContestRegistration"> | string
   contestId?: Prisma.StringFilter<"ContestRegistration"> | string
   registeredAt?: Prisma.DateTimeFilter<"ContestRegistration"> | Date | string
+  mode?: Prisma.EnumModeFilter<"ContestRegistration"> | $Enums.Mode
 }
 
 export type ContestRegistrationCreateWithoutContestInput = {
   registeredAt?: Date | string
+  mode: $Enums.Mode
   user: Prisma.UserCreateNestedOneWithoutContestInput
 }
 
 export type ContestRegistrationUncheckedCreateWithoutContestInput = {
   userId: string
   registeredAt?: Date | string
+  mode: $Enums.Mode
 }
 
 export type ContestRegistrationCreateOrConnectWithoutContestInput = {
@@ -449,41 +480,49 @@ export type ContestRegistrationUpdateManyWithWhereWithoutContestInput = {
 export type ContestRegistrationCreateManyUserInput = {
   contestId: string
   registeredAt?: Date | string
+  mode: $Enums.Mode
 }
 
 export type ContestRegistrationUpdateWithoutUserInput = {
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
   contest?: Prisma.ContestUpdateOneRequiredWithoutParticipantsNestedInput
 }
 
 export type ContestRegistrationUncheckedUpdateWithoutUserInput = {
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
 }
 
 export type ContestRegistrationUncheckedUpdateManyWithoutUserInput = {
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
 }
 
 export type ContestRegistrationCreateManyContestInput = {
   userId: string
   registeredAt?: Date | string
+  mode: $Enums.Mode
 }
 
 export type ContestRegistrationUpdateWithoutContestInput = {
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
   user?: Prisma.UserUpdateOneRequiredWithoutContestNestedInput
 }
 
 export type ContestRegistrationUncheckedUpdateWithoutContestInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
 }
 
 export type ContestRegistrationUncheckedUpdateManyWithoutContestInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
 }
 
 
@@ -492,6 +531,7 @@ export type ContestRegistrationSelect<ExtArgs extends runtime.Types.Extensions.I
   userId?: boolean
   contestId?: boolean
   registeredAt?: boolean
+  mode?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contestRegistration"]>
@@ -500,6 +540,7 @@ export type ContestRegistrationSelectCreateManyAndReturn<ExtArgs extends runtime
   userId?: boolean
   contestId?: boolean
   registeredAt?: boolean
+  mode?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contestRegistration"]>
@@ -508,6 +549,7 @@ export type ContestRegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime
   userId?: boolean
   contestId?: boolean
   registeredAt?: boolean
+  mode?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contestRegistration"]>
@@ -516,9 +558,10 @@ export type ContestRegistrationSelectScalar = {
   userId?: boolean
   contestId?: boolean
   registeredAt?: boolean
+  mode?: boolean
 }
 
-export type ContestRegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "contestId" | "registeredAt", ExtArgs["result"]["contestRegistration"]>
+export type ContestRegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "contestId" | "registeredAt" | "mode", ExtArgs["result"]["contestRegistration"]>
 export type ContestRegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
@@ -542,6 +585,7 @@ export type $ContestRegistrationPayload<ExtArgs extends runtime.Types.Extensions
     userId: string
     contestId: string
     registeredAt: Date
+    mode: $Enums.Mode
   }, ExtArgs["result"]["contestRegistration"]>
   composites: {}
 }
@@ -970,6 +1014,7 @@ export interface ContestRegistrationFieldRefs {
   readonly userId: Prisma.FieldRef<"ContestRegistration", 'String'>
   readonly contestId: Prisma.FieldRef<"ContestRegistration", 'String'>
   readonly registeredAt: Prisma.FieldRef<"ContestRegistration", 'DateTime'>
+  readonly mode: Prisma.FieldRef<"ContestRegistration", 'Mode'>
 }
     
 

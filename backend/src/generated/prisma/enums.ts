@@ -19,3 +19,20 @@ export const Verdict = {
 } as const
 
 export type Verdict = (typeof Verdict)[keyof typeof Verdict]
+
+
+export const ContestStatus = {
+  UPCOMING: 'UPCOMING',
+  ONGOING: 'ONGOING',
+  PAST: 'PAST'
+} as const
+
+export type ContestStatus = (typeof ContestStatus)[keyof typeof ContestStatus]
+
+
+export const Mode = {
+  OFFICIAL: 'OFFICIAL',
+  VIRTUAL: 'VIRTUAL'
+} as const
+
+export type Mode = (typeof Mode)[keyof typeof Mode]

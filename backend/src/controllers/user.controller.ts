@@ -1,109 +1,103 @@
 import { authenticate } from "../middlewares/auth.middleware.js";
 import type { Request, Response } from "express";
-import { prisma } from "../db/db.js";
-import { login } from "./auth.controller.js";
-import { $Enums } from "../generated/prisma/client.js";
+import { prisma } from "../db/db.js"
 
 interface RatingData {
   contestName: string;
   newRating: number;
-  date: string;
 }
 
- interface ProfileLoaderData {
+interface ProfileLoaderData {
   username: string;
-  handle: string;
-  avatarUrl?: string;
+  name: string; // Added to match your Prisma select
+  avatarUrl: string | null;
   currentRating: number;
   problemsSolved: number;
+  rank: number;
   ratingHistory: RatingData[];
 }
 
-
-
 export async function getUser(req: Request, res: Response): Promise<void> {
+  const userId = req.params.id ?? req.user?.userId;
 
-  console.time("ping-db");
-
-await prisma.$queryRaw`SELECT 1`;
-
-console.timeEnd("ping-db");
-
-
-const userId = req.params.id ?? req.user!.userId; // parms.id bc you named your router users/:id router.get(users :/id)
-// since getUser is a common function for both me as well as for accesign other persons profile :id
-if (typeof userId !== 'string') {
+  if (typeof userId !== 'string') {
     res.status(400).json({ error: "Invalid user ID" });
     return;
-}
-// console.log("url:", req.originalUrl);
-// console.log("params:", req.params);
-try {
-  console.time("problem solved");
+  }
 
+  try {
+    console.time("problem solved");
     const solved = await prisma.submission.findMany({
-          where: {
-            userId,
-            status: "ACCEPTED"
-          },
-          distinct: ["problemId"],
-          select: {
-            problemId: true
-          }
-        });
-
+      where: {
+        userId,
+        status: "ACCEPTED"
+      },
+      distinct: ["problemId"],
+      select: {
+        problemId: true
+      }
+    });
     console.timeEnd("problem solved");
 
-const problemsSolvedCount = solved.length;
-  console.time("userINFO");
+    const problemsSolvedCount = solved.length;
+
+    console.time("userINFO");
     const user = await prisma.user.findUnique({
-  where: { id: userId }, // index on id increases the performance 
-  select: {
-    username: true,
-    name: true,
-    avatarUrl: true,
-    ratingHistory: {
-      orderBy: {
-        createdAt: 'asc',
-      },
+      where: { id: userId },
       select: {
-        newRating: true,
-        createdAt: true,
-        contest: {
+        username: true,
+        name: true,
+        avatarUrl: true,
+        ratingHistory: {
+           orderBy: {
+             contestId: 'asc',
+           },
           select: {
-            title: true,
+            newRating: true,
+            title : true,
+            
           },
         },
       },
-    },
-  },
-});
-  console.timeEnd("userINFO");
- if (!user) {
-        res.status(404).json({ error: "User not found" });
-        return;
+    });
+    console.timeEnd("userINFO");
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
     }
 
-  const rank = await prisma.user.count({
-        where: {
-          currentRating: {
-            gt: user?.ratingHistory[user.ratingHistory.length - 1]?.newRating ?? 0,
-          },
+    const totalContests = user.ratingHistory.length;
+    const currentRating = totalContests > 0 ? user.ratingHistory[totalContests - 1].newRating : 1500; // 1500 as baseline default
+
+    const rank = await prisma.user.count({
+      where: {
+        currentRating: {
+          gt: currentRating,
         },
-      }) + 1;
+      },
+    }) + 1;
 
-const result = {
-  ...user,
-  problemsSolved: problemsSolvedCount,
-  rank,
-  currentRating:
-    user?.ratingHistory[user.ratingHistory.length - 1]?.newRating ?? 0,
-};
 
-   
+    const formattedRatingHistory: RatingData[] = (
+      user.ratingHistory).map((result) => ({
+      contestName: result.title,
+      newRating: result.newRating,
+    }));
+
+    const result: ProfileLoaderData = {
+      username: user.username,
+      name: user.name ?? "",
+      avatarUrl: user.avatarUrl,
+      currentRating: currentRating,
+      problemsSolved: problemsSolvedCount,
+      rank: rank,
+      ratingHistory: formattedRatingHistory 
+    };
+
     res.json(result);
-} catch (error) {
+  } catch (error) {
     console.error("Error fetching user:", error);
     res.status(500).json({ error: "Internal server error" });
-}
+  }
 }

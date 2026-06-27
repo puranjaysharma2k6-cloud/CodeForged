@@ -27,83 +27,107 @@ export type AggregateContestResult = {
 }
 
 export type ContestResultAvgAggregateOutputType = {
-  rankAchieved: number | null
-  oldRating: number | null
+  score: number | null
+  penalty: number | null
   newRating: number | null
+  finalRank: number | null
 }
 
 export type ContestResultSumAggregateOutputType = {
-  rankAchieved: number | null
-  oldRating: number | null
+  score: number | null
+  penalty: number | null
   newRating: number | null
+  finalRank: number | null
 }
 
 export type ContestResultMinAggregateOutputType = {
+  id: string | null
+  title: string | null
   userId: string | null
   contestId: string | null
-  rankAchieved: number | null
-  oldRating: number | null
+  mode: $Enums.Mode | null
+  score: number | null
+  penalty: number | null
   newRating: number | null
-  createdAt: Date | null
+  finalRank: number | null
 }
 
 export type ContestResultMaxAggregateOutputType = {
+  id: string | null
+  title: string | null
   userId: string | null
   contestId: string | null
-  rankAchieved: number | null
-  oldRating: number | null
+  mode: $Enums.Mode | null
+  score: number | null
+  penalty: number | null
   newRating: number | null
-  createdAt: Date | null
+  finalRank: number | null
 }
 
 export type ContestResultCountAggregateOutputType = {
+  id: number
+  title: number
   userId: number
   contestId: number
-  rankAchieved: number
-  oldRating: number
+  mode: number
+  score: number
+  penalty: number
   newRating: number
-  createdAt: number
+  finalRank: number
+  problemStats: number
   _all: number
 }
 
 
 export type ContestResultAvgAggregateInputType = {
-  rankAchieved?: true
-  oldRating?: true
+  score?: true
+  penalty?: true
   newRating?: true
+  finalRank?: true
 }
 
 export type ContestResultSumAggregateInputType = {
-  rankAchieved?: true
-  oldRating?: true
+  score?: true
+  penalty?: true
   newRating?: true
+  finalRank?: true
 }
 
 export type ContestResultMinAggregateInputType = {
+  id?: true
+  title?: true
   userId?: true
   contestId?: true
-  rankAchieved?: true
-  oldRating?: true
+  mode?: true
+  score?: true
+  penalty?: true
   newRating?: true
-  createdAt?: true
+  finalRank?: true
 }
 
 export type ContestResultMaxAggregateInputType = {
+  id?: true
+  title?: true
   userId?: true
   contestId?: true
-  rankAchieved?: true
-  oldRating?: true
+  mode?: true
+  score?: true
+  penalty?: true
   newRating?: true
-  createdAt?: true
+  finalRank?: true
 }
 
 export type ContestResultCountAggregateInputType = {
+  id?: true
+  title?: true
   userId?: true
   contestId?: true
-  rankAchieved?: true
-  oldRating?: true
+  mode?: true
+  score?: true
+  penalty?: true
   newRating?: true
-  createdAt?: true
+  finalRank?: true
+  problemStats?: true
   _all?: true
 }
 
@@ -194,12 +218,16 @@ export type ContestResultGroupByArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 export type ContestResultGroupByOutputType = {
+  id: string
+  title: string
   userId: string
   contestId: string
-  rankAchieved: number
-  oldRating: number
+  mode: $Enums.Mode
+  score: number
+  penalty: number
   newRating: number
-  createdAt: Date
+  finalRank: number | null
+  problemStats: runtime.JsonValue | null
   _count: ContestResultCountAggregateOutputType | null
   _avg: ContestResultAvgAggregateOutputType | null
   _sum: ContestResultSumAggregateOutputType | null
@@ -226,49 +254,65 @@ export type ContestResultWhereInput = {
   AND?: Prisma.ContestResultWhereInput | Prisma.ContestResultWhereInput[]
   OR?: Prisma.ContestResultWhereInput[]
   NOT?: Prisma.ContestResultWhereInput | Prisma.ContestResultWhereInput[]
+  id?: Prisma.StringFilter<"ContestResult"> | string
+  title?: Prisma.StringFilter<"ContestResult"> | string
   userId?: Prisma.StringFilter<"ContestResult"> | string
   contestId?: Prisma.StringFilter<"ContestResult"> | string
-  rankAchieved?: Prisma.IntFilter<"ContestResult"> | number
-  oldRating?: Prisma.IntFilter<"ContestResult"> | number
+  mode?: Prisma.EnumModeFilter<"ContestResult"> | $Enums.Mode
+  score?: Prisma.IntFilter<"ContestResult"> | number
+  penalty?: Prisma.IntFilter<"ContestResult"> | number
   newRating?: Prisma.IntFilter<"ContestResult"> | number
-  createdAt?: Prisma.DateTimeFilter<"ContestResult"> | Date | string
+  finalRank?: Prisma.IntNullableFilter<"ContestResult"> | number | null
+  problemStats?: Prisma.JsonNullableFilter<"ContestResult">
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   contest?: Prisma.XOR<Prisma.ContestScalarRelationFilter, Prisma.ContestWhereInput>
 }
 
 export type ContestResultOrderByWithRelationInput = {
+  id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
-  rankAchieved?: Prisma.SortOrder
-  oldRating?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  penalty?: Prisma.SortOrder
   newRating?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  finalRank?: Prisma.SortOrderInput | Prisma.SortOrder
+  problemStats?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   contest?: Prisma.ContestOrderByWithRelationInput
 }
 
 export type ContestResultWhereUniqueInput = Prisma.AtLeast<{
+  id?: string
   userId_contestId?: Prisma.ContestResultUserIdContestIdCompoundUniqueInput
   AND?: Prisma.ContestResultWhereInput | Prisma.ContestResultWhereInput[]
   OR?: Prisma.ContestResultWhereInput[]
   NOT?: Prisma.ContestResultWhereInput | Prisma.ContestResultWhereInput[]
+  title?: Prisma.StringFilter<"ContestResult"> | string
   userId?: Prisma.StringFilter<"ContestResult"> | string
   contestId?: Prisma.StringFilter<"ContestResult"> | string
-  rankAchieved?: Prisma.IntFilter<"ContestResult"> | number
-  oldRating?: Prisma.IntFilter<"ContestResult"> | number
+  mode?: Prisma.EnumModeFilter<"ContestResult"> | $Enums.Mode
+  score?: Prisma.IntFilter<"ContestResult"> | number
+  penalty?: Prisma.IntFilter<"ContestResult"> | number
   newRating?: Prisma.IntFilter<"ContestResult"> | number
-  createdAt?: Prisma.DateTimeFilter<"ContestResult"> | Date | string
+  finalRank?: Prisma.IntNullableFilter<"ContestResult"> | number | null
+  problemStats?: Prisma.JsonNullableFilter<"ContestResult">
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   contest?: Prisma.XOR<Prisma.ContestScalarRelationFilter, Prisma.ContestWhereInput>
-}, "userId_contestId">
+}, "id" | "userId_contestId">
 
 export type ContestResultOrderByWithAggregationInput = {
+  id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
-  rankAchieved?: Prisma.SortOrder
-  oldRating?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  penalty?: Prisma.SortOrder
   newRating?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  finalRank?: Prisma.SortOrderInput | Prisma.SortOrder
+  problemStats?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ContestResultCountOrderByAggregateInput
   _avg?: Prisma.ContestResultAvgOrderByAggregateInput
   _max?: Prisma.ContestResultMaxOrderByAggregateInput
@@ -280,73 +324,105 @@ export type ContestResultScalarWhereWithAggregatesInput = {
   AND?: Prisma.ContestResultScalarWhereWithAggregatesInput | Prisma.ContestResultScalarWhereWithAggregatesInput[]
   OR?: Prisma.ContestResultScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ContestResultScalarWhereWithAggregatesInput | Prisma.ContestResultScalarWhereWithAggregatesInput[]
+  id?: Prisma.StringWithAggregatesFilter<"ContestResult"> | string
+  title?: Prisma.StringWithAggregatesFilter<"ContestResult"> | string
   userId?: Prisma.StringWithAggregatesFilter<"ContestResult"> | string
   contestId?: Prisma.StringWithAggregatesFilter<"ContestResult"> | string
-  rankAchieved?: Prisma.IntWithAggregatesFilter<"ContestResult"> | number
-  oldRating?: Prisma.IntWithAggregatesFilter<"ContestResult"> | number
+  mode?: Prisma.EnumModeWithAggregatesFilter<"ContestResult"> | $Enums.Mode
+  score?: Prisma.IntWithAggregatesFilter<"ContestResult"> | number
+  penalty?: Prisma.IntWithAggregatesFilter<"ContestResult"> | number
   newRating?: Prisma.IntWithAggregatesFilter<"ContestResult"> | number
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"ContestResult"> | Date | string
+  finalRank?: Prisma.IntNullableWithAggregatesFilter<"ContestResult"> | number | null
+  problemStats?: Prisma.JsonNullableWithAggregatesFilter<"ContestResult">
 }
 
 export type ContestResultCreateInput = {
-  rankAchieved: number
-  oldRating: number
+  id?: string
+  title: string
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user: Prisma.UserCreateNestedOneWithoutRatingHistoryInput
   contest: Prisma.ContestCreateNestedOneWithoutResultsInput
 }
 
 export type ContestResultUncheckedCreateInput = {
+  id?: string
+  title: string
   userId: string
   contestId: string
-  rankAchieved: number
-  oldRating: number
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultUpdateInput = {
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneRequiredWithoutRatingHistoryNestedInput
   contest?: Prisma.ContestUpdateOneRequiredWithoutResultsNestedInput
 }
 
 export type ContestResultUncheckedUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultCreateManyInput = {
+  id?: string
+  title: string
   userId: string
   contestId: string
-  rankAchieved: number
-  oldRating: number
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultUpdateManyMutationInput = {
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultUncheckedUpdateManyInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultListRelationFilter = {
@@ -365,42 +441,54 @@ export type ContestResultUserIdContestIdCompoundUniqueInput = {
 }
 
 export type ContestResultCountOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
-  rankAchieved?: Prisma.SortOrder
-  oldRating?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  penalty?: Prisma.SortOrder
   newRating?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  finalRank?: Prisma.SortOrder
+  problemStats?: Prisma.SortOrder
 }
 
 export type ContestResultAvgOrderByAggregateInput = {
-  rankAchieved?: Prisma.SortOrder
-  oldRating?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  penalty?: Prisma.SortOrder
   newRating?: Prisma.SortOrder
+  finalRank?: Prisma.SortOrder
 }
 
 export type ContestResultMaxOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
-  rankAchieved?: Prisma.SortOrder
-  oldRating?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  penalty?: Prisma.SortOrder
   newRating?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  finalRank?: Prisma.SortOrder
 }
 
 export type ContestResultMinOrderByAggregateInput = {
+  id?: Prisma.SortOrder
+  title?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
-  rankAchieved?: Prisma.SortOrder
-  oldRating?: Prisma.SortOrder
+  mode?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  penalty?: Prisma.SortOrder
   newRating?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
+  finalRank?: Prisma.SortOrder
 }
 
 export type ContestResultSumOrderByAggregateInput = {
-  rankAchieved?: Prisma.SortOrder
-  oldRating?: Prisma.SortOrder
+  score?: Prisma.SortOrder
+  penalty?: Prisma.SortOrder
   newRating?: Prisma.SortOrder
+  finalRank?: Prisma.SortOrder
 }
 
 export type ContestResultCreateNestedManyWithoutUserInput = {
@@ -488,19 +576,27 @@ export type ContestResultUncheckedUpdateManyWithoutContestNestedInput = {
 }
 
 export type ContestResultCreateWithoutUserInput = {
-  rankAchieved: number
-  oldRating: number
+  id?: string
+  title: string
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contest: Prisma.ContestCreateNestedOneWithoutResultsInput
 }
 
 export type ContestResultUncheckedCreateWithoutUserInput = {
+  id?: string
+  title: string
   contestId: string
-  rankAchieved: number
-  oldRating: number
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultCreateOrConnectWithoutUserInput = {
@@ -533,28 +629,40 @@ export type ContestResultScalarWhereInput = {
   AND?: Prisma.ContestResultScalarWhereInput | Prisma.ContestResultScalarWhereInput[]
   OR?: Prisma.ContestResultScalarWhereInput[]
   NOT?: Prisma.ContestResultScalarWhereInput | Prisma.ContestResultScalarWhereInput[]
+  id?: Prisma.StringFilter<"ContestResult"> | string
+  title?: Prisma.StringFilter<"ContestResult"> | string
   userId?: Prisma.StringFilter<"ContestResult"> | string
   contestId?: Prisma.StringFilter<"ContestResult"> | string
-  rankAchieved?: Prisma.IntFilter<"ContestResult"> | number
-  oldRating?: Prisma.IntFilter<"ContestResult"> | number
+  mode?: Prisma.EnumModeFilter<"ContestResult"> | $Enums.Mode
+  score?: Prisma.IntFilter<"ContestResult"> | number
+  penalty?: Prisma.IntFilter<"ContestResult"> | number
   newRating?: Prisma.IntFilter<"ContestResult"> | number
-  createdAt?: Prisma.DateTimeFilter<"ContestResult"> | Date | string
+  finalRank?: Prisma.IntNullableFilter<"ContestResult"> | number | null
+  problemStats?: Prisma.JsonNullableFilter<"ContestResult">
 }
 
 export type ContestResultCreateWithoutContestInput = {
-  rankAchieved: number
-  oldRating: number
+  id?: string
+  title: string
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user: Prisma.UserCreateNestedOneWithoutRatingHistoryInput
 }
 
 export type ContestResultUncheckedCreateWithoutContestInput = {
+  id?: string
+  title: string
   userId: string
-  rankAchieved: number
-  oldRating: number
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultCreateOrConnectWithoutContestInput = {
@@ -584,114 +692,162 @@ export type ContestResultUpdateManyWithWhereWithoutContestInput = {
 }
 
 export type ContestResultCreateManyUserInput = {
+  id?: string
+  title: string
   contestId: string
-  rankAchieved: number
-  oldRating: number
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultUpdateWithoutUserInput = {
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   contest?: Prisma.ContestUpdateOneRequiredWithoutResultsNestedInput
 }
 
 export type ContestResultUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultUncheckedUpdateManyWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultCreateManyContestInput = {
+  id?: string
+  title: string
   userId: string
-  rankAchieved: number
-  oldRating: number
+  mode: $Enums.Mode
+  score?: number
+  penalty?: number
   newRating: number
-  createdAt?: Date | string
+  finalRank?: number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultUpdateWithoutContestInput = {
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneRequiredWithoutRatingHistoryNestedInput
 }
 
 export type ContestResultUncheckedUpdateWithoutContestInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ContestResultUncheckedUpdateManyWithoutContestInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
-  rankAchieved?: Prisma.IntFieldUpdateOperationsInput | number
-  oldRating?: Prisma.IntFieldUpdateOperationsInput | number
+  mode?: Prisma.EnumModeFieldUpdateOperationsInput | $Enums.Mode
+  score?: Prisma.IntFieldUpdateOperationsInput | number
+  penalty?: Prisma.IntFieldUpdateOperationsInput | number
   newRating?: Prisma.IntFieldUpdateOperationsInput | number
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  finalRank?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  problemStats?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
 
 export type ContestResultSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  title?: boolean
   userId?: boolean
   contestId?: boolean
-  rankAchieved?: boolean
-  oldRating?: boolean
+  mode?: boolean
+  score?: boolean
+  penalty?: boolean
   newRating?: boolean
-  createdAt?: boolean
+  finalRank?: boolean
+  problemStats?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contestResult"]>
 
 export type ContestResultSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  title?: boolean
   userId?: boolean
   contestId?: boolean
-  rankAchieved?: boolean
-  oldRating?: boolean
+  mode?: boolean
+  score?: boolean
+  penalty?: boolean
   newRating?: boolean
-  createdAt?: boolean
+  finalRank?: boolean
+  problemStats?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contestResult"]>
 
 export type ContestResultSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  title?: boolean
   userId?: boolean
   contestId?: boolean
-  rankAchieved?: boolean
-  oldRating?: boolean
+  mode?: boolean
+  score?: boolean
+  penalty?: boolean
   newRating?: boolean
-  createdAt?: boolean
+  finalRank?: boolean
+  problemStats?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contestResult"]>
 
 export type ContestResultSelectScalar = {
+  id?: boolean
+  title?: boolean
   userId?: boolean
   contestId?: boolean
-  rankAchieved?: boolean
-  oldRating?: boolean
+  mode?: boolean
+  score?: boolean
+  penalty?: boolean
   newRating?: boolean
-  createdAt?: boolean
+  finalRank?: boolean
+  problemStats?: boolean
 }
 
-export type ContestResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userId" | "contestId" | "rankAchieved" | "oldRating" | "newRating" | "createdAt", ExtArgs["result"]["contestResult"]>
+export type ContestResultOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "userId" | "contestId" | "mode" | "score" | "penalty" | "newRating" | "finalRank" | "problemStats", ExtArgs["result"]["contestResult"]>
 export type ContestResultInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
@@ -712,12 +868,16 @@ export type $ContestResultPayload<ExtArgs extends runtime.Types.Extensions.Inter
     contest: Prisma.$ContestPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
+    id: string
+    title: string
     userId: string
     contestId: string
-    rankAchieved: number
-    oldRating: number
+    mode: $Enums.Mode
+    score: number
+    penalty: number
     newRating: number
-    createdAt: Date
+    finalRank: number | null
+    problemStats: runtime.JsonValue | null
   }, ExtArgs["result"]["contestResult"]>
   composites: {}
 }
@@ -801,8 +961,8 @@ export interface ContestResultDelegate<ExtArgs extends runtime.Types.Extensions.
    * // Get first 10 ContestResults
    * const contestResults = await prisma.contestResult.findMany({ take: 10 })
    * 
-   * // Only select the `userId`
-   * const contestResultWithUserIdOnly = await prisma.contestResult.findMany({ select: { userId: true } })
+   * // Only select the `id`
+   * const contestResultWithIdOnly = await prisma.contestResult.findMany({ select: { id: true } })
    * 
    */
   findMany<T extends ContestResultFindManyArgs>(args?: Prisma.SelectSubset<T, ContestResultFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContestResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -846,9 +1006,9 @@ export interface ContestResultDelegate<ExtArgs extends runtime.Types.Extensions.
    *   ]
    * })
    * 
-   * // Create many ContestResults and only return the `userId`
-   * const contestResultWithUserIdOnly = await prisma.contestResult.createManyAndReturn({
-   *   select: { userId: true },
+   * // Create many ContestResults and only return the `id`
+   * const contestResultWithIdOnly = await prisma.contestResult.createManyAndReturn({
+   *   select: { id: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -937,9 +1097,9 @@ export interface ContestResultDelegate<ExtArgs extends runtime.Types.Extensions.
    *   ]
    * })
    * 
-   * // Update zero or more ContestResults and only return the `userId`
-   * const contestResultWithUserIdOnly = await prisma.contestResult.updateManyAndReturn({
-   *   select: { userId: true },
+   * // Update zero or more ContestResults and only return the `id`
+   * const contestResultWithIdOnly = await prisma.contestResult.updateManyAndReturn({
+   *   select: { id: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1143,12 +1303,16 @@ export interface Prisma__ContestResultClient<T, Null = never, ExtArgs extends ru
  * Fields of the ContestResult model
  */
 export interface ContestResultFieldRefs {
+  readonly id: Prisma.FieldRef<"ContestResult", 'String'>
+  readonly title: Prisma.FieldRef<"ContestResult", 'String'>
   readonly userId: Prisma.FieldRef<"ContestResult", 'String'>
   readonly contestId: Prisma.FieldRef<"ContestResult", 'String'>
-  readonly rankAchieved: Prisma.FieldRef<"ContestResult", 'Int'>
-  readonly oldRating: Prisma.FieldRef<"ContestResult", 'Int'>
+  readonly mode: Prisma.FieldRef<"ContestResult", 'Mode'>
+  readonly score: Prisma.FieldRef<"ContestResult", 'Int'>
+  readonly penalty: Prisma.FieldRef<"ContestResult", 'Int'>
   readonly newRating: Prisma.FieldRef<"ContestResult", 'Int'>
-  readonly createdAt: Prisma.FieldRef<"ContestResult", 'DateTime'>
+  readonly finalRank: Prisma.FieldRef<"ContestResult", 'Int'>
+  readonly problemStats: Prisma.FieldRef<"ContestResult", 'Json'>
 }
     
 

@@ -5,7 +5,7 @@ import ProtectedLayout from "./layouts/layout"
 import Login from './Pages/Auth/Login'
 import Register from './Pages/Auth/Register'
 import ContestsPage from './Pages/Contests/Contest'
-import { contestsLoader } from './Pages/Contests/Contests.loader'
+import { contestsLoader } from "./Pages/Contests/Contests.loader.tsx"
 import { profileLoader } from "./Pages/Profile/profile.loader"
 import Profile from "./Pages/Profile/Profile"
 import LandingPage from "./Pages/Dashboard/home"
@@ -14,11 +14,10 @@ import Codeeditor from "./components/CodeEditor/codeeditor.tsx"
 const router = createBrowserRouter([
   
   {
-    path : "/",
     element: <ProtectedLayout />,   
     children: [
       { path: "/",         element: <LandingPage /> },
-       { path: "contests", element: <ContestsPage />, loader: contestsLoader,},
+       { path: "contests", element: <ContestsPage />,loader : contestsLoader },
        {  path : "test", element : <Codeeditor />},
        { path: "profile",   element: <Profile />,loader : profileLoader },
        {
@@ -28,6 +27,7 @@ const router = createBrowserRouter([
       { path: "register", element: <Register /> },
      ]
      },
+     
      {
     path: "/leaderboard",
     element : <LeaderboardPage/>,

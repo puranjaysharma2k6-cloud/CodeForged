@@ -920,7 +920,9 @@ export const ContestScalarFieldEnum = {
   id: 'id',
   title: 'title',
   startTime: 'startTime',
-  editorial: 'editorial'
+  duration: 'duration',
+  editorial: 'editorial',
+  status: 'status'
 } as const
 
 export type ContestScalarFieldEnum = (typeof ContestScalarFieldEnum)[keyof typeof ContestScalarFieldEnum]
@@ -944,19 +946,24 @@ export type SubmissionScalarFieldEnum = (typeof SubmissionScalarFieldEnum)[keyof
 export const ContestRegistrationScalarFieldEnum = {
   userId: 'userId',
   contestId: 'contestId',
-  registeredAt: 'registeredAt'
+  registeredAt: 'registeredAt',
+  mode: 'mode'
 } as const
 
 export type ContestRegistrationScalarFieldEnum = (typeof ContestRegistrationScalarFieldEnum)[keyof typeof ContestRegistrationScalarFieldEnum]
 
 
 export const ContestResultScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
   userId: 'userId',
   contestId: 'contestId',
-  rankAchieved: 'rankAchieved',
-  oldRating: 'oldRating',
+  mode: 'mode',
+  score: 'score',
+  penalty: 'penalty',
   newRating: 'newRating',
-  createdAt: 'createdAt'
+  finalRank: 'finalRank',
+  problemStats: 'problemStats'
 } as const
 
 export type ContestResultScalarFieldEnum = (typeof ContestResultScalarFieldEnum)[keyof typeof ContestResultScalarFieldEnum]
@@ -968,6 +975,14 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {
@@ -984,6 +999,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -1042,6 +1066,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'ContestStatus'
+ */
+export type EnumContestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ContestStatus[]'
+ */
+export type ListEnumContestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContestStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Verdict'
  */
 export type EnumVerdictFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Verdict'>
@@ -1052,6 +1090,34 @@ export type EnumVerdictFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMo
  * Reference to a field of type 'Verdict[]'
  */
 export type ListEnumVerdictFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Verdict[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Mode'
+ */
+export type EnumModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Mode'>
+    
+
+
+/**
+ * Reference to a field of type 'Mode[]'
+ */
+export type ListEnumModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Mode[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 

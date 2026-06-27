@@ -1,15 +1,10 @@
 import config from '../../config';
-import { getAccessToken } from '../../context/AuthContext';  // ← single source
-
-// --------------------------------------------------
-// Types
-// --------------------------------------------------
 
 export interface Contest {
   id: string
   name: string
-  startDate: string    // ISO string e.g. "2024-03-15T10:00:00Z"
-  duration: number     // in minutes
+  startDate: string
+  duration: number
   status: 'upcoming' | 'ongoing' | 'past'
 }
 
@@ -20,53 +15,41 @@ export interface Participation {
   score: number
 }
 
-export interface ContestsLoaderData {
-  contests: Contest[]
-  participations: Record<string, Participation>   // contestId -> participation
-  isAuthenticated: boolean
+
+
+
+// <PastContests> manages its own paginated data independently.
+async function loadUpcomingContests(): Promise<Contest[]> {
+  try {
+    const res = await fetch(`${config.apiUrl}/api/contests/upcoming`);
+    if (!res.ok) return [];
+    const json = await res.json();
+    return Array.isArray(json) ? json : json.data ?? [];
+  } catch {
+    return [];
+  }
 }
 
-// --------------------------------------------------
-// Loader
-// --------------------------------------------------
-
-export async function contestsLoader(): Promise<ContestsLoaderData> {
-
-  // public endpoint — no token needed
-  const contestsRes = await fetch(`${config.apiUrl}/api/contests`);
-  if (!contestsRes.ok) throw new Error('Failed to fetch contests');
-  const contests: Contest[] = await contestsRes.json();
-
-  // Loaders run outside the React tree so they can't call useAuth().
-  // getAccessToken() is a module-level accessor exported by AuthContext that
-  // reads from the same localStorage that AuthContext writes to — one source
-  // of truth, just accessed without a hook.
-  const token = getAccessToken();
-
-  if (!token) {
-    return { contests, participations: {}, isAuthenticated: false };
-  }
-
-  // Logged in — fetch participation for all past contests in parallel.
-  // Promise.allSettled means one failure doesn't crash the whole page.
-  const pastContests = contests.filter(c => c.status === 'past');
-
-  const participationResults = await Promise.allSettled(
-    pastContests.map(contest =>
-      fetch(`${config.apiUrl}/api/contests/${contest.id}/participation`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(res => res.ok ? res.json() : null)  // null = didn't participate
-    )
-  );
-
-  const participations: Record<string, Participation> = {};
-  pastContests.forEach((contest, index) => {
-    const result = participationResults[index];
-    if (result.status === 'fulfilled' && result.value) {
-      participations[contest.id] = result.value;
+async function loadInitialPast() {
+  try {
+    const res = await fetch(`${config.apiUrl}/api/contests?status=past&page=1&limit=9`);
+    if (!res.ok) return { contests: [], total: 0 };
+    const json = await res.json();
+    if (Array.isArray(json)) {
+      return { contests: json, total: json.length };
     }
-  });
+    return {
+      contests: json.data ?? json.contests ?? [],
+      total: json.meta?.totalContests ?? json.total ?? (json.data ?? json.contests ?? []).length,
+    };
+  } catch {
+    return { contests: [], total: 0 };
+  }
+}
 
-  return { contests, participations, isAuthenticated: true };
+export function contestsLoader() {
+  const upcomingContests = loadUpcomingContests();
+  const initialPast = loadInitialPast();
+
+  return { upcomingContests, initialPast };
 }

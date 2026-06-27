@@ -14,7 +14,15 @@ datasource db {
   COMPILATION_ERROR
   RUNTIME_ERROR
 }
-
+enum ContestStatus {
+  UPCOMING
+  ONGOING
+  PAST
+}
+enum Mode {
+  OFFICIAL
+  VIRTUAL
+}
 model User { 
   id String @id @default(uuid()) 
   email        String  @unique
@@ -26,7 +34,8 @@ model User {
   contest      ContestRegistration[]
   ratingHistory      ContestResult[]
   avatarUrl    String?
-
+  @@index([id])
+  @@index([currentRating(sort: Desc)])
 }   
 
 
@@ -40,15 +49,22 @@ model Problem {
   contestId String 
    
 } 
-//many to one mapping
+//one to many mapping for problems one problem belongs to a signle contest
+//many to many for registrations
+//many to many for results
+
 model Contest{
   id String @id @default(uuid())
   title String
   startTime DateTime
-  editorial String
+  duration Int
+  editorial String?
+   status    ContestStatus @default(UPCOMING)
   problems Problem[] 
   participants ContestRegistration[]
   results ContestResult[]
+
+  @@index([id])
 }
 
 model Submission {
@@ -72,7 +88,7 @@ model ContestRegistration {
   userId       String
   contestId    String
   registeredAt DateTime @default(now())
-
+   mode          Mode
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   contest      Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
 
@@ -81,16 +97,28 @@ model ContestRegistration {
 }
 
 model ContestResult {
-  userId       String
-  contestId    String
-  rankAchieved Int      
-  oldRating    Int      
-  newRating    Int       
-  createdAt    DateTime @default(now())
+  id            String   @id @default(uuid())
+  title         String
+  userId        String
+  contestId     String
+  mode          Mode
+  score         Int      @default(0)
+  penalty       Int      @default(0) 
+  newRating     Int      
+  // 2. The Historical Snapshot (Crucial!)
+  finalRank     Int?     
+  
+  //  Problem Breakdown (The grid of green checks and red crosses)
+  problemStats  Json?    
 
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  contest      Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id])
+  contest       Contest  @relation(fields: [contestId], references: [id])
 
-  @@id([userId, contestId])
-  @@index([userId,createdAt])
+  
+  @@unique([userId, contestId]) 
+  
+  //these indexes fetch leaderboardquickly
+  // mode field is important virtual participants need to be filtered out
+  // if overall rank need to be checked ( virtual + official) seperately query and sum users gt than me
+  //@@index([contestId,mode,score(sort: Desc), penalty(sort: Asc)]) 
 }
