@@ -3,22 +3,18 @@ import {
   getContestById,
   getprevContests,
   getLatestContests,
-  getContestRegistration,
   registerForContest,
 } from "../../controllers/contest.controller.js";
+import contestArena from "./contestarena.routes.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
 
-const router = Router();
+
+const router = Router({ mergeParams: true });
 
 // Public
 router.get("/past", getprevContests);
 router.get("/upcoming",getLatestContests);
-router.get("/:id/registration", authenticate, getContestRegistration);
-router.get("/:id", authenticate,getContestById);
-
-// Protected - require valid JWT
-//router.get("/:id/participation", authenticate, getParticipation);
-router.post("/:id/register", authenticate, registerForContest);
+router.use("/:id",authenticate,contestArena);
 
 
 export default router;

@@ -1,9 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { Code, Play, Terminal, Settings, CheckCircle, AlertCircle, BookOpen, HelpCircle } from "lucide-react";
+
+import {ChevronLeft,  Code, Play, Terminal, Settings, CheckCircle, AlertCircle, BookOpen, HelpCircle } from "lucide-react";
 import config from "../../config";
 import { fetchwithAuth } from "../../Utils/fetchwithAuth";
-import { useParams } from "react-router";
+import { useNavigate, useParams,useLocation } from "react-router";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // ─── TYPES & CONSTANTS ────────────────────────────────────────────────────────
 
@@ -152,22 +155,40 @@ const PanelBar = ({ left, right }: { left: React.ReactNode; right?: React.ReactN
 
 // ─── FEATURE COMPONENTS ───────────────────────────────────────────────────────
 
-const Header = () => (
-  <div className="flex items-center justify-between flex-wrap gap-4 mb-6 pb-6 border-b border-slate-800 shrink-0">
-    <div className="flex items-center gap-4">
-      <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-500">
-        <Code size={30} />
+const Header = () => {
+  const navigate = useNavigate(); 
+
+  return (
+    <div className="flex items-center justify-between flex-wrap gap-4 mb-6 pb-6 border-b border-slate-800 shrink-0">
+      
+      <div 
+        onClick={() => navigate(-1)} 
+        className="flex items-center gap-4 cursor-pointer group select-none"
+        title="Go Back"
+      >
+       
+        <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-500 group-hover:bg-blue-500/20 group-hover:border-blue-500/60 transition-all duration-150">
+          <Code size={30} />
+        </div>
+        <div>
+          <p className="text-white font-bold text-xl leading-tight group-hover:text-blue-400 transition-colors duration-150">
+            CodeForged
+          </p>
+          {/* Subtle micro-interaction label showing it acts as a back navigation link */}
+          <p className="text-xs text-zinc-500 mt-0.5 flex items-center gap-0.5 group-hover:text-zinc-400 transition-colors">
+            <ChevronLeft size={14} className="transform group-hover:-translate-x-0.5 transition-transform" /> 
+            Back to Arena
+          </p>
+        </div>
       </div>
-      <div>
-        <p className="text-white font-bold text-xl leading-tight">CodeForged</p>
+
+      <div className="flex items-center gap-2 text-sm text-emerald-400 border border-emerald-500/40 rounded-full px-4 py-1.5 font-medium">
+        <CheckCircle size={16} />
+        Type-Safe Console
       </div>
     </div>
-    <div className="flex items-center gap-2 text-sm text-emerald-400 border border-emerald-500/40 rounded-full px-4 py-1.5 font-medium">
-      <CheckCircle size={16} />
-      Type-Safe Console
-    </div>
-  </div>
-);
+  );
+};
 
 // Panels accept className so the resize containers can control height
 const EditorPanel = ({ lang, code, onSel, onCode, className = "" }: {
@@ -279,28 +300,71 @@ const ProblemPanel = ({ problem, loading, error, className = "" }: {
         </span>
       }
     />
-    <div className="flex-1 min-h-0 px-8 py-6">
+    <div className="flex-1 min-h-0 px-8 py-6 overflow-y-auto arena-scroll text-zinc-300">
       {loading ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-zinc-500">
+        <div className="flex h-full flex-col items-center justify-center gap-4 text-zinc-500">
           <Spinner />
           <p className="text-sm">Loading problem details from API...</p>
         </div>
       ) : error ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-rose-400">
+        <div className="flex h-full flex-col items-center justify-center gap-3 text-rose-400">
           <p className="font-semibold">Failed to load problem</p>
           <p className="text-sm text-zinc-400">{error}</p>
         </div>
       ) : problem ? (
-        <div className="flex flex-col gap-4 h-full overflow-auto">
-          <div>
-            <p className="text-zinc-300 text-sm uppercase tracking-[0.24em] font-semibold mb-2">{problem.title}</p>
-            <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-sm leading-6 text-zinc-300">
-              {problem.content}
-            </div>
-          </div>
+        <div className="flex flex-col gap-4">
+      
+          <h1 className="text-2xl font-bold tracking-tight text-white mb-2">
+            {problem.title}
+          </h1>
+          
+          <hr className="border-slate-800 my-2" />
+
+          {/*  Markdown Core Renderer */}
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={{
+              // Headings
+              h1: ({ node, ...props }) => <h1 className="text-2xl font-extrabold text-white mt-6 mb-3 tracking-tight" {...props} />,
+              h2: ({ node, ...props }) => <h2 className="text-xl font-bold text-white mt-5 mb-2 tracking-wide" {...props} />,
+              h3: ({ node, ...props }) => <h3 className="text-md font-bold uppercase tracking-wider text-[#22d3ee] mt-4 mb-2" {...props} />,
+              
+              // Text Paragraphs
+              p: ({ node, ...props }) => <p className="text-sm leading-7 text-zinc-300 mb-4" {...props} />,
+              
+              
+              ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-2 text-sm text-zinc-300" {...props} />,
+              ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-2 text-sm text-zinc-300" {...props} />,
+              li: ({ node, ...props }) => <li className="leading-relaxed" {...props} />,
+              
+             
+              code: ({ node, className, children, ...props }) => {
+                const isInline = !className;
+                return isInline ? (
+                  <code className="bg-slate-800 text-blue-400 px-1.5 py-0.5 rounded font-mono text-xs" {...props}>
+                    {children}
+                  </code>
+                ) : (
+                  <pre className="bg-slate-900 border border-slate-800 rounded-xl p-4 my-3 overflow-x-auto font-mono text-xs text-emerald-400 leading-relaxed">
+                    <code {...props}>{children}</code>
+                  </pre>
+                );
+              },
+              
+
+              hr: ({ node, ...props }) => <hr className="border-slate-800 my-6" {...props} />,
+              
+  
+              blockquote: ({ node, ...props }) => (
+                <blockquote className="border-l-4 border-blue-500 bg-blue-500/5 pl-4 py-2 my-4 italic text-zinc-400 rounded-r-lg" {...props} />
+              ),
+            }}
+          >
+            {problem.content}
+          </ReactMarkdown>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 text-zinc-400">
+        <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-400">
           <p className="text-sm">No problem data loaded yet.</p>
         </div>
       )}
@@ -312,49 +376,28 @@ const ProblemPanel = ({ problem, loading, error, className = "" }: {
 
 export default function App() {
   const state = useCodeEditor();
-  const [problem, setProblem] = useState<{ title: string; content: string } | null>(null);
-  const [loadingProblem, setLoadingProblem] = useState(true);
-  const [problemError, setProblemError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { contestId } = useParams();
+  
 
-  // leftPct: percentage of total width given to the left column (editor + output)
-  // editorPct: percentage of left column height given to the editor
+  const problem = location.state?.problemData;
+
   const [leftPct,   setLeftPct]   = useState(55);
   const [editorPct, setEditorPct] = useState(65);
 
-  const containerRef = useRef<HTMLDivElement>(null); // measures total width for horizontal resize
-  const leftColRef   = useRef<HTMLDivElement>(null); // measures total height for vertical resize
+  const containerRef = useRef<HTMLDivElement>(null); 
+  const leftColRef   = useRef<HTMLDivElement>(null); 
 
   useEffect(() => {
-    const fetchProblem = async () => {
-      setLoadingProblem(true);
-      setProblemError(null);
-       const {contestId,problemId}=useParams();
+     //console.log(problem);
+    if (!problem) {
+      navigate(`/contests/${contestId}`);
+    }
+  }, [problem, navigate, contestId]);
+  
 
-      try {
-      //______________________________________________________________________________________________________________
-      //  API 
-       
-        const response = await fetchwithAuth(`${config.apiUrl}/api/contest/${contestId}/problem/${problemId}`);
-
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        setProblem({
-          title: data.title ?? "Sample Problem",
-          content: data.content ?? "Problem content will appear here once the backend endpoint is connected.",
-        });
-      } catch (error: any) {
-        setProblemError(error?.message ?? "Unable to load problem data.");
-      } finally {
-        setLoadingProblem(false);
-      }
-    };
-
-    fetchProblem();
-  }, []);
+  if (!problem) return null; 
 
   const onHorizontalDrag = useCallback((delta: number) => {
     if (!containerRef.current) return;
@@ -372,23 +415,18 @@ export default function App() {
 
   return (
     <div className="bg-[#090d16] text-white font-sans">
-           
-           {/* the tag below is for centering the div lol for symmetric padding */}
        <div className="flex justify-center"> 
         <div className="px-10 py-6 flex flex-col h-[calc(99vh-60px)] w-[calc(100vw-12px)]">
 
         <Header />
 
-     
         <div ref={containerRef} className="flex flex-1 min-h-0">
 
-          {/* Left column: editor on top, output on bottom */}
           <div
             ref={leftColRef}
             className="flex flex-col min-w-0 min-h-0"
             style={{ width: `${leftPct}%` }}
           >
-            {/* Editor — takes editorPct% of left column height */}
             <div style={{ height: `${editorPct}%` }} className="min-h-0">
               <EditorPanel
                 lang={state.lang}
@@ -398,30 +436,25 @@ export default function App() {
               />
             </div>
 
-            {/* Vertical resizer between editor and output */}
             <Resizer direction="v" onDrag={onVerticalDrag} />
 
-            {/* Output — fills remaining height */}
             <div className="flex-1 min-h-0">
-              <OutputPanel
-                logs={state.logs}
-                run={state.run}
-                exec={state.exec}
-                clear={state.clear}
-              />
+              <OutputPanel logs={state.logs} run={state.run} exec={state.exec} clear={state.clear} />
             </div>
           </div>
           
-
-          {/* Single horizontal resizer between left column and problem panel */}
           <Resizer direction="h" onDrag={onHorizontalDrag} />
 
-          {/* Right column: problem description — fills remaining width */}
           <div className="flex-1 min-w-0 min-h-0">
+            
             <ProblemPanel
-              problem={problem}
-              loading={loadingProblem}
-              error={problemError}
+              problem={{
+                title: problem.title,
+                
+                content: problem.statement 
+              }}
+              loading={false} 
+              error={null}
             />
           </div>
 

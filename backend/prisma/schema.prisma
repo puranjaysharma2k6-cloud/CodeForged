@@ -113,7 +113,7 @@ model ContestResult {
   title         String
   userId        String
   contestId     String
-  mode          Mode
+  mode          Mode   
   score         Int      @default(0)
   penalty       Int      @default(0) 
   newRating     Int      
@@ -127,7 +127,7 @@ model ContestResult {
   contest       Contest  @relation(fields: [contestId], references: [id])
 
   
-  @@unique([userId, contestId]) 
+  @@unique([userId, contestId,mode]) 
   
   //these indexes fetch leaderboardquickly
   // mode field is important virtual participants need to be filtered out

@@ -285,7 +285,7 @@ export type ContestResultOrderByWithRelationInput = {
 
 export type ContestResultWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  userId_contestId?: Prisma.ContestResultUserIdContestIdCompoundUniqueInput
+  userId_contestId_mode?: Prisma.ContestResultUserIdContestIdModeCompoundUniqueInput
   AND?: Prisma.ContestResultWhereInput | Prisma.ContestResultWhereInput[]
   OR?: Prisma.ContestResultWhereInput[]
   NOT?: Prisma.ContestResultWhereInput | Prisma.ContestResultWhereInput[]
@@ -300,7 +300,7 @@ export type ContestResultWhereUniqueInput = Prisma.AtLeast<{
   problemStats?: Prisma.JsonNullableFilter<"ContestResult">
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   contest?: Prisma.XOR<Prisma.ContestScalarRelationFilter, Prisma.ContestWhereInput>
-}, "id" | "userId_contestId">
+}, "id" | "userId_contestId_mode">
 
 export type ContestResultOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -435,9 +435,10 @@ export type ContestResultOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type ContestResultUserIdContestIdCompoundUniqueInput = {
+export type ContestResultUserIdContestIdModeCompoundUniqueInput = {
   userId: string
   contestId: string
+  mode: $Enums.Mode
 }
 
 export type ContestResultCountOrderByAggregateInput = {

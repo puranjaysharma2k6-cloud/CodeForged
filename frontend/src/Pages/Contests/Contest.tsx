@@ -1,9 +1,10 @@
 import { Suspense, useState } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import type { Contest } from './Contests.loader';
-import  ContestsTabs  from './components/ToggleBar/ToggleBar';
+import  ContestsTabs  from '../../components/ToggleBar/ToggleBar';
 import { UpcomingContests } from './components/UpcomingContests';
 import { PastContests } from './components/PastContests';
+import ToggleBar from '../../components/ToggleBar/ToggleBar';
 
 type ContestTab = 'upcoming' | 'past';
 
@@ -58,7 +59,15 @@ export default function ContestsPage() {
         </div>
 
         <div className="mb-6 py-6 sm:mb-8 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-4">
-          <ContestsTabs activeTab={activeTab} onChange={setActiveTab} />
+          <ToggleBar<ContestTab>
+          activeTab={activeTab}
+          onChange={setActiveTab}
+          tabs={['upcoming', 'past']}
+          labels={{
+            upcoming: 'Upcoming',
+            past: 'Past'
+          }}
+  />
 
           {/* Count badge is isolated in its own Suspense so it resolves
               independently without blocking the tabs themselves */}

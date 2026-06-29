@@ -58,6 +58,60 @@ export async function getLatestContests(req : Request, res : Response){
   }
 }
 
+export async function getContestArena(req: Request, res: Response): Promise<void> {
+  const contestId = req.params.id as string;
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized." });
+    return;
+  }
+
+  try {
+  
+  const contestData = await prisma.contest.findUnique({
+    where: { id: contestId },
+    include: {
+      
+      problems : {
+        select : {
+          id:true,
+          title:true,
+          statement:true,
+
+          timeLimit:true,
+          memoryLimit:true,
+          submissions : true,
+        }
+      },
+  
+      participants: {
+        where: { userId },
+        orderBy: { registeredAt: "desc" },
+        take: 1,
+        select: {
+          contestId: true,
+          registeredAt: true,
+          mode: true,
+        },
+      },
+    },
+  });
+
+  const contest = contestData;
+  const registration = contestData?.participants?.[0] ?? null;
+
+    if (!contest) {
+      res.status(404).json({ message: "Contest not found." });
+      return;
+    }
+
+
+    res.status(200).json({ contest, registration });
+  } catch (e) {
+    res.status(500).json({ message: "Internal server error." });
+  }
+}
 
 export async function getContestById(req: Request, res: Response): Promise<void> {
   const contestId  = req.params.id;
@@ -216,6 +270,8 @@ export async function registerForContest(req: Request, res: Response): Promise<v
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+
 
 
 
