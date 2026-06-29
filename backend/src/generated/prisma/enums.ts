@@ -9,6 +9,13 @@
 * 🟢 You can import this file directly.
 */
 
+export const x = {
+  TEST: 'TEST'
+} as const
+
+export type x = (typeof x)[keyof typeof x]
+
+
 export const Verdict = {
   ACCEPTED: 'ACCEPTED',
   WRONG_ANSWER: 'WRONG_ANSWER',

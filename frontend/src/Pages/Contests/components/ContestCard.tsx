@@ -1,6 +1,10 @@
 import type { Contest, Participation } from '../Contests.loader';
-
-
+import { useEffect, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import config from '../../../config';
+import { fetchwithAuth } from '../../../Utils/fetchwithAuth';
+import { useAuth } from '../../../context/AuthContext';
+import '../Contests.css';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -19,23 +23,6 @@ function formatDuration(minutes: number): string {
   if (m === 0) return `${h}h`;
   return `${h}h ${m}m`;
 }
-
-const STATUS_CONFIG = {
-  upcoming: {
-    label: 'Upcoming',
-    badge: 'bg-[#1f5a3b] text-[#4ade80] border border-[#2d6a48]',
-  },
-  ongoing: {
-    label: 'Live',
-    badge: 'bg-[#5a3a1f] text-[#fbbf24] border border-[#6a4a2d]',
-  },
-  past: {
-    label: 'Ended',
-    badge: 'bg-[#3a3a3a] text-[#9ca3af] border border-[#363c4a]',
-  },
-} as const;
-
-
 
 function StatBlock({ label, value }: { label: string; value: string | number }) {
   return (
@@ -61,37 +48,192 @@ export type ContestCardProps = {
   participation?: Participation;
 };
 
+type ContestRegistration = {
+  contestId: string;
+  mode: 'OFFICIAL' | 'VIRTUAL';
+  registeredAt: string;
+};
+
 export function ContestCard({ contest, participation }: ContestCardProps) {
-  const { label, badge } = STATUS_CONFIG[contest.status];
+  const { isAuthenticated } = useAuth();
+  
+  const navigate = useNavigate();
   const participated = !!participation;
+  const statusClass = contest.status.toLowerCase();
+  const [registration, setRegistration] = useState<ContestRegistration | null>(null);
+  const [isLoadingRegistration, setIsLoadingRegistration] = useState(true);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [registrationError, setRegistrationError] = useState<string | null>(null);
 
+  const isRegistered = registration !== null;
+  const virtualContestEndsAt =
+    registration?.mode === 'VIRTUAL'
+      ? new Date(registration.registeredAt).getTime() + contest.duration * 60 * 1000
+      : 0;
+  const isVirtualContestActive =
+    contest.status === 'PAST' &&
+    registration?.mode === 'VIRTUAL' &&
+    virtualContestEndsAt > Date.now();
+  const canEnterArena =
+    (contest.status === 'ONGOING' && isRegistered) || isVirtualContestActive;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRegistration() {
+      setIsLoadingRegistration(true);
+      
+      try {
+        const response = await fetchwithAuth(
+          `${config.apiUrl}/api/contests/${contest.id}/registration`
+        );
+        const data = await response.json().catch(() => null);
+
+        if (!cancelled) {
+          setRegistration(response.ok ? data?.registration ?? null : null);
+        }
+      } catch {
+        if (!cancelled) {
+          setRegistration(null);
+        }
+        
+      } finally {
+        if (!cancelled) {
+          setIsLoadingRegistration(false);
+        }
+      }
+    }
+
+    loadRegistration();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [contest.id]);
+
+  async function refreshRegistration() {
+    const response = await fetchwithAuth(
+      `${config.apiUrl}/api/contests/${contest.id}/registration`
+    );
+    const data = await response.json().catch(() => null);
+
+    if (response.ok) {
+      setRegistration(data?.registration ?? null);
+      return data?.registration ?? null;
+    }
+
+    return null;
+  }
+
+  async function handleRegister() {
+    
+    setIsRegistering(true);
+    setRegistrationError(null);
+    if(!isAuthenticated){
+      navigate('/auth/login');
+      return;
+    }
+  
+   try {
+     
+      const response = await fetchwithAuth(
+        `${config.apiUrl}/api/contests/${contest.id}/register`,
+        { method: 'POST' }
+      );
+      
+       
+     if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            navigate('/auth/login');
+            return;
+          }
+        }
+
+      const data = await response.json().catch(() => null);
+          
+      if (!response.ok) {
+        const message = data?.error ?? data?.message ?? 'Registration failed.';
+        
+        if (message.toLowerCase().includes('already registered')) {
+          await refreshRegistration();
+          return;
+        }
+
+        if (contest.status === 'PAST' && message.toLowerCase().includes('still ongoing')) {
+          await refreshRegistration();
+          navigate(`/contests/${contest.id}`);
+          return;
+        }
+      
+        throw new Error(message);
+      }
+
+      setRegistration(data?.registration ?? null);
+
+      if (contest.status === 'PAST') {
+        navigate(`/contests/${contest.id}`);
+      }
+    } catch (error) {
+       //console.log(error);
+      setRegistrationError(
+        error instanceof Error ? error.message : 'Registration failed.'
+      );
+    } finally {
+      setIsRegistering(false);
+    }
+  }
+  
   return (
-    <div className="bg-[#262b36] rounded-xl border border-[#363c4a] shadow-sm hover:shadow-lg transition-shadow duration-200 p-5 flex flex-col gap-3">
+    <div className="contest-card">
+      <div className="contest-card-header">
+        <h3  className="text-[#ffffff] font-semibold text-base md:text-xl leading-snug">{contest.name}</h3>
 
-      {/* Header row */}
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="text-[#ffffff] font-semibold text-sm leading-snug">{contest.name}</h3>
-
-        <span className={`shrink-0 flex items-center text-xs font-medium px-2.5 py-1 rounded-full ${badge}`}>
-          {contest.status === 'ongoing' && <LiveDot />}
-          {label}
+        <span className={`contest-status-badge contest-status-badge--${statusClass}`}>
+          {contest.status === 'ONGOING' && <LiveDot />}
+          {contest.status}
         </span>
+        {canEnterArena ? (
+          <NavLink to={`/contests/${contest.id}`} className="contest-enter-button">
+            Enter Contest
+          </NavLink>
+        ) : (
+          <button
+            type="button"
+            className="contest-register-button"
+            onClick={handleRegister}
+            disabled={isLoadingRegistration || isRegistering || (isRegistered && contest.status === 'UPCOMING')}
+          >
+            {isLoadingRegistration
+              ? 'Checking...'
+              : isRegistering
+              ? 'Registering...'
+              : contest.status === 'PAST'
+                ? 'Start Virtual'
+                : isRegistered
+                  ? 'Registered'
+                  : 'Register'}
+          </button>
+        )}
       </div>
 
       {/* Meta row */}
-      <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-[#9ca3af]">
-        <span className="flex items-center gap-1.5">
+      <div className="translate-x-2.5 flex flex-wrap gap-x-4 gap-y-2 text-m text-[#9ca3af]">
+        <span className="flex items-center gap-2">
           <CalendarIcon />
           {formatDate(contest.startDate)}
         </span>
-        <span className="flex items-center gap-1.5">
+        <span className="flex items-center gap-2">
           <ClockIcon />
           {formatDuration(contest.duration)}
         </span>
       </div>
 
-      {/* Participation stats — past contests only */}
-      {contest.status === 'past' && (
+      {registrationError && (
+        <p className="contest-registration-error">{registrationError}</p>
+      )}
+
+
+      {contest.status === 'PAST' && (
         <div className="pt-3 border-t border-[#363c4a]">
           {participated ? (
             <div className="grid grid-cols-3 gap-3">
@@ -111,7 +253,7 @@ export function ContestCard({ contest, participation }: ContestCardProps) {
 
 function CalendarIcon() {
   return (
-    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className="w-4 h-4 shrink-0 text-[#9ca3af]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round"
         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
@@ -120,7 +262,7 @@ function CalendarIcon() {
 
 function ClockIcon() {
   return (
-    <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className="w-4 h-4 shrink-0 text-[#9ca3af]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round"
         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>

@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { prisma } from "../db/db.js";
+import { register } from "node:module";
 
 
 export async function getprevContests(req:Request,res : Response) {
@@ -13,23 +14,24 @@ export async function getprevContests(req:Request,res : Response) {
     // this skip take thing is pagination
     // when a user queries past contests databse does not loads all of em
     // db loads only 10-20 then when user goes onto next page then only loaded
-        const [contests, totalContests] = await prisma.$transaction([
+       const [contests, totalContests] = await Promise.all([
         prisma.contest.findMany({
-          where: { status: 'PAST' }, 
-          orderBy: { startTime: 'desc' },
+          where: { status: "PAST" },
+          orderBy: { startTime: "desc" },
           skip: offset,
           take: limit,
         }),
         prisma.contest.count({
-          where: { status: 'PAST' }
-        })
+          where: { status: "PAST" },
+        }),
       ]);
-
+          
         return res.status(200).json({
             data: contests,
             meta: { currentPage: page, totalPages: Math.ceil(totalContests / limit), totalContests }
         });
     } catch (error) {
+      console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
 
@@ -40,7 +42,9 @@ export async function getLatestContests(req : Request, res : Response){
   try{
   const contest = await prisma.contest.findMany({
     where : {
-      status : 'UPCOMING', 
+     status: {
+      in: ["UPCOMING", "ONGOING"],
+    },
     },
      orderBy: { startTime: 'asc' }
    });
@@ -79,10 +83,48 @@ export async function getContestById(req: Request, res: Response): Promise<void>
 }
 
 
+export async function getContestRegistration(req: Request, res: Response): Promise<void> {
+  const contestId = req.params.id as string;
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    res.status(401).json({ message: "Invalid user. Check credentials." });
+    return;
+  }
+
+  if (!contestId) {
+    res.status(400).json({ error: "Contest ID is required in URL parameters." });
+    return;
+  }
+
+  try {
+    const registration = await prisma.contestRegistration.findFirst({
+    where: {
+      userId,
+      contestId,
+    },
+    orderBy: {
+      registeredAt: "desc",
+    },
+    select: {
+      contestId: true,
+      registeredAt: true,
+      mode: true,
+    },
+});
+
+    res.status(200).json({ registration });
+  } catch (error) {
+    console.error("Registration lookup endpoint error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+
 
 export async function registerForContest(req: Request, res: Response): Promise<void> {
 
-  const contestId = req.params.contestId as string ; 
+  const contestId = req.params.id as string ; 
   const userId = req.user?.userId; 
   const now = new Date();
 
@@ -131,7 +173,8 @@ export async function registerForContest(req: Request, res: Response): Promise<v
       }
     }
     if (registrationMode === 'VIRTUAL'){
-      const ongoingContestWindow= new Date(now.getTime()-contest.duration * 60 * 60 * 1000);
+      //console.log(now.getTime());
+      const ongoingContestWindow= new Date(now.getTime()-contest.duration * 60 * 1000);
        const ongoingContest = await prisma.contestRegistration.findFirst({
         where: {
           userId,
@@ -139,19 +182,25 @@ export async function registerForContest(req: Request, res: Response): Promise<v
           registeredAt : { gt : ongoingContestWindow},
           mode: 'VIRTUAL'
         } 
-      });
+      }); 
+        console.log(ongoingContest);
+   
        if(ongoingContest){
+        
         res.status(400).json({error : "The contest is still ongoing"});
         return;
        }
+      
       }
+        
       // immediately enter the contest arena after loggin in 
+     
     const registration = await prisma.contestRegistration.create({
       data: {
         userId,
         contestId,
         registeredAt: now,
-        mode: registrationMode
+        mode: registrationMode,
       },
     });
 
@@ -167,8 +216,6 @@ export async function registerForContest(req: Request, res: Response): Promise<v
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-
 
 
 

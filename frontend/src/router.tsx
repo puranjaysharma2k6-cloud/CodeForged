@@ -1,42 +1,61 @@
-import { createBrowserRouter } from "react-router"
-import ProtectedLayout from "./layouts/layout"
-// import {Login} from "./Pages"
+import { createBrowserRouter } from "react-router";
 
-import Login from './Pages/Auth/Login'
-import Register from './Pages/Auth/Register'
-import ContestsPage from './Pages/Contests/Contest'
-import { contestsLoader } from "./Pages/Contests/Contests.loader.tsx"
-import { profileLoader } from "./Pages/Profile/profile.loader"
-import Profile from "./Pages/Profile/Profile"
-import LandingPage from "./Pages/Dashboard/home"
-import LeaderboardPage from "./Pages/leaderboard/leaderboard"
-import Codeeditor from "./components/CodeEditor/codeeditor.tsx"
+// Layouts
+import ProtectedLayout from "./layouts/layout";
+import PublicLayout from "./layouts/PublicLayout"; // <-- We will create this
+
+// Pages
+import Login from './Pages/Auth/Login';
+import Register from './Pages/Auth/Register';
+import LandingPage from './Pages/Dashboard/home';
+import ContestsPage from './Pages/Contests/Contest';
+import ContestArena from "./Pages/ContestArena/ContestArena";
+import Codeeditor from "./components/CodeEditor/codeeditor.tsx";
+import Profile from "./Pages/Profile/Profile";
+import LeaderboardPage from "./Pages/leaderboard/leaderboard";
+import { contestsLoader } from "./Pages/Contests/Contests.loader.tsx";
+
 const router = createBrowserRouter([
-  
+
   {
-    element: <ProtectedLayout />,   
+    element: <PublicLayout />, 
     children: [
-      { path: "/",         element: <LandingPage /> },
-       { path: "contests", element: <ContestsPage />,loader : contestsLoader },
-       {  path : "test", element : <Codeeditor />},
-       { path: "profile",   element: <Profile />,loader : profileLoader },
-       {
+      { path: "/", element: <LandingPage /> },
+      {
+        path: "contests",
+        children: [
+          { index: true, element: <ContestsPage />, loader: contestsLoader },
+          
+        ]
+      },
+    ]
+  },
+
+
+  {
     path: "/auth",
     children: [
-      { path: "login",    element: <Login /> },
+      { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
-     ]
-     },
-     
-     {
-    path: "/leaderboard",
-    element : <LeaderboardPage/>,
-    loader : profileLoader, // this is just an auth check no data is loaded 
-     },
-      { path: "profile/:id",    element: <Profile /> },
+    ]
+  },
+
+  {
+    element: <ProtectedLayout />, 
+    children: [
+      { path: "contests/:contestId", element: <ContestArena /> },
+      { path: "test", element: <Codeeditor /> },
       
+      {
+        path: "profile",
+        children: [
+          { index: true, element: <Profile /> },
+          { path: ":id", element: <Profile /> },
+        ]
+      },
+      { path: "leaderboard", element: <LeaderboardPage /> },
     ]
   }
-])
+]);
 
-export default router
+export default router;

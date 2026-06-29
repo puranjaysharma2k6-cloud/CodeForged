@@ -225,6 +225,33 @@
   gap: 0.75rem;
 }
 
+.contest-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 90px;
+  margin: 1rem;
+  padding: 1.5rem;
+  background-color: #262b36;
+  border: 1px solid #363c4a;
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.contest-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.contest-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 /* Buttons */
 .btn-register, .btn-ghost, .btn-virtual {
   display: inline-flex;
@@ -247,6 +274,96 @@
 
 .btn-register:hover {
   background-color: var(--lc-orange-dark);
+}
+
+.contest-status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.contest-status-badge--upcoming {
+  background-color: #1f5a3b;
+  border: 1px solid #2d6a48;
+  color: #4ade80;
+}
+
+.contest-status-badge--ongoing {
+  background-color: #5a3a1f;
+  border: 1px solid #6a4a2d;
+  color: #fbbf24;
+}
+
+.contest-status-badge--past {
+  background-color: #3a3a3a;
+  border: 1px solid #363c4a;
+  color: #9ca3af;
+}
+
+.contest-register-button,
+.contest-enter-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8rem;
+  padding: 1.125rem 1.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.contest-register-button {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.contest-register-button:hover {
+  background-color: #3b82f6;
+}
+
+.contest-register-button:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.contest-register-button:disabled:hover {
+  background-color: #2563eb;
+}
+
+.contest-enter-button {
+  background-color: #16a34a;
+  border-color: #22c55e;
+  color: #ffffff;
+}
+
+.contest-enter-button:hover {
+  background-color: #22c55e;
+}
+
+.contest-register-button:focus-visible,
+.contest-enter-button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.contest-registration-error {
+  margin: 0;
+  color: #fca5a5;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .btn-ghost {
@@ -502,6 +619,16 @@
 @media (max-width: 640px) {
   .contests-page {
     padding: 1.5rem 1rem;
+  }
+
+  .contest-card {
+    margin: 0.75rem 0.25rem;
+    padding: 1.25rem;
+    border-radius: 0.875rem;
+  }
+
+  .contest-card-header {
+    flex-wrap: wrap;
   }
   
   .past-row {

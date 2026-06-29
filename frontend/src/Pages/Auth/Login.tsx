@@ -43,7 +43,7 @@ export default function Login() {
     setError("");
 
     try {
-              const response = await fetch(`${config.apiUrl}/api/login`, {
+              const response = await fetch(`${config.apiUrl}/api/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

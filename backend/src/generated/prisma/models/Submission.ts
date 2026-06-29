@@ -328,7 +328,7 @@ export type SubmissionCreateInput = {
   memory?: number | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSubmissionInput
-  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionInput
+  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
 }
 
 export type SubmissionUncheckedCreateInput = {
@@ -352,7 +352,7 @@ export type SubmissionUpdateInput = {
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSubmissionNestedInput
-  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionNestedInput
+  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
 }
 
 export type SubmissionUncheckedUpdateInput = {
@@ -561,7 +561,7 @@ export type SubmissionCreateWithoutUserInput = {
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
-  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionInput
+  problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
 }
 
 export type SubmissionUncheckedCreateWithoutUserInput = {
@@ -683,7 +683,7 @@ export type SubmissionUpdateWithoutUserInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionNestedInput
+  problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
 }
 
 export type SubmissionUncheckedUpdateWithoutUserInput = {

@@ -91,7 +91,9 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 export const ProblemScalarFieldEnum = {
   id: 'id',
   title: 'title',
-  content: 'content',
+  statement: 'statement',
+  timeLimit: 'timeLimit',
+  memoryLimit: 'memoryLimit',
   published: 'published',
   contestId: 'contestId'
 } as const
@@ -130,7 +132,8 @@ export const ContestRegistrationScalarFieldEnum = {
   userId: 'userId',
   contestId: 'contestId',
   registeredAt: 'registeredAt',
-  mode: 'mode'
+  mode: 'mode',
+  attempt: 'attempt'
 } as const
 
 export type ContestRegistrationScalarFieldEnum = (typeof ContestRegistrationScalarFieldEnum)[keyof typeof ContestRegistrationScalarFieldEnum]

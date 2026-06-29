@@ -20,14 +20,28 @@ export type ProblemModel = runtime.Types.Result.DefaultSelection<Prisma.$Problem
 
 export type AggregateProblem = {
   _count: ProblemCountAggregateOutputType | null
+  _avg: ProblemAvgAggregateOutputType | null
+  _sum: ProblemSumAggregateOutputType | null
   _min: ProblemMinAggregateOutputType | null
   _max: ProblemMaxAggregateOutputType | null
+}
+
+export type ProblemAvgAggregateOutputType = {
+  timeLimit: number | null
+  memoryLimit: number | null
+}
+
+export type ProblemSumAggregateOutputType = {
+  timeLimit: number | null
+  memoryLimit: number | null
 }
 
 export type ProblemMinAggregateOutputType = {
   id: string | null
   title: string | null
-  content: string | null
+  statement: string | null
+  timeLimit: number | null
+  memoryLimit: number | null
   published: boolean | null
   contestId: string | null
 }
@@ -35,7 +49,9 @@ export type ProblemMinAggregateOutputType = {
 export type ProblemMaxAggregateOutputType = {
   id: string | null
   title: string | null
-  content: string | null
+  statement: string | null
+  timeLimit: number | null
+  memoryLimit: number | null
   published: boolean | null
   contestId: string | null
 }
@@ -43,17 +59,31 @@ export type ProblemMaxAggregateOutputType = {
 export type ProblemCountAggregateOutputType = {
   id: number
   title: number
-  content: number
+  statement: number
+  timeLimit: number
+  memoryLimit: number
   published: number
   contestId: number
   _all: number
 }
 
 
+export type ProblemAvgAggregateInputType = {
+  timeLimit?: true
+  memoryLimit?: true
+}
+
+export type ProblemSumAggregateInputType = {
+  timeLimit?: true
+  memoryLimit?: true
+}
+
 export type ProblemMinAggregateInputType = {
   id?: true
   title?: true
-  content?: true
+  statement?: true
+  timeLimit?: true
+  memoryLimit?: true
   published?: true
   contestId?: true
 }
@@ -61,7 +91,9 @@ export type ProblemMinAggregateInputType = {
 export type ProblemMaxAggregateInputType = {
   id?: true
   title?: true
-  content?: true
+  statement?: true
+  timeLimit?: true
+  memoryLimit?: true
   published?: true
   contestId?: true
 }
@@ -69,7 +101,9 @@ export type ProblemMaxAggregateInputType = {
 export type ProblemCountAggregateInputType = {
   id?: true
   title?: true
-  content?: true
+  statement?: true
+  timeLimit?: true
+  memoryLimit?: true
   published?: true
   contestId?: true
   _all?: true
@@ -113,6 +147,18 @@ export type ProblemAggregateArgs<ExtArgs extends runtime.Types.Extensions.Intern
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: ProblemAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: ProblemSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: ProblemMinAggregateInputType
@@ -143,6 +189,8 @@ export type ProblemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   _count?: ProblemCountAggregateInputType | true
+  _avg?: ProblemAvgAggregateInputType
+  _sum?: ProblemSumAggregateInputType
   _min?: ProblemMinAggregateInputType
   _max?: ProblemMaxAggregateInputType
 }
@@ -150,10 +198,14 @@ export type ProblemGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type ProblemGroupByOutputType = {
   id: string
   title: string
-  content: string | null
+  statement: string
+  timeLimit: number
+  memoryLimit: number
   published: boolean
   contestId: string
   _count: ProblemCountAggregateOutputType | null
+  _avg: ProblemAvgAggregateOutputType | null
+  _sum: ProblemSumAggregateOutputType | null
   _min: ProblemMinAggregateOutputType | null
   _max: ProblemMaxAggregateOutputType | null
 }
@@ -179,21 +231,25 @@ export type ProblemWhereInput = {
   NOT?: Prisma.ProblemWhereInput | Prisma.ProblemWhereInput[]
   id?: Prisma.StringFilter<"Problem"> | string
   title?: Prisma.StringFilter<"Problem"> | string
-  content?: Prisma.StringNullableFilter<"Problem"> | string | null
+  statement?: Prisma.StringFilter<"Problem"> | string
+  timeLimit?: Prisma.IntFilter<"Problem"> | number
+  memoryLimit?: Prisma.IntFilter<"Problem"> | number
   published?: Prisma.BoolFilter<"Problem"> | boolean
   contestId?: Prisma.StringFilter<"Problem"> | string
-  submission?: Prisma.SubmissionListRelationFilter
   contest?: Prisma.XOR<Prisma.ContestScalarRelationFilter, Prisma.ContestWhereInput>
+  submissions?: Prisma.SubmissionListRelationFilter
 }
 
 export type ProblemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrderInput | Prisma.SortOrder
+  statement?: Prisma.SortOrder
+  timeLimit?: Prisma.SortOrder
+  memoryLimit?: Prisma.SortOrder
   published?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
-  submission?: Prisma.SubmissionOrderByRelationAggregateInput
   contest?: Prisma.ContestOrderByWithRelationInput
+  submissions?: Prisma.SubmissionOrderByRelationAggregateInput
 }
 
 export type ProblemWhereUniqueInput = Prisma.AtLeast<{
@@ -202,22 +258,28 @@ export type ProblemWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ProblemWhereInput[]
   NOT?: Prisma.ProblemWhereInput | Prisma.ProblemWhereInput[]
   title?: Prisma.StringFilter<"Problem"> | string
-  content?: Prisma.StringNullableFilter<"Problem"> | string | null
+  statement?: Prisma.StringFilter<"Problem"> | string
+  timeLimit?: Prisma.IntFilter<"Problem"> | number
+  memoryLimit?: Prisma.IntFilter<"Problem"> | number
   published?: Prisma.BoolFilter<"Problem"> | boolean
   contestId?: Prisma.StringFilter<"Problem"> | string
-  submission?: Prisma.SubmissionListRelationFilter
   contest?: Prisma.XOR<Prisma.ContestScalarRelationFilter, Prisma.ContestWhereInput>
+  submissions?: Prisma.SubmissionListRelationFilter
 }, "id">
 
 export type ProblemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrderInput | Prisma.SortOrder
+  statement?: Prisma.SortOrder
+  timeLimit?: Prisma.SortOrder
+  memoryLimit?: Prisma.SortOrder
   published?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
   _count?: Prisma.ProblemCountOrderByAggregateInput
+  _avg?: Prisma.ProblemAvgOrderByAggregateInput
   _max?: Prisma.ProblemMaxOrderByAggregateInput
   _min?: Prisma.ProblemMinOrderByAggregateInput
+  _sum?: Prisma.ProblemSumOrderByAggregateInput
 }
 
 export type ProblemScalarWhereWithAggregatesInput = {
@@ -226,7 +288,9 @@ export type ProblemScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ProblemScalarWhereWithAggregatesInput | Prisma.ProblemScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Problem"> | string
   title?: Prisma.StringWithAggregatesFilter<"Problem"> | string
-  content?: Prisma.StringNullableWithAggregatesFilter<"Problem"> | string | null
+  statement?: Prisma.StringWithAggregatesFilter<"Problem"> | string
+  timeLimit?: Prisma.IntWithAggregatesFilter<"Problem"> | number
+  memoryLimit?: Prisma.IntWithAggregatesFilter<"Problem"> | number
   published?: Prisma.BoolWithAggregatesFilter<"Problem"> | boolean
   contestId?: Prisma.StringWithAggregatesFilter<"Problem"> | string
 }
@@ -234,43 +298,53 @@ export type ProblemScalarWhereWithAggregatesInput = {
 export type ProblemCreateInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
-  submission?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
   contest: Prisma.ContestCreateNestedOneWithoutProblemsInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
   contestId: string
-  submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  submission?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
   contest?: Prisma.ContestUpdateOneRequiredWithoutProblemsNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
-  submission?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemCreateManyInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
   contestId: string
 }
@@ -278,14 +352,18 @@ export type ProblemCreateManyInput = {
 export type ProblemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type ProblemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -293,15 +371,24 @@ export type ProblemUncheckedUpdateManyInput = {
 export type ProblemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  statement?: Prisma.SortOrder
+  timeLimit?: Prisma.SortOrder
+  memoryLimit?: Prisma.SortOrder
   published?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
+}
+
+export type ProblemAvgOrderByAggregateInput = {
+  timeLimit?: Prisma.SortOrder
+  memoryLimit?: Prisma.SortOrder
 }
 
 export type ProblemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  statement?: Prisma.SortOrder
+  timeLimit?: Prisma.SortOrder
+  memoryLimit?: Prisma.SortOrder
   published?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
 }
@@ -309,9 +396,16 @@ export type ProblemMaxOrderByAggregateInput = {
 export type ProblemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrder
-  content?: Prisma.SortOrder
+  statement?: Prisma.SortOrder
+  timeLimit?: Prisma.SortOrder
+  memoryLimit?: Prisma.SortOrder
   published?: Prisma.SortOrder
   contestId?: Prisma.SortOrder
+}
+
+export type ProblemSumOrderByAggregateInput = {
+  timeLimit?: Prisma.SortOrder
+  memoryLimit?: Prisma.SortOrder
 }
 
 export type ProblemListRelationFilter = {
@@ -375,34 +469,38 @@ export type ProblemUncheckedUpdateManyWithoutContestNestedInput = {
   deleteMany?: Prisma.ProblemScalarWhereInput | Prisma.ProblemScalarWhereInput[]
 }
 
-export type ProblemCreateNestedOneWithoutSubmissionInput = {
-  create?: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionInput, Prisma.ProblemUncheckedCreateWithoutSubmissionInput>
-  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutSubmissionInput
+export type ProblemCreateNestedOneWithoutSubmissionsInput = {
+  create?: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutSubmissionsInput
   connect?: Prisma.ProblemWhereUniqueInput
 }
 
-export type ProblemUpdateOneRequiredWithoutSubmissionNestedInput = {
-  create?: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionInput, Prisma.ProblemUncheckedCreateWithoutSubmissionInput>
-  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutSubmissionInput
-  upsert?: Prisma.ProblemUpsertWithoutSubmissionInput
+export type ProblemUpdateOneRequiredWithoutSubmissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
+  connectOrCreate?: Prisma.ProblemCreateOrConnectWithoutSubmissionsInput
+  upsert?: Prisma.ProblemUpsertWithoutSubmissionsInput
   connect?: Prisma.ProblemWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ProblemUpdateToOneWithWhereWithoutSubmissionInput, Prisma.ProblemUpdateWithoutSubmissionInput>, Prisma.ProblemUncheckedUpdateWithoutSubmissionInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProblemUpdateToOneWithWhereWithoutSubmissionsInput, Prisma.ProblemUpdateWithoutSubmissionsInput>, Prisma.ProblemUncheckedUpdateWithoutSubmissionsInput>
 }
 
 export type ProblemCreateWithoutContestInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
-  submission?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemUncheckedCreateWithoutContestInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
-  submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
+  submissions?: Prisma.SubmissionUncheckedCreateNestedManyWithoutProblemInput
 }
 
 export type ProblemCreateOrConnectWithoutContestInput = {
@@ -437,55 +535,65 @@ export type ProblemScalarWhereInput = {
   NOT?: Prisma.ProblemScalarWhereInput | Prisma.ProblemScalarWhereInput[]
   id?: Prisma.StringFilter<"Problem"> | string
   title?: Prisma.StringFilter<"Problem"> | string
-  content?: Prisma.StringNullableFilter<"Problem"> | string | null
+  statement?: Prisma.StringFilter<"Problem"> | string
+  timeLimit?: Prisma.IntFilter<"Problem"> | number
+  memoryLimit?: Prisma.IntFilter<"Problem"> | number
   published?: Prisma.BoolFilter<"Problem"> | boolean
   contestId?: Prisma.StringFilter<"Problem"> | string
 }
 
-export type ProblemCreateWithoutSubmissionInput = {
+export type ProblemCreateWithoutSubmissionsInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
   contest: Prisma.ContestCreateNestedOneWithoutProblemsInput
 }
 
-export type ProblemUncheckedCreateWithoutSubmissionInput = {
+export type ProblemUncheckedCreateWithoutSubmissionsInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
   contestId: string
 }
 
-export type ProblemCreateOrConnectWithoutSubmissionInput = {
+export type ProblemCreateOrConnectWithoutSubmissionsInput = {
   where: Prisma.ProblemWhereUniqueInput
-  create: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionInput, Prisma.ProblemUncheckedCreateWithoutSubmissionInput>
+  create: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
 }
 
-export type ProblemUpsertWithoutSubmissionInput = {
-  update: Prisma.XOR<Prisma.ProblemUpdateWithoutSubmissionInput, Prisma.ProblemUncheckedUpdateWithoutSubmissionInput>
-  create: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionInput, Prisma.ProblemUncheckedCreateWithoutSubmissionInput>
+export type ProblemUpsertWithoutSubmissionsInput = {
+  update: Prisma.XOR<Prisma.ProblemUpdateWithoutSubmissionsInput, Prisma.ProblemUncheckedUpdateWithoutSubmissionsInput>
+  create: Prisma.XOR<Prisma.ProblemCreateWithoutSubmissionsInput, Prisma.ProblemUncheckedCreateWithoutSubmissionsInput>
   where?: Prisma.ProblemWhereInput
 }
 
-export type ProblemUpdateToOneWithWhereWithoutSubmissionInput = {
+export type ProblemUpdateToOneWithWhereWithoutSubmissionsInput = {
   where?: Prisma.ProblemWhereInput
-  data: Prisma.XOR<Prisma.ProblemUpdateWithoutSubmissionInput, Prisma.ProblemUncheckedUpdateWithoutSubmissionInput>
+  data: Prisma.XOR<Prisma.ProblemUpdateWithoutSubmissionsInput, Prisma.ProblemUncheckedUpdateWithoutSubmissionsInput>
 }
 
-export type ProblemUpdateWithoutSubmissionInput = {
+export type ProblemUpdateWithoutSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contest?: Prisma.ContestUpdateOneRequiredWithoutProblemsNestedInput
 }
 
-export type ProblemUncheckedUpdateWithoutSubmissionInput = {
+export type ProblemUncheckedUpdateWithoutSubmissionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   contestId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -493,30 +601,38 @@ export type ProblemUncheckedUpdateWithoutSubmissionInput = {
 export type ProblemCreateManyContestInput = {
   id?: string
   title: string
-  content?: string | null
+  statement: string
+  timeLimit?: number
+  memoryLimit?: number
   published?: boolean
 }
 
 export type ProblemUpdateWithoutContestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  submission?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateWithoutContestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  submission?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
+  submissions?: Prisma.SubmissionUncheckedUpdateManyWithoutProblemNestedInput
 }
 
 export type ProblemUncheckedUpdateManyWithoutContestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
-  content?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  statement?: Prisma.StringFieldUpdateOperationsInput | string
+  timeLimit?: Prisma.IntFieldUpdateOperationsInput | number
+  memoryLimit?: Prisma.IntFieldUpdateOperationsInput | number
   published?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
@@ -526,11 +642,11 @@ export type ProblemUncheckedUpdateManyWithoutContestInput = {
  */
 
 export type ProblemCountOutputType = {
-  submission: number
+  submissions: number
 }
 
 export type ProblemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  submission?: boolean | ProblemCountOutputTypeCountSubmissionArgs
+  submissions?: boolean | ProblemCountOutputTypeCountSubmissionsArgs
 }
 
 /**
@@ -546,7 +662,7 @@ export type ProblemCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * ProblemCountOutputType without action
  */
-export type ProblemCountOutputTypeCountSubmissionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type ProblemCountOutputTypeCountSubmissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SubmissionWhereInput
 }
 
@@ -554,18 +670,22 @@ export type ProblemCountOutputTypeCountSubmissionArgs<ExtArgs extends runtime.Ty
 export type ProblemSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  content?: boolean
+  statement?: boolean
+  timeLimit?: boolean
+  memoryLimit?: boolean
   published?: boolean
   contestId?: boolean
-  submission?: boolean | Prisma.Problem$submissionArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
+  submissions?: boolean | Prisma.Problem$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProblemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["problem"]>
 
 export type ProblemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  content?: boolean
+  statement?: boolean
+  timeLimit?: boolean
+  memoryLimit?: boolean
   published?: boolean
   contestId?: boolean
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
@@ -574,7 +694,9 @@ export type ProblemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type ProblemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   title?: boolean
-  content?: boolean
+  statement?: boolean
+  timeLimit?: boolean
+  memoryLimit?: boolean
   published?: boolean
   contestId?: boolean
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
@@ -583,15 +705,17 @@ export type ProblemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type ProblemSelectScalar = {
   id?: boolean
   title?: boolean
-  content?: boolean
+  statement?: boolean
+  timeLimit?: boolean
+  memoryLimit?: boolean
   published?: boolean
   contestId?: boolean
 }
 
-export type ProblemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "published" | "contestId", ExtArgs["result"]["problem"]>
+export type ProblemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "statement" | "timeLimit" | "memoryLimit" | "published" | "contestId", ExtArgs["result"]["problem"]>
 export type ProblemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  submission?: boolean | Prisma.Problem$submissionArgs<ExtArgs>
   contest?: boolean | Prisma.ContestDefaultArgs<ExtArgs>
+  submissions?: boolean | Prisma.Problem$submissionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProblemCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProblemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -604,13 +728,15 @@ export type ProblemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $ProblemPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Problem"
   objects: {
-    submission: Prisma.$SubmissionPayload<ExtArgs>[]
     contest: Prisma.$ContestPayload<ExtArgs>
+    submissions: Prisma.$SubmissionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
-    content: string | null
+    statement: string
+    timeLimit: number
+    memoryLimit: number
     published: boolean
     contestId: string
   }, ExtArgs["result"]["problem"]>
@@ -1007,8 +1133,8 @@ readonly fields: ProblemFieldRefs;
  */
 export interface Prisma__ProblemClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  submission<T extends Prisma.Problem$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$submissionArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contest<T extends Prisma.ContestDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContestDefaultArgs<ExtArgs>>): Prisma.Prisma__ContestClient<runtime.Types.Result.GetResult<Prisma.$ContestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  submissions<T extends Prisma.Problem$submissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Problem$submissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1040,7 +1166,9 @@ export interface Prisma__ProblemClient<T, Null = never, ExtArgs extends runtime.
 export interface ProblemFieldRefs {
   readonly id: Prisma.FieldRef<"Problem", 'String'>
   readonly title: Prisma.FieldRef<"Problem", 'String'>
-  readonly content: Prisma.FieldRef<"Problem", 'String'>
+  readonly statement: Prisma.FieldRef<"Problem", 'String'>
+  readonly timeLimit: Prisma.FieldRef<"Problem", 'Int'>
+  readonly memoryLimit: Prisma.FieldRef<"Problem", 'Int'>
   readonly published: Prisma.FieldRef<"Problem", 'Boolean'>
   readonly contestId: Prisma.FieldRef<"Problem", 'String'>
 }
@@ -1444,9 +1572,9 @@ export type ProblemDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Problem.submission
+ * Problem.submissions
  */
-export type Problem$submissionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Problem$submissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Submission
    */

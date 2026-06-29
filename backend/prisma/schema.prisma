@@ -6,6 +6,9 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+enum x { 
+  TEST
+}
  enum Verdict {
   ACCEPTED
   WRONG_ANSWER
@@ -39,16 +42,24 @@ model User {
 }   
 
 
-model Problem { 
-  id String @id @default(uuid())
-  title     String
-  content   String?
-  published Boolean @default(false) 
-  submission Submission[]
-  contest   Contest @relation(fields: [contestId], references: [id])
-  contestId String 
-   
-} 
+model Problem {
+  id          String   @id @default(uuid())
+
+  title       String
+  statement   String   @db.Text
+
+  timeLimit   Int      @default(2000)
+  memoryLimit Int      @default(256)
+
+  published   Boolean  @default(false)
+
+  contest      Contest      @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  contestId    String
+
+  submissions  Submission[]
+
+  @@index([contestId])
+}
 //one to many mapping for problems one problem belongs to a signle contest
 //many to many for registrations
 //many to many for results
@@ -89,11 +100,12 @@ model ContestRegistration {
   contestId    String
   registeredAt DateTime @default(now())
    mode          Mode
+   attempt      Int   @default(autoincrement())  
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   contest      Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
 
   
-  @@id([userId, contestId]) 
+  @@id([userId, contestId, attempt]) 
 }
 
 model ContestResult {

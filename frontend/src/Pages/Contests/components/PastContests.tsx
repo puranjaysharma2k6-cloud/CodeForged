@@ -2,6 +2,7 @@ import { useEffect, useReducer, useState } from 'react';
 import config from '../../../config';
 import { fetchwithAuth } from '../../../Utils/fetchwithAuth';
 import type { Contest, Participation } from '../Contests.loader';
+import { normalizeContest } from '../Contests.loader';
 import { ContestCard } from './ContestCard';
 import { Pagination } from './Pagination';
 
@@ -53,14 +54,16 @@ async function fetchPastContests(
 ): Promise<{ contests: Contest[]; participations: Record<string, Participation>; totalPages: number }> {
 
   const res = await fetch(
-    `${config.apiUrl}/api/contests?status=past&page=${page}&limit=${PAGE_SIZE}`
+    `${config.apiUrl}/api/contests/past?page=${page}&limit=${PAGE_SIZE}`
   );
   if (!res.ok) throw new Error('Failed to load past contests.');
 
   const data = await res.json();
 
   // API may return { contests, total } or a bare array
-  const contests: Contest[] = Array.isArray(data) ? data : (data.contests ?? []);
+  const contests: Contest[] = Array.isArray(data)
+    ? data.map(normalizeContest)
+    : (data.data ?? data.contests ?? []).map(normalizeContest);
   const total: number        = data.total ?? contests.length;
   const totalPages           = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -71,7 +74,7 @@ async function fetchPastContests(
   if (token && contests.length > 0) {
     const results = await Promise.allSettled(
       contests.map(async c => {
-        const r = await fetchwithAuth(`${config.apiUrl}/api/contests/${c.id}/participation`);
+        const r = await fetchwithAuth(`${config.apiUrl}/api/contests/${c.id}/registration`);
         return r.ok ? r.json() : null;
       })
     );
@@ -119,15 +122,15 @@ export function PastContests({ initialData }: { initialData?: { contests: Contes
         }
       }
     }
-
+      
     loadPastContests();
-
+    
     return () => { cancelled = true; };
-  }, [page, retryKey, initialData]);   // re-fetches when page changes OR on retry
+  }, [page, retryKey, initialData]);   
 
   if (state.loading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-center">
         {Array.from({ length: PAGE_SIZE }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -166,7 +169,7 @@ export function PastContests({ initialData }: { initialData?: { contests: Contes
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-center">
         {state.contests.map(contest => (
           <ContestCard
             key={contest.id}
@@ -192,19 +195,19 @@ export function PastContests({ initialData }: { initialData?: { contests: Contes
 
 function SkeletonCard() {
   return (
-    <div className="bg-[#262b36] rounded-xl border border-[#363c4a] p-5 animate-pulse flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="h-4 bg-[#363c4a] rounded w-2/3" />
-        <div className="h-5 bg-[#363c4a] rounded-full w-14 shrink-0" />
+    <div className="bg-[#262b36] rounded-xl border border-[#363c4a] p-6 animate-pulse flex flex-col gap-4 min-h-[140px]">
+      <div className="flex items-start justify-between gap-4">
+        <div className="h-5 bg-[#363c4a] rounded w-2/3" />
+        <div className="h-6 bg-[#363c4a] rounded-full w-16 shrink-0" />
       </div>
       <div className="space-y-2">
-        <div className="h-3 bg-[#363c4a] rounded w-1/2" />
-        <div className="h-3 bg-[#363c4a] rounded w-1/3" />
+        <div className="h-4 bg-[#363c4a] rounded w-1/2" />
+        <div className="h-4 bg-[#363c4a] rounded w-1/3" />
       </div>
       <div className="pt-3 border-t border-[#363c4a] grid grid-cols-3 gap-3">
-        <div className="h-8 bg-[#363c4a] rounded" />
-        <div className="h-8 bg-[#363c4a] rounded" />
-        <div className="h-8 bg-[#363c4a] rounded" />
+        <div className="h-10 bg-[#363c4a] rounded" />
+        <div className="h-10 bg-[#363c4a] rounded" />
+        <div className="h-10 bg-[#363c4a] rounded" />
       </div>
     </div>
   );

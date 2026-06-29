@@ -1,0 +1,30 @@
+/* Fluid padding for the problem cards */
+/* syntax: clamp(MIN, PREFERRED_VIEWPORT_WIDTH, MAX) */
+.arena-card-padding {
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+/* Sleek custom scrollbar to match the dark theme */
+.arena-scroll {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #363c4a transparent; /* Firefox */
+}
+
+/* Chrome, Edge, and Safari */
+.arena-scroll::-webkit-scrollbar {
+  width: 6px; 
+}
+
+.arena-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  margin-block: 0.5rem; /* Adds top/bottom padding to the scrollbar track itself */
+}
+
+.arena-scroll::-webkit-scrollbar-thumb {
+  background-color: #363c4a;
+  border-radius: 10px;
+}
+
+.arena-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563; /* Lightens up slightly when hovered */
+}

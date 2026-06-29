@@ -47,7 +47,7 @@ export default function Register() {
     setError("");
 
     try {
-      const response = await fetch(`${config.apiUrl}/api/register`, {
+      const response = await fetch(`${config.apiUrl}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
