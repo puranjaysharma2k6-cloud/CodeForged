@@ -34,7 +34,7 @@ export default function RealtimeLeaderboard({ contestId, problems }: RealtimeLea
 
   // WebSocket Connection Setup (Direct stream from Redis Backend)
   useEffect(() => {
-    let wsUrl = `${config.apiUrl.replace(/^http/, "ws")}/api/contests/${contestId}/leaderboard/ws`;
+    let wsUrl = `${config.apiUrl.replace(/^http/, "wss")}/api/contests/${contestId}/leaderboard/ws`;
     const socket = new WebSocket(wsUrl);
     socketRef.current = socket;
 

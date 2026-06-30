@@ -6,91 +6,131 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-enum x { 
-  TEST
-}
- enum Verdict {
+
+
+enum Verdict {
+  PENDING              
   ACCEPTED
   WRONG_ANSWER
   TIME_LIMIT_EXCEEDED
   MEMORY_LIMIT_EXCEEDED
   COMPILATION_ERROR
   RUNTIME_ERROR
+  PRESENTATION_ERROR    
+  OUTPUT_LIMIT_EXCEEDED 
+  SYSTEM_ERROR         
 }
+
 enum ContestStatus {
   UPCOMING
   ONGOING
   PAST
 }
+
 enum Mode {
   OFFICIAL
   VIRTUAL
 }
-model User { 
-  id String @id @default(uuid()) 
+
+
+
+model User {
+  id           String  @id @default(uuid())
   email        String  @unique
   username     String  @unique
   passwordHash String
   name         String?
-  currentRating Int @default(0)
-  submission   Submission[]
-  contest      ContestRegistration[]
-  ratingHistory      ContestResult[]
+  currentRating Int    @default(0)
   avatarUrl    String?
+
+  submission    Submission[]
+  contest       ContestRegistration[]
+  ratingHistory ContestResult[]
+
   @@index([id])
   @@index([currentRating(sort: Desc)])
-}   
+}
 
 
 model Problem {
-  id          String   @id @default(uuid())
-
+  id          String  @id @default(uuid())
   title       String
-  statement   String   @db.Text
+  statement   String  @db.Text
+  timeLimit   Int     @default(2000) 
+  memoryLimit Int     @default(256)  
 
-  timeLimit   Int      @default(2000)
-  memoryLimit Int      @default(256)
+  published   Boolean @default(false)
 
-  published   Boolean  @default(false)
+  // vjudge mapping — "vjudgeContestId/problemLetter" e.g. "563012/A"
+  // null when provider is judge0 (judge0 doesn't need an external mapping)
+  vjudgeId    String?
 
-  contest      Contest      @relation(fields: [contestId], references: [id], onDelete: Cascade)
-  contestId    String
+  contest     Contest    @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  contestId   String
 
-  submissions  Submission[]
+  submissions Submission[]
+
+  // judge0 test cases — empty while vjudge is the active provider,
+  // populated when you migrate to judge0
+  testCases   TestCase[]
 
   @@index([contestId])
 }
-//one to many mapping for problems one problem belongs to a signle contest
-//many to many for registrations
-//many to many for results
 
-model Contest{
-  id String @id @default(uuid())
-  title String
+// ---------------------------------------------------------------------------
+// TestCase
+// ---------------------------------------------------------------------------
+// Only used by judge0. Rows will be empty while vjudge is active.
+
+
+model TestCase {
+  id         String  @id @default(uuid())
+  input      String  @db.Text
+  expected   String  @db.Text        // expected stdout
+  isSample   Boolean @default(false) // true = shown to user in problem statement
+  orderIndex Int     @default(0)     // run order
+
+  problem    Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId  String
+
+  @@index([problemId])
+}
+
+
+
+model Contest {
+  id        String        @id @default(uuid())
+  title     String
   startTime DateTime
-  duration Int
+  duration  Int
   editorial String?
-   status    ContestStatus @default(UPCOMING)
-  problems Problem[] 
+  status    ContestStatus @default(UPCOMING)
+
+  problems     Problem[]
   participants ContestRegistration[]
-  results ContestResult[]
+  results      ContestResult[]
 
   @@index([id])
 }
 
 model Submission {
-  id         String   @id @default(uuid()) 
-  code       String   @db.Text             
-  language   String                        
-  status     Verdict                       
-  runtime    Int?                          
-  memory     Int?                          
-  createdAt  DateTime @default(now())      
+  id        String   @id @default(uuid())
+  code      String   @db.Text
+  language  String
+  status    Verdict  @default(PENDING)
+  runtime   Int?     
+  memory    Int?     
+  createdAt DateTime @default(now())
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  problem    Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  problemId  String
+  // Per-test-case breakdown — null while vjudge is active.
+  // judge0: array of { index, verdict, runtime, memory }
+  // Stored as JSON so no extra migration is needed when you flip the provider.
+  testResults Json?
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problemId String
 
   @@index([userId, status, problemId])
 }
@@ -99,32 +139,31 @@ model ContestRegistration {
   userId       String
   contestId    String
   registeredAt DateTime @default(now())
-   mode          Mode
-   attempt      Int   @default(autoincrement())  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  contest      Contest  @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  mode         Mode
+  attempt      Int      @default(autoincrement())
 
-  
-  @@id([userId, contestId, attempt]) 
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+
+  @@id([userId, contestId, attempt])
 }
 
 model ContestResult {
-  id            String   @id @default(uuid())
-  title         String
-  userId        String
-  contestId     String
-  mode          Mode   
-  score         Int      @default(0)
-  penalty       Int      @default(0) 
-  newRating     Int      
-  // 2. The Historical Snapshot (Crucial!)
-  finalRank     Int?     
-  
-  //  Problem Breakdown (The grid of green checks and red crosses)
-  problemStats  Json?    
+  id        String @id @default(uuid())
+  title     String
+  userId    String
+  contestId String
+  mode      Mode
 
-  user          User     @relation(fields: [userId], references: [id])
-  contest       Contest  @relation(fields: [contestId], references: [id])
+  score     Int @default(0)
+  penalty   Int @default(0)
+  newRating Int
+
+  finalRank    Int?
+  problemStats Json? // { [problemId]: { solved: bool, attempts: int, penalty: int } }
+
+  user    User    @relation(fields: [userId], references: [id])
+  contest Contest @relation(fields: [contestId], references: [id])
 
   
   @@unique([userId, contestId,mode]) 

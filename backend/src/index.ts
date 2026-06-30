@@ -2,6 +2,8 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import apiRoutes from "./routes/index.js";
+import { scheduleActiveContest } from "./jobs/contestScheduler.js";
+import { contestRooms } from "./ws/contestRooms.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
@@ -23,6 +25,12 @@ async function start() {
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
+
+  // Schedule the active contest's start/end timers at exact milliseconds.
+  // No polling — one setTimeout per transition, fires at precisely the right time.
+  await scheduleActiveContest();
 }
 
 start();
+
+export { contestRooms };
