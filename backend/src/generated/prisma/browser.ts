@@ -28,6 +28,11 @@ export type User = Prisma.UserModel
  */
 export type Problem = Prisma.ProblemModel
 /**
+ * Model TestCase
+ * 
+ */
+export type TestCase = Prisma.TestCaseModel
+/**
  * Model Contest
  * 
  */

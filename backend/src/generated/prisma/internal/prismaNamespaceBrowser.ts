@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Problem: 'Problem',
+  TestCase: 'TestCase',
   Contest: 'Contest',
   Submission: 'Submission',
   ContestRegistration: 'ContestRegistration',
@@ -95,10 +96,23 @@ export const ProblemScalarFieldEnum = {
   timeLimit: 'timeLimit',
   memoryLimit: 'memoryLimit',
   published: 'published',
+  vjudgeId: 'vjudgeId',
   contestId: 'contestId'
 } as const
 
 export type ProblemScalarFieldEnum = (typeof ProblemScalarFieldEnum)[keyof typeof ProblemScalarFieldEnum]
+
+
+export const TestCaseScalarFieldEnum = {
+  id: 'id',
+  input: 'input',
+  expected: 'expected',
+  isSample: 'isSample',
+  orderIndex: 'orderIndex',
+  problemId: 'problemId'
+} as const
+
+export type TestCaseScalarFieldEnum = (typeof TestCaseScalarFieldEnum)[keyof typeof TestCaseScalarFieldEnum]
 
 
 export const ContestScalarFieldEnum = {
@@ -121,6 +135,7 @@ export const SubmissionScalarFieldEnum = {
   runtime: 'runtime',
   memory: 'memory',
   createdAt: 'createdAt',
+  testResults: 'testResults',
   userId: 'userId',
   problemId: 'problemId'
 } as const

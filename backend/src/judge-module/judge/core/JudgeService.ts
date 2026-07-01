@@ -1,8 +1,8 @@
-import { IJudgeProvider } from '../ports/IJudgeProvider';
-import { IVerdictPublisher } from '../ports/IVerdictPublisher';
-import { IProblemMappingRepository } from '../ports/IProblemMappingRepository';
-import { SubmissionRequest, JudgeResult, VerdictStatus, TERMINAL_STATUSES } from '../types';
-import { UnsupportedLanguageError, JudgeSubmissionError, JudgePollingTimeoutError } from '../errors';
+import { IJudgeProvider } from '../ports/IJudgeProvider.js';
+import { IVerdictPublisher } from '../ports/IVerdictPublisher.js';
+import { IProblemMappingRepository } from '../ports/IProblemMappingRepository.js';
+import { SubmissionRequest, JudgeResult, VerdictStatus, TERMINAL_STATUSES } from '../types.js';
+import { UnsupportedLanguageError, JudgeSubmissionError, JudgePollingTimeoutError } from '../errors.js';
 
 export interface JudgeServiceConfig {
   pollIntervalMs: number;

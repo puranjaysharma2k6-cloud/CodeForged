@@ -1,5 +1,6 @@
 import { prisma } from "../db/db.js";
 import { contestRooms } from "../ws/contestRooms.js";
+import { ContestStatus } from "../generated/prisma/enums.js";
 
 /**
  * Schedules the two status transitions for a single contest using
@@ -20,15 +21,10 @@ function clearTimers() {
   if (endTimer)   { clearTimeout(endTimer);   endTimer   = null; }
 }
 
-/**
- * Schedule both transitions for the given contest.
- * Safe to call at boot (picks up mid-contest correctly) and whenever
- * a new contest is created or updated.
- */
 export function scheduleContest(contest: {
   id: string;
   startTime: Date;
-  duration: number; // minutes
+  duration: number; 
 }): void {
   clearTimers();
 
@@ -38,12 +34,12 @@ export function scheduleContest(contest: {
   const msToStart = startMs - now;
   const msToEnd   = endMs   - now;
 
-  // ── UPCOMING → ONGOING ──────────────────────────────────────────────
+  //UPCOMING to ONGOING
   if (msToStart > 0) {
     startTimer = setTimeout(async () => {
       await prisma.contest.update({
         where: { id: contest.id },
-        data:  { status: "ONGOING" },
+        data:  { status: ContestStatus.ONGOING },
       });
       console.log(`[scheduler] contest "${contest.id}" is now ONGOING`);
     }, msToStart);
@@ -53,12 +49,12 @@ export function scheduleContest(contest: {
     );
   }
 
-  // ── ONGOING → PAST ───────────────────────────────────────────────────
+  // ONGOING to PAST 
   if (msToEnd > 0) {
     endTimer = setTimeout(async () => {
       await prisma.contest.update({
         where: { id: contest.id },
-        data:  { status: "PAST" },
+        data:  { status: ContestStatus.PAST },
       });
       console.log(`[scheduler] contest "${contest.id}" is now PAST`);
 
@@ -88,7 +84,7 @@ export async function scheduleActiveContest(): Promise<void> {
 
   // Find any contest that isn't finished yet
   const contest = await prisma.contest.findFirst({
-    where: { status: { in: ["UPCOMING", "ONGOING"] } },
+    where: { status: { in: [ContestStatus.UPCOMING, ContestStatus.ONGOING] } },
     orderBy: { startTime: "asc" },
     select: { id: true, startTime: true, duration: true, status: true },
   });

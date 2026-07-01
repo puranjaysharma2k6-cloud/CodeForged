@@ -1,5 +1,5 @@
-import { ISubmissionQueue, SubmissionHandler } from '../ports/ISubmissionQueue';
-import { SubmissionRequest } from '../types';
+import { ISubmissionQueue, SubmissionHandler } from '../ports/ISubmissionQueue.js';
+import { SubmissionRequest } from '../types.js';
 
 export interface InMemoryQueueOptions {
   /** max submissions in flight at once — this is your vjudge rate-limit knob */

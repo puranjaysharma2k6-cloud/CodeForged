@@ -9,20 +9,17 @@
 * 🟢 You can import this file directly.
 */
 
-export const x = {
-  TEST: 'TEST'
-} as const
-
-export type x = (typeof x)[keyof typeof x]
-
-
 export const Verdict = {
+  PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
   WRONG_ANSWER: 'WRONG_ANSWER',
   TIME_LIMIT_EXCEEDED: 'TIME_LIMIT_EXCEEDED',
   MEMORY_LIMIT_EXCEEDED: 'MEMORY_LIMIT_EXCEEDED',
   COMPILATION_ERROR: 'COMPILATION_ERROR',
-  RUNTIME_ERROR: 'RUNTIME_ERROR'
+  RUNTIME_ERROR: 'RUNTIME_ERROR',
+  PRESENTATION_ERROR: 'PRESENTATION_ERROR',
+  OUTPUT_LIMIT_EXCEEDED: 'OUTPUT_LIMIT_EXCEEDED',
+  SYSTEM_ERROR: 'SYSTEM_ERROR'
 } as const
 
 export type Verdict = (typeof Verdict)[keyof typeof Verdict]

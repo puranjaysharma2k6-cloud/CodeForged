@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Problem: 'Problem',
+  TestCase: 'TestCase',
   Contest: 'Contest',
   Submission: 'Submission',
   ContestRegistration: 'ContestRegistration',
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "problem" | "contest" | "submission" | "contestRegistration" | "contestResult"
+    modelProps: "user" | "problem" | "testCase" | "contest" | "submission" | "contestRegistration" | "contestResult"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -554,6 +555,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ProblemCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ProblemCountAggregateOutputType> | number
+        }
+      }
+    }
+    TestCase: {
+      payload: Prisma.$TestCasePayload<ExtArgs>
+      fields: Prisma.TestCaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TestCaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TestCaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>
+        }
+        findFirst: {
+          args: Prisma.TestCaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TestCaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>
+        }
+        findMany: {
+          args: Prisma.TestCaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>[]
+        }
+        create: {
+          args: Prisma.TestCaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>
+        }
+        createMany: {
+          args: Prisma.TestCaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TestCaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>[]
+        }
+        delete: {
+          args: Prisma.TestCaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>
+        }
+        update: {
+          args: Prisma.TestCaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>
+        }
+        deleteMany: {
+          args: Prisma.TestCaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TestCaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TestCaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>[]
+        }
+        upsert: {
+          args: Prisma.TestCaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TestCasePayload>
+        }
+        aggregate: {
+          args: Prisma.TestCaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTestCase>
+        }
+        groupBy: {
+          args: Prisma.TestCaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TestCaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TestCaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TestCaseCountAggregateOutputType> | number
         }
       }
     }
@@ -912,10 +987,23 @@ export const ProblemScalarFieldEnum = {
   timeLimit: 'timeLimit',
   memoryLimit: 'memoryLimit',
   published: 'published',
+  vjudgeId: 'vjudgeId',
   contestId: 'contestId'
 } as const
 
 export type ProblemScalarFieldEnum = (typeof ProblemScalarFieldEnum)[keyof typeof ProblemScalarFieldEnum]
+
+
+export const TestCaseScalarFieldEnum = {
+  id: 'id',
+  input: 'input',
+  expected: 'expected',
+  isSample: 'isSample',
+  orderIndex: 'orderIndex',
+  problemId: 'problemId'
+} as const
+
+export type TestCaseScalarFieldEnum = (typeof TestCaseScalarFieldEnum)[keyof typeof TestCaseScalarFieldEnum]
 
 
 export const ContestScalarFieldEnum = {
@@ -938,6 +1026,7 @@ export const SubmissionScalarFieldEnum = {
   runtime: 'runtime',
   memory: 'memory',
   createdAt: 'createdAt',
+  testResults: 'testResults',
   userId: 'userId',
   problemId: 'problemId'
 } as const
@@ -1097,20 +1186,6 @@ export type ListEnumVerdictFieldRefInput<$PrismaModel> = FieldRefInputType<$Pris
 
 
 /**
- * Reference to a field of type 'Mode'
- */
-export type EnumModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Mode'>
-    
-
-
-/**
- * Reference to a field of type 'Mode[]'
- */
-export type ListEnumModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Mode[]'>
-    
-
-
-/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -1121,6 +1196,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'Mode'
+ */
+export type EnumModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Mode'>
+    
+
+
+/**
+ * Reference to a field of type 'Mode[]'
+ */
+export type ListEnumModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Mode[]'>
     
 
 
@@ -1249,6 +1338,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   problem?: Prisma.ProblemOmit
+  testCase?: Prisma.TestCaseOmit
   contest?: Prisma.ContestOmit
   submission?: Prisma.SubmissionOmit
   contestRegistration?: Prisma.ContestRegistrationOmit

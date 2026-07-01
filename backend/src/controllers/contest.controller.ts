@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { prisma } from "../db/db.js";
-import { register } from "node:module";
+import { ContestStatus, Mode } from "../generated/prisma/enums.js";
 
 
 export async function getprevContests(req:Request,res : Response) {
@@ -16,13 +16,13 @@ export async function getprevContests(req:Request,res : Response) {
     // db loads only 10-20 then when user goes onto next page then only loaded
        const [contests, totalContests] = await Promise.all([
         prisma.contest.findMany({
-          where: { status: "PAST" },
+          where: { status: ContestStatus.PAST },
           orderBy: { startTime: "desc" },
           skip: offset,
           take: limit,
         }),
         prisma.contest.count({
-          where: { status: "PAST" },
+          where: { status: ContestStatus.PAST },
         }),
       ]);
           
@@ -41,13 +41,13 @@ export async function getLatestContests(req : Request, res : Response){
  
   try{
   const contest = await prisma.contest.findMany({
-    where : {
-     status: {
-      in: ["UPCOMING", "ONGOING"],
+    where: {
+      status: {
+        in: [ContestStatus.UPCOMING, ContestStatus.ONGOING],
+      },
     },
-    },
-     orderBy: { startTime: 'asc' }
-   });
+    orderBy: { startTime: 'asc' }
+  });
   
    res.status(200).json({
      data : contest,
@@ -204,20 +204,20 @@ export async function registerForContest(req: Request, res: Response): Promise<v
 
     const now = new Date();
     const endTime = new Date(contest.startTime.getTime() + 5 * 60 * 1000);
-    const isPastContest = contest.status=="PAST";
-    const registrationMode = isPastContest ? 'VIRTUAL' : 'OFFICIAL';
-    
-     if(contest.status=="ONGOING" && endTime<now){
+    const isPastContest = contest.status === ContestStatus.PAST;
+    const registrationMode = isPastContest ? Mode.VIRTUAL : Mode.OFFICIAL;
+
+    if (contest.status === ContestStatus.ONGOING && endTime < now) {
         res.status(400).json({error : "registration deadline exceeded"});
         return;
      }
     
-    if (registrationMode === 'OFFICIAL') {
+    if (registrationMode === Mode.OFFICIAL) {
       const existingOfficial = await prisma.contestRegistration.findFirst({
         where: {
           userId,
           contestId,
-          mode: 'OFFICIAL'
+          mode: Mode.OFFICIAL,
         }
       });
          
@@ -226,16 +226,15 @@ export async function registerForContest(req: Request, res: Response): Promise<v
         return;
       }
     }
-    if (registrationMode === 'VIRTUAL'){
-      //console.log(now.getTime());
-      const ongoingContestWindow= new Date(now.getTime()-contest.duration * 60 * 1000);
-       const ongoingContest = await prisma.contestRegistration.findFirst({
+    if (registrationMode === Mode.VIRTUAL) {
+      const ongoingContestWindow = new Date(now.getTime() - contest.duration * 60 * 1000);
+      const ongoingContest = await prisma.contestRegistration.findFirst({
         where: {
           userId,
           contestId,
-          registeredAt : { gt : ongoingContestWindow},
-          mode: 'VIRTUAL'
-        } 
+          registeredAt: { gt: ongoingContestWindow },
+          mode: Mode.VIRTUAL,
+        }
       }); 
         console.log(ongoingContest);
    

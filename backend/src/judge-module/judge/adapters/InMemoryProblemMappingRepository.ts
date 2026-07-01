@@ -1,5 +1,5 @@
-import { IProblemMappingRepository } from '../ports/IProblemMappingRepository';
-import { ProblemMapping } from '../types';
+import { IProblemMappingRepository } from '../ports/IProblemMappingRepository.js';
+import { ProblemMapping } from '../types.js';
 
 /**
  * Simple in-memory implementation for dev/testing. Swap for a

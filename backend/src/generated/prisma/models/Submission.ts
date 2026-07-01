@@ -68,6 +68,7 @@ export type SubmissionCountAggregateOutputType = {
   runtime: number
   memory: number
   createdAt: number
+  testResults: number
   userId: number
   problemId: number
   _all: number
@@ -116,6 +117,7 @@ export type SubmissionCountAggregateInputType = {
   runtime?: true
   memory?: true
   createdAt?: true
+  testResults?: true
   userId?: true
   problemId?: true
   _all?: true
@@ -215,6 +217,7 @@ export type SubmissionGroupByOutputType = {
   runtime: number | null
   memory: number | null
   createdAt: Date
+  testResults: runtime.JsonValue | null
   userId: string
   problemId: string
   _count: SubmissionCountAggregateOutputType | null
@@ -250,6 +253,7 @@ export type SubmissionWhereInput = {
   runtime?: Prisma.IntNullableFilter<"Submission"> | number | null
   memory?: Prisma.IntNullableFilter<"Submission"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  testResults?: Prisma.JsonNullableFilter<"Submission">
   userId?: Prisma.StringFilter<"Submission"> | string
   problemId?: Prisma.StringFilter<"Submission"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -264,6 +268,7 @@ export type SubmissionOrderByWithRelationInput = {
   runtime?: Prisma.SortOrderInput | Prisma.SortOrder
   memory?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  testResults?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   problemId?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -281,6 +286,7 @@ export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
   runtime?: Prisma.IntNullableFilter<"Submission"> | number | null
   memory?: Prisma.IntNullableFilter<"Submission"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  testResults?: Prisma.JsonNullableFilter<"Submission">
   userId?: Prisma.StringFilter<"Submission"> | string
   problemId?: Prisma.StringFilter<"Submission"> | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -295,6 +301,7 @@ export type SubmissionOrderByWithAggregationInput = {
   runtime?: Prisma.SortOrderInput | Prisma.SortOrder
   memory?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  testResults?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   problemId?: Prisma.SortOrder
   _count?: Prisma.SubmissionCountOrderByAggregateInput
@@ -315,6 +322,7 @@ export type SubmissionScalarWhereWithAggregatesInput = {
   runtime?: Prisma.IntNullableWithAggregatesFilter<"Submission"> | number | null
   memory?: Prisma.IntNullableWithAggregatesFilter<"Submission"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Submission"> | Date | string
+  testResults?: Prisma.JsonNullableWithAggregatesFilter<"Submission">
   userId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
   problemId?: Prisma.StringWithAggregatesFilter<"Submission"> | string
 }
@@ -323,10 +331,11 @@ export type SubmissionCreateInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user: Prisma.UserCreateNestedOneWithoutSubmissionInput
   problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
 }
@@ -335,10 +344,11 @@ export type SubmissionUncheckedCreateInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId: string
   problemId: string
 }
@@ -351,6 +361,7 @@ export type SubmissionUpdateInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneRequiredWithoutSubmissionNestedInput
   problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
 }
@@ -363,6 +374,7 @@ export type SubmissionUncheckedUpdateInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   problemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -371,10 +383,11 @@ export type SubmissionCreateManyInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId: string
   problemId: string
 }
@@ -387,6 +400,7 @@ export type SubmissionUpdateManyMutationInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type SubmissionUncheckedUpdateManyInput = {
@@ -397,6 +411,7 @@ export type SubmissionUncheckedUpdateManyInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   problemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
@@ -419,6 +434,7 @@ export type SubmissionCountOrderByAggregateInput = {
   runtime?: Prisma.SortOrder
   memory?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  testResults?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   problemId?: Prisma.SortOrder
 }
@@ -557,10 +573,11 @@ export type SubmissionCreateWithoutUserInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   problem: Prisma.ProblemCreateNestedOneWithoutSubmissionsInput
 }
 
@@ -568,10 +585,11 @@ export type SubmissionUncheckedCreateWithoutUserInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   problemId: string
 }
 
@@ -612,6 +630,7 @@ export type SubmissionScalarWhereInput = {
   runtime?: Prisma.IntNullableFilter<"Submission"> | number | null
   memory?: Prisma.IntNullableFilter<"Submission"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Submission"> | Date | string
+  testResults?: Prisma.JsonNullableFilter<"Submission">
   userId?: Prisma.StringFilter<"Submission"> | string
   problemId?: Prisma.StringFilter<"Submission"> | string
 }
@@ -620,10 +639,11 @@ export type SubmissionCreateWithoutProblemInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user: Prisma.UserCreateNestedOneWithoutSubmissionInput
 }
 
@@ -631,10 +651,11 @@ export type SubmissionUncheckedCreateWithoutProblemInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId: string
 }
 
@@ -668,10 +689,11 @@ export type SubmissionCreateManyUserInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   problemId: string
 }
 
@@ -683,6 +705,7 @@ export type SubmissionUpdateWithoutUserInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   problem?: Prisma.ProblemUpdateOneRequiredWithoutSubmissionsNestedInput
 }
 
@@ -694,6 +717,7 @@ export type SubmissionUncheckedUpdateWithoutUserInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   problemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -705,6 +729,7 @@ export type SubmissionUncheckedUpdateManyWithoutUserInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   problemId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -712,10 +737,11 @@ export type SubmissionCreateManyProblemInput = {
   id?: string
   code: string
   language: string
-  status: $Enums.Verdict
+  status?: $Enums.Verdict
   runtime?: number | null
   memory?: number | null
   createdAt?: Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId: string
 }
 
@@ -727,6 +753,7 @@ export type SubmissionUpdateWithoutProblemInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   user?: Prisma.UserUpdateOneRequiredWithoutSubmissionNestedInput
 }
 
@@ -738,6 +765,7 @@ export type SubmissionUncheckedUpdateWithoutProblemInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -749,6 +777,7 @@ export type SubmissionUncheckedUpdateManyWithoutProblemInput = {
   runtime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   memory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  testResults?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   userId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -762,6 +791,7 @@ export type SubmissionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   runtime?: boolean
   memory?: boolean
   createdAt?: boolean
+  testResults?: boolean
   userId?: boolean
   problemId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -776,6 +806,7 @@ export type SubmissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   runtime?: boolean
   memory?: boolean
   createdAt?: boolean
+  testResults?: boolean
   userId?: boolean
   problemId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -790,6 +821,7 @@ export type SubmissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   runtime?: boolean
   memory?: boolean
   createdAt?: boolean
+  testResults?: boolean
   userId?: boolean
   problemId?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -804,11 +836,12 @@ export type SubmissionSelectScalar = {
   runtime?: boolean
   memory?: boolean
   createdAt?: boolean
+  testResults?: boolean
   userId?: boolean
   problemId?: boolean
 }
 
-export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "language" | "status" | "runtime" | "memory" | "createdAt" | "userId" | "problemId", ExtArgs["result"]["submission"]>
+export type SubmissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "language" | "status" | "runtime" | "memory" | "createdAt" | "testResults" | "userId" | "problemId", ExtArgs["result"]["submission"]>
 export type SubmissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   problem?: boolean | Prisma.ProblemDefaultArgs<ExtArgs>
@@ -836,6 +869,7 @@ export type $SubmissionPayload<ExtArgs extends runtime.Types.Extensions.Internal
     runtime: number | null
     memory: number | null
     createdAt: Date
+    testResults: runtime.JsonValue | null
     userId: string
     problemId: string
   }, ExtArgs["result"]["submission"]>
@@ -1270,6 +1304,7 @@ export interface SubmissionFieldRefs {
   readonly runtime: Prisma.FieldRef<"Submission", 'Int'>
   readonly memory: Prisma.FieldRef<"Submission", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Submission", 'DateTime'>
+  readonly testResults: Prisma.FieldRef<"Submission", 'Json'>
   readonly userId: Prisma.FieldRef<"Submission", 'String'>
   readonly problemId: Prisma.FieldRef<"Submission", 'String'>
 }

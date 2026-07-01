@@ -1,5 +1,5 @@
-import { IJudgeProvider } from '../ports/IJudgeProvider';
-import { ProviderNotRegisteredError } from '../errors';
+import { IJudgeProvider } from '../ports/IJudgeProvider.js';
+import { ProviderNotRegisteredError } from '../errors.js';
 
 /**
  * Registry/factory for judge providers. Lets you select the active

@@ -4,6 +4,9 @@ import express from "express";
 import apiRoutes from "./routes/index.js";
 import { scheduleActiveContest } from "./jobs/contestScheduler.js";
 import { contestRooms } from "./ws/contestRooms.js";
+import { buildJudgeService, buildSubmissionQueue } from "./judge-module/example/usage.js";
+import { VerdictPublisher } from "./verdicts/VerdictPublisher.js";
+import { setSubmissionQueue } from "./controllers/submission.controller.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
@@ -26,8 +29,24 @@ async function start() {
     console.log(`Server running on http://localhost:${PORT}`);
   });
 
-  // Schedule the active contest's start/end timers at exact milliseconds.
-  // No polling — one setTimeout per transition, fires at precisely the right time.
+  // ── Judge blackbox ────────────────────────────────────────────────────
+  // VerdictPublisher: updates DB on terminal verdict.
+  // TODO: swap for RedisPubSubVerdictPublisher once pub/sub is wired,
+  //       so WebSocket layer can forward live updates to the frontend.
+  const publisher = new VerdictPublisher();
+  const { judgeService, vjudgeProvider } = buildJudgeService(publisher);
+  const submissionQueue = buildSubmissionQueue(judgeService, vjudgeProvider);
+
+  // Inject queue into the submit controller
+  setSubmissionQueue(submissionQueue);
+
+  console.log(
+    `[judge] vjudge pool ready — ${vjudgeProvider.getPoolStatus().total} account(s)`,
+  );
+
+  // ── Contest scheduler ────────────────────────────────────────────────
+  // Schedules precise setTimeout for UPCOMING→ONGOING and ONGOING→PAST.
+  // Also closes arena WebSockets when a contest ends.
   await scheduleActiveContest();
 }
 
