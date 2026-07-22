@@ -1,0 +1,41 @@
+[33mcommit be65e1de66f2ce2aa9b2af68a0d80d9092cd7010[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: puranjaysharma2k6 <puranjaysharma2k6@gmail.com>
+Date:   Tue Jun 30 18:57:00 2026 +0530
+
+    judge sandbox setup automatic updatin of contest status schema upd supports testcases and problem link
+
+[33mcommit f6b5404af391b7ec6bf0b115b343a50c17d030fc[m
+Author: puranjaysharma2k6 <puranjaysharma2k6@gmail.com>
+Date:   Mon Jun 29 21:04:42 2026 +0530
+
+     fully configured contest arena added sexy ui leaderboard( reltime) + IDE
+
+[33mcommit daee74b77fb0a79bd4e1f1e6e78b9bbd4a6256b8[m
+Author: puranjaysharma2k6 <puranjaysharma2k6@gmail.com>
+Date:   Mon Jun 29 15:25:06 2026 +0530
+
+    added contests arena page improv router layout redirect logic for contests card
+
+[33mcommit e0b0e377968bafdbef2ec04b8ef1894a2ac6ac4e[m
+Author: puranjaysharma2k6 <puranjaysharma2k6@gmail.com>
+Date:   Sat Jun 27 17:54:22 2026 +0530
+
+    contests page frontend + api calls to get past and upcoming contests
+
+[33mcommit 9e3ed1cb866478e80e93e4472cbbf218c0ccfe1f[m
+Author: puranjaysharma2k6 <puranjaysharma2k6@gmail.com>
+Date:   Fri Jun 26 15:27:12 2026 +0530
+
+    made the initial code editor (Monaco)
+
+[33mcommit 66da19c3d55295fc0f9d54a3f9f8d21cc6bf6020[m
+Author: puranjaysharma2k6 <puranjaysharma2k6@gmail.com>
+Date:   Fri Jun 26 02:38:17 2026 +0530
+
+     added a leaderboad and profile page for users
+
+[33mcommit d41bdac8a8338cb1e9c9e9207fdea83af56efdff[m
+Author: puranjaysharma2k6 <puranjaysharma2k6@gmail.com>
+Date:   Wed Jun 24 20:34:09 2026 +0530
+
+    Initial commit setup authorization part and defined inital schema

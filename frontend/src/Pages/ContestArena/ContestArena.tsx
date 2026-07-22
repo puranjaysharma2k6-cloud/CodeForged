@@ -9,7 +9,8 @@ type Problem = {
   difficulty: 'Easy' | 'Medium' | 'Hard';
   verdict?: 'ACCEPTED' | 'WRONG_ANSWER' |
   'TIME_LIMIT_EXCEEDED' | 'MEMORY_LIMIT_EXCEEDED' |
-  'COMPILATION_ERROR' | 'RUNTIME_ERROR' | null; 
+  'COMPILATION_ERROR' | 'RUNTIME_ERROR' | null;
+  submissions?: Array<{ userId?: string; status?: string | null }>;
 };
 
 type ArenaTab = 'problems' | 'standings';
@@ -46,6 +47,44 @@ const DIFFICULTY_MAP = {
   Medium: "text-amber-400 bg-amber-500/5 border-amber-500/20",
   Hard: "text-rose-400 bg-rose-500/5 border-rose-500/20",
 };
+
+function getSolvedByCount(problem: Problem) {
+  const uniqueAcceptedUsers = new Set<string>();
+
+  problem.submissions?.forEach((submission) => {
+    if (submission.status === 'ACCEPTED' && submission.userId) {
+      uniqueAcceptedUsers.add(submission.userId);
+    }
+  });
+
+  return uniqueAcceptedUsers.size;
+}
+
+function getSubmissionState(problem: Problem) {
+  const hasAttempt = Boolean(problem.verdict) || problem.submissions?.some((submission) => submission.status && submission.status !== 'PENDING');
+
+  if (problem.verdict === 'ACCEPTED') {
+    return {
+      label: 'Solved',
+      styles: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-400',
+      accent: 'border-l-emerald-500',
+    };
+  }
+
+  if (hasAttempt) {
+    return {
+      label: 'Attempted',
+      styles: 'border-amber-500/20 bg-amber-500/10 text-amber-400',
+      accent: 'border-l-amber-500',
+    };
+  }
+
+  return {
+    label: 'Unsolved',
+    styles: 'border-slate-600/40 bg-slate-500/5 text-slate-400',
+    accent: 'border-l-slate-600',
+  };
+}
 
 export default function ContestArena() {
   const [activeTab, setActiveTab] = useState<ArenaTab>('problems');
@@ -105,57 +144,48 @@ export default function ContestArena() {
               ) : (
                 problems.map((problem, index) => {
                   const isAccepted = problem.verdict === 'ACCEPTED';
-                  const hasFailedAttempt = problem.verdict && problem.verdict !== 'ACCEPTED';
                   const activeVerdict = problem.verdict ? VERDICT_MAP[problem.verdict] : null;
+                  const solvedByCount = getSolvedByCount(problem);
+                  const submissionState = getSubmissionState(problem);
 
                   return (
                     <NavLink
                       key={problem.id}
                       to={`/contests/${contestId}/${problem.id}`}
                       state={{ problemData: problem }}
-                      className={`arena-card-padding group flex items-center justify-between rounded-2xl border transition-all duration-200 ${
-                        isAccepted
-                          ? 'border-green-500/30 bg-[#1a1d24] hover:border-green-400 hover:bg-green-500/5'
-                          : hasFailedAttempt
-                            ? 'border-rose-500/30 bg-[#1a1d24] hover:border-rose-400 hover:bg-rose-500/5'
-                            : 'border-[#363c4a] bg-[#1a1d24] hover:border-[#22d3ee] hover:bg-[#20242d]'
-                      }`}
+                      className={`arena-card-padding flex flex-col gap-4 rounded-2xl border border-[#363c4a] bg-[#141821] px-5 py-5 sm:flex-row sm:items-center sm:justify-between ${submissionState.accent}`}
                     >
-                      {/* Left Side Info */}
-                      <div className="flex items-center gap-6">
-                        <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl font-bold transition-colors ${
-                          isAccepted 
-                            ? 'bg-green-500/10 text-green-500 group-hover:bg-green-500/20' 
-                            : hasFailedAttempt
-                              ? 'bg-rose-500/10 text-rose-400'
-                              : 'bg-[#22d3ee]/10 text-[#22d3ee] group-hover:bg-[#22d3ee]/20'
+                      <div className="flex items-start gap-4">
+                        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg font-bold ${
+                          isAccepted
+                            ? 'bg-emerald-500/10 text-emerald-400'
+                            : 'bg-[#22d3ee]/10 text-[#22d3ee]'
                         }`}>
                           {String.fromCharCode(65 + index)}
                         </span>
 
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl font-semibold leading-loose text-white">
-                            {problem.title}
-                          </span>
-                          
-                          {isAccepted && (
-                            <svg className="h-6 w-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          )}
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-lg font-semibold leading-none text-white">
+                              {problem.title}
+                            </span>
+                            <span className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${submissionState.styles}`}>
+                              {submissionState.label}
+                            </span>
+                          </div>
+                          <p className="mt-2 text-sm text-slate-400">
+                            {solvedByCount} participant{solvedByCount === 1 ? '' : 's'} solved
+                          </p>
                         </div>
                       </div>
 
-                      {/* Right Side Status Badges */}
-                      <div className="flex items-center gap-3 pr-2">
-                        {/* Difficulty Badge */}
-                        <span className={`rounded-lg border px-3 py-1 text-xs font-semibold tracking-wide capitalize ${DIFFICULTY_MAP[problem.difficulty] || ''}`}>
+                      <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold tracking-wide capitalize ${DIFFICULTY_MAP[problem.difficulty] || ''}`}>
                           {problem.difficulty}
                         </span>
 
-                        {/* Verdict Status Badge */}
                         {activeVerdict && (
-                          <span className={`rounded-lg border px-3 py-1 text-xs font-bold uppercase tracking-wider ${activeVerdict.styles}`}>
+                          <span className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider ${activeVerdict.styles}`}>
                             {activeVerdict.label}
                           </span>
                         )}
@@ -168,7 +198,7 @@ export default function ContestArena() {
             </div>
           ) : (
             /* REALTIME LEADERBOARD VIEW */
-            <div className="w-full h-full animate-fade-in">
+            <div className="h-full w-full">
               <RealtimeLeaderboard 
                 contestId={contestId || ""} 
                 problems={problems.map(p => ({ id: p.id, title: p.title }))} 
