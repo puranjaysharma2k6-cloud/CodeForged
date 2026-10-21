@@ -74,53 +74,55 @@ const FALLBACK_SEEDS: CodeforcesProblemSeed[] = [
 ];
 
 const CUSTOM_PROBLEM_SEED = {
-  title: 'Two Sum',
-  statement: `# Two Sum
+  title: 'A. Two Sum',
+  statement: `# A. Two Sum
 
-Given an array of integers nums and an integer target, return the indices of the two numbers such that they add up to the target.
+You are given two integers a and b.
+Print the value of a + b.
 
-You may assume that each input has exactly one solution, and you cannot use the same element twice.
+## Input
+The input contains two integers a and b.
+
+## Output
+Print the sum of a and b.
 
 ## Example 1
-Input: nums = [2,7,11,15], target = 9
-Output: [0,1]
+Input
+2 3
+
+Output
+5
 
 ## Example 2
-Input: nums = [3,2,4], target = 6
-Output: [1,2]
+Input
+10 20
 
-## Constraints
-- 2 <= nums.length <= 10^4
-- -10^9 <= nums[i] <= 10^9
-- -10^9 <= target <= 10^9
-- There is exactly one valid answer.
-
-## Notes
-Return the indices as a list of two integers in ascending order.`,
+Output
+30`,
   timeLimit: 1000,
   memoryLimit: 256,
   testCases: [
     {
-      input: 'nums = [2,7,11,15]\ntarget = 9\n',
-      expected: '[0, 1]\n',
+      input: '2 3\n',
+      expected: '5\n',
       isSample: true,
       orderIndex: 0,
     },
     {
-      input: 'nums = [3,2,4]\ntarget = 6\n',
-      expected: '[1, 2]\n',
+      input: '10 20\n',
+      expected: '30\n',
       isSample: true,
       orderIndex: 1,
     },
     {
-      input: 'nums = [10,20,30,40]\ntarget = 50\n',
-      expected: '[1, 2]\n',
+      input: '7 8\n',
+      expected: '15\n',
       isSample: false,
       orderIndex: 2,
     },
     {
-      input: 'nums = [1,5,3,8,9]\ntarget = 13\n',
-      expected: '[2, 4]\n',
+      input: '-5 9\n',
+      expected: '4\n',
       isSample: false,
       orderIndex: 3,
     },
