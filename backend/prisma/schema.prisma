@@ -43,9 +43,11 @@ model User {
   currentRating Int    @default(0)
   avatarUrl    String?
 
-  submission    Submission[]
-  contest       ContestRegistration[]
-  ratingHistory ContestResult[]
+  submission           Submission[]
+  contest              ContestRegistration[]
+  ratingHistory        ContestResult[]
+  topicStats           UserTopicStats[]
+  topicAnalysisCache   UserTopicAnalysisCache[]
 
   @@index([id])
   @@index([currentRating(sort: Desc)])
@@ -61,26 +63,54 @@ model Problem {
 
   published   Boolean @default(false)
 
-  // vjudge mapping — "vjudgeContestId/problemLetter" e.g. "563012/A"
-  // null when provider is judge0 (judge0 doesn't need an external mapping)
-  vjudgeId    String?
 
   contest     Contest    @relation(fields: [contestId], references: [id], onDelete: Cascade)
   contestId   String
 
   submissions Submission[]
+  tags       ProblemTag[]
 
-  // judge0 test cases — empty while vjudge is the active provider,
-  // populated when you migrate to judge0
+ 
   testCases   TestCase[]
 
   @@index([contestId])
 }
 
-// ---------------------------------------------------------------------------
-// TestCase
-// ---------------------------------------------------------------------------
-// Only used by judge0. Rows will be empty while vjudge is active.
+model ProblemTag {
+  problemId String
+  tag       String
+
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@id([problemId, tag])
+  @@index([problemId])
+}
+
+model UserTopicStats {
+  userId        String
+  tag           String
+  totalAttempts Int     @default(0)
+  failedAttempts Int    @default(0)
+  lastUpdated   DateTime @default(now())
+
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, tag])
+  @@index([userId])
+}
+
+model UserTopicAnalysisCache {
+  userId                    String   @id
+  targetTag                 String
+  verdictAnalysis           String   @db.Text
+  whatWentWrong             String   @db.Text
+  betterApproach            String   @db.Text
+  recommendedDataStructure  String
+  statsHash                 String
+  generatedAt               DateTime @default(now())
+
+  user                      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
 
 model TestCase {
@@ -171,5 +201,5 @@ model ContestResult {
   //these indexes fetch leaderboardquickly
   // mode field is important virtual participants need to be filtered out
   // if overall rank need to be checked ( virtual + official) seperately query and sum users gt than me
-  //@@index([contestId,mode,score(sort: Desc), penalty(sort: Asc)]) 
+  @@index([contestId,mode,score(sort: Desc), penalty(sort: Asc)]) 
 }

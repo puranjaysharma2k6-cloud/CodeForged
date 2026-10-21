@@ -44,9 +44,14 @@ const router = createBrowserRouter([
   {
     element: <ProtectedLayout />, 
     children: [
-      { path: "contests/:contestId", element: <ContestArena />,
-        children :[ ]
-       },
+      {
+        path: "contests/:contestId",
+        element: <ContestLayout />,
+        children: [
+          { index: true, element: <ContestArena /> },
+          { path: ":problemId", element: <Codeeditor /> },
+        ],
+      },
      
       
       {
@@ -60,14 +65,6 @@ const router = createBrowserRouter([
       
     ]
   },
-  {
-        path: "contests/:contestId",
-        element: <ContestLayout />, // 
-        children: [
-          { index: true, element: <ContestArena /> },      // Full-screen no navbar
-          { path: ":problemId", element: <Codeeditor /> }  // Full-screen 
-        ]
-      }
 ]);
 
 export default router;

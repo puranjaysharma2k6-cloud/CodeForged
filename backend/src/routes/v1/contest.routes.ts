@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  getContestById,
   getprevContests,
   getLatestContests,
   registerForContest,
@@ -15,6 +14,7 @@ const router = Router({ mergeParams: true });
 router.get("/past", getprevContests);
 router.get("/upcoming",getLatestContests);
 router.use("/:id",authenticate,contestArena);
+
 
 
 export default router;

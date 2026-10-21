@@ -1,14 +1,4 @@
-/**
- * Shared Redis client using node-redis.
- *
- * Two separate clients are required:
- *   redisClient  — for writes (XADD, ZADD, DEL, general commands)
- *   redisReader  — for blocking reads (XREAD with BLOCK) — a client
- *                  doing a blocking command cannot issue other commands
- *                  on the same connection simultaneously.
- *
- * Both connect lazily on first use. Call connectRedis() at server boot.
- */
+
 
 import { createClient, type RedisClientType } from 'redis';
 

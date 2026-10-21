@@ -12,17 +12,19 @@
  */
 
 import { prisma } from '../../db/db.js';
-import { VerdictStatus } from '../../judge-module/judge/types.js';
+import { Verdict } from '../../generated/prisma/enums.js';
+
+type VerdictStatus = (typeof Verdict)[keyof typeof Verdict];
 
 // Verdicts that count as a "failed" attempt
 const FAILED_VERDICTS = new Set<VerdictStatus>([
-  VerdictStatus.WRONG_ANSWER,
-  VerdictStatus.TIME_LIMIT_EXCEEDED,
-  VerdictStatus.RUNTIME_ERROR,
-  VerdictStatus.MEMORY_LIMIT_EXCEEDED,
-  VerdictStatus.COMPILATION_ERROR,
-  VerdictStatus.PRESENTATION_ERROR,
-  VerdictStatus.OUTPUT_LIMIT_EXCEEDED,
+  Verdict.WRONG_ANSWER,
+  Verdict.TIME_LIMIT_EXCEEDED,
+  Verdict.RUNTIME_ERROR,
+  Verdict.MEMORY_LIMIT_EXCEEDED,
+  Verdict.COMPILATION_ERROR,
+  Verdict.PRESENTATION_ERROR,
+  Verdict.OUTPUT_LIMIT_EXCEEDED,
 ]);
 
 export function updateUserTopicStats(

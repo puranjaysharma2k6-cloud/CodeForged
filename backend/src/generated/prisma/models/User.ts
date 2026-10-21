@@ -235,6 +235,8 @@ export type UserWhereInput = {
   submission?: Prisma.SubmissionListRelationFilter
   contest?: Prisma.ContestRegistrationListRelationFilter
   ratingHistory?: Prisma.ContestResultListRelationFilter
+  topicStats?: Prisma.UserTopicStatsListRelationFilter
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -248,6 +250,8 @@ export type UserOrderByWithRelationInput = {
   submission?: Prisma.SubmissionOrderByRelationAggregateInput
   contest?: Prisma.ContestRegistrationOrderByRelationAggregateInput
   ratingHistory?: Prisma.ContestResultOrderByRelationAggregateInput
+  topicStats?: Prisma.UserTopicStatsOrderByRelationAggregateInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -264,6 +268,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   submission?: Prisma.SubmissionListRelationFilter
   contest?: Prisma.ContestRegistrationListRelationFilter
   ratingHistory?: Prisma.ContestResultListRelationFilter
+  topicStats?: Prisma.UserTopicStatsListRelationFilter
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheListRelationFilter
 }, "id" | "email" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -305,6 +311,8 @@ export type UserCreateInput = {
   submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
   contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
   ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -318,6 +326,8 @@ export type UserUncheckedCreateInput = {
   submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
   contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
   ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsUncheckedCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -331,6 +341,8 @@ export type UserUpdateInput = {
   submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
   contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
   ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -344,6 +356,8 @@ export type UserUncheckedUpdateInput = {
   submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
   contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
   ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUncheckedUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -435,6 +449,34 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type UserCreateNestedOneWithoutTopicStatsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTopicStatsInput, Prisma.UserUncheckedCreateWithoutTopicStatsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTopicStatsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTopicStatsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTopicStatsInput, Prisma.UserUncheckedCreateWithoutTopicStatsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTopicStatsInput
+  upsert?: Prisma.UserUpsertWithoutTopicStatsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTopicStatsInput, Prisma.UserUpdateWithoutTopicStatsInput>, Prisma.UserUncheckedUpdateWithoutTopicStatsInput>
+}
+
+export type UserCreateNestedOneWithoutTopicAnalysisCacheInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTopicAnalysisCacheInput, Prisma.UserUncheckedCreateWithoutTopicAnalysisCacheInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTopicAnalysisCacheInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTopicAnalysisCacheNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTopicAnalysisCacheInput, Prisma.UserUncheckedCreateWithoutTopicAnalysisCacheInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTopicAnalysisCacheInput
+  upsert?: Prisma.UserUpsertWithoutTopicAnalysisCacheInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTopicAnalysisCacheInput, Prisma.UserUpdateWithoutTopicAnalysisCacheInput>, Prisma.UserUncheckedUpdateWithoutTopicAnalysisCacheInput>
+}
+
 export type UserCreateNestedOneWithoutSubmissionInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSubmissionInput, Prisma.UserUncheckedCreateWithoutSubmissionInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubmissionInput
@@ -477,6 +519,150 @@ export type UserUpdateOneRequiredWithoutRatingHistoryNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRatingHistoryInput, Prisma.UserUpdateWithoutRatingHistoryInput>, Prisma.UserUncheckedUpdateWithoutRatingHistoryInput>
 }
 
+export type UserCreateWithoutTopicStatsInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutTopicStatsInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutTopicStatsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTopicStatsInput, Prisma.UserUncheckedCreateWithoutTopicStatsInput>
+}
+
+export type UserUpsertWithoutTopicStatsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTopicStatsInput, Prisma.UserUncheckedUpdateWithoutTopicStatsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTopicStatsInput, Prisma.UserUncheckedCreateWithoutTopicStatsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTopicStatsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTopicStatsInput, Prisma.UserUncheckedUpdateWithoutTopicStatsInput>
+}
+
+export type UserUpdateWithoutTopicStatsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTopicStatsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutTopicAnalysisCacheInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutTopicAnalysisCacheInput = {
+  id?: string
+  email: string
+  username: string
+  passwordHash: string
+  name?: string | null
+  currentRating?: number
+  avatarUrl?: string | null
+  submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
+  contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
+  ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutTopicAnalysisCacheInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTopicAnalysisCacheInput, Prisma.UserUncheckedCreateWithoutTopicAnalysisCacheInput>
+}
+
+export type UserUpsertWithoutTopicAnalysisCacheInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTopicAnalysisCacheInput, Prisma.UserUncheckedUpdateWithoutTopicAnalysisCacheInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTopicAnalysisCacheInput, Prisma.UserUncheckedCreateWithoutTopicAnalysisCacheInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTopicAnalysisCacheInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTopicAnalysisCacheInput, Prisma.UserUncheckedUpdateWithoutTopicAnalysisCacheInput>
+}
+
+export type UserUpdateWithoutTopicAnalysisCacheInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTopicAnalysisCacheInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currentRating?: Prisma.IntFieldUpdateOperationsInput | number
+  avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
+  contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
+  ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutSubmissionInput = {
   id?: string
   email: string
@@ -487,6 +673,8 @@ export type UserCreateWithoutSubmissionInput = {
   avatarUrl?: string | null
   contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
   ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSubmissionInput = {
@@ -499,6 +687,8 @@ export type UserUncheckedCreateWithoutSubmissionInput = {
   avatarUrl?: string | null
   contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
   ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsUncheckedCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSubmissionInput = {
@@ -527,6 +717,8 @@ export type UserUpdateWithoutSubmissionInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
   ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSubmissionInput = {
@@ -539,6 +731,8 @@ export type UserUncheckedUpdateWithoutSubmissionInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
   ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUncheckedUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutContestInput = {
@@ -551,6 +745,8 @@ export type UserCreateWithoutContestInput = {
   avatarUrl?: string | null
   submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
   ratingHistory?: Prisma.ContestResultCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutContestInput = {
@@ -563,6 +759,8 @@ export type UserUncheckedCreateWithoutContestInput = {
   avatarUrl?: string | null
   submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
   ratingHistory?: Prisma.ContestResultUncheckedCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsUncheckedCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutContestInput = {
@@ -591,6 +789,8 @@ export type UserUpdateWithoutContestInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
   ratingHistory?: Prisma.ContestResultUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutContestInput = {
@@ -603,6 +803,8 @@ export type UserUncheckedUpdateWithoutContestInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
   ratingHistory?: Prisma.ContestResultUncheckedUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUncheckedUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRatingHistoryInput = {
@@ -615,6 +817,8 @@ export type UserCreateWithoutRatingHistoryInput = {
   avatarUrl?: string | null
   submission?: Prisma.SubmissionCreateNestedManyWithoutUserInput
   contest?: Prisma.ContestRegistrationCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRatingHistoryInput = {
@@ -627,6 +831,8 @@ export type UserUncheckedCreateWithoutRatingHistoryInput = {
   avatarUrl?: string | null
   submission?: Prisma.SubmissionUncheckedCreateNestedManyWithoutUserInput
   contest?: Prisma.ContestRegistrationUncheckedCreateNestedManyWithoutUserInput
+  topicStats?: Prisma.UserTopicStatsUncheckedCreateNestedManyWithoutUserInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRatingHistoryInput = {
@@ -655,6 +861,8 @@ export type UserUpdateWithoutRatingHistoryInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submission?: Prisma.SubmissionUpdateManyWithoutUserNestedInput
   contest?: Prisma.ContestRegistrationUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRatingHistoryInput = {
@@ -667,6 +875,8 @@ export type UserUncheckedUpdateWithoutRatingHistoryInput = {
   avatarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submission?: Prisma.SubmissionUncheckedUpdateManyWithoutUserNestedInput
   contest?: Prisma.ContestRegistrationUncheckedUpdateManyWithoutUserNestedInput
+  topicStats?: Prisma.UserTopicStatsUncheckedUpdateManyWithoutUserNestedInput
+  topicAnalysisCache?: Prisma.UserTopicAnalysisCacheUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -678,12 +888,16 @@ export type UserCountOutputType = {
   submission: number
   contest: number
   ratingHistory: number
+  topicStats: number
+  topicAnalysisCache: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   submission?: boolean | UserCountOutputTypeCountSubmissionArgs
   contest?: boolean | UserCountOutputTypeCountContestArgs
   ratingHistory?: boolean | UserCountOutputTypeCountRatingHistoryArgs
+  topicStats?: boolean | UserCountOutputTypeCountTopicStatsArgs
+  topicAnalysisCache?: boolean | UserCountOutputTypeCountTopicAnalysisCacheArgs
 }
 
 /**
@@ -717,6 +931,20 @@ export type UserCountOutputTypeCountRatingHistoryArgs<ExtArgs extends runtime.Ty
   where?: Prisma.ContestResultWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountTopicStatsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserTopicStatsWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountTopicAnalysisCacheArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserTopicAnalysisCacheWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -729,6 +957,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   submission?: boolean | Prisma.User$submissionArgs<ExtArgs>
   contest?: boolean | Prisma.User$contestArgs<ExtArgs>
   ratingHistory?: boolean | Prisma.User$ratingHistoryArgs<ExtArgs>
+  topicStats?: boolean | Prisma.User$topicStatsArgs<ExtArgs>
+  topicAnalysisCache?: boolean | Prisma.User$topicAnalysisCacheArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -767,6 +997,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   submission?: boolean | Prisma.User$submissionArgs<ExtArgs>
   contest?: boolean | Prisma.User$contestArgs<ExtArgs>
   ratingHistory?: boolean | Prisma.User$ratingHistoryArgs<ExtArgs>
+  topicStats?: boolean | Prisma.User$topicStatsArgs<ExtArgs>
+  topicAnalysisCache?: boolean | Prisma.User$topicAnalysisCacheArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -778,6 +1010,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     submission: Prisma.$SubmissionPayload<ExtArgs>[]
     contest: Prisma.$ContestRegistrationPayload<ExtArgs>[]
     ratingHistory: Prisma.$ContestResultPayload<ExtArgs>[]
+    topicStats: Prisma.$UserTopicStatsPayload<ExtArgs>[]
+    topicAnalysisCache: Prisma.$UserTopicAnalysisCachePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1184,6 +1418,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   submission<T extends Prisma.User$submissionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$submissionArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SubmissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contest<T extends Prisma.User$contestArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contestArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContestRegistrationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ratingHistory<T extends Prisma.User$ratingHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ratingHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContestResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  topicStats<T extends Prisma.User$topicStatsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$topicStatsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTopicStatsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  topicAnalysisCache<T extends Prisma.User$topicAnalysisCacheArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$topicAnalysisCacheArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTopicAnalysisCachePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1682,6 +1918,54 @@ export type User$ratingHistoryArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.ContestResultScalarFieldEnum | Prisma.ContestResultScalarFieldEnum[]
+}
+
+/**
+ * User.topicStats
+ */
+export type User$topicStatsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserTopicStats
+   */
+  select?: Prisma.UserTopicStatsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserTopicStats
+   */
+  omit?: Prisma.UserTopicStatsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTopicStatsInclude<ExtArgs> | null
+  where?: Prisma.UserTopicStatsWhereInput
+  orderBy?: Prisma.UserTopicStatsOrderByWithRelationInput | Prisma.UserTopicStatsOrderByWithRelationInput[]
+  cursor?: Prisma.UserTopicStatsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserTopicStatsScalarFieldEnum | Prisma.UserTopicStatsScalarFieldEnum[]
+}
+
+/**
+ * User.topicAnalysisCache
+ */
+export type User$topicAnalysisCacheArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserTopicAnalysisCache
+   */
+  select?: Prisma.UserTopicAnalysisCacheSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserTopicAnalysisCache
+   */
+  omit?: Prisma.UserTopicAnalysisCacheOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserTopicAnalysisCacheInclude<ExtArgs> | null
+  where?: Prisma.UserTopicAnalysisCacheWhereInput
+  orderBy?: Prisma.UserTopicAnalysisCacheOrderByWithRelationInput | Prisma.UserTopicAnalysisCacheOrderByWithRelationInput[]
+  cursor?: Prisma.UserTopicAnalysisCacheWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserTopicAnalysisCacheScalarFieldEnum | Prisma.UserTopicAnalysisCacheScalarFieldEnum[]
 }
 
 /**

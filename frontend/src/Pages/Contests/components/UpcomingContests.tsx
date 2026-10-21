@@ -20,7 +20,7 @@ export function UpcomingContests({ contests }: UpcomingContestsProps) {
 
   if (sorted.length === 0) {
     return (
-      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-center">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
         <UpcomingContest
           title="No upcoming contests"
           subtitle="Check back soon — new contests are added regularly."
@@ -30,7 +30,7 @@ export function UpcomingContests({ contests }: UpcomingContestsProps) {
   }
 
   return (
-    <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-center">
+    <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
       {sorted.map(contest => (
         <ContestCard key={contest.id} contest={contest} />
       ))}

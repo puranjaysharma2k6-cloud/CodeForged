@@ -1,18 +1,18 @@
 import type { Request, Response } from 'express';
 import { prisma } from '../db/db.js';
-import { SupportedLanguage } from '../judge-module/judge/types.js';
 import { Verdict } from '../generated/prisma/enums.js';
+import { submitToJudge0, submitBatchToJudge0 } from '../judge/judge0.js';
 
-// submissionQueue is initialised in index.ts and injected here at boot
-// We use a late-binding ref so the controller file can be imported before
-// the queue is ready (circular import safety).
-let _queue: { enqueue: (r: any) => Promise<void> } | null = null;
-
-export function setSubmissionQueue(q: { enqueue: (r: any) => Promise<void> }): void {
-  _queue = q;
+export enum SupportedLanguage {
+  CPP17 = 'cpp17',
+  CPP20 = 'cpp20',
+  JAVA = 'java',
+  PYTHON3 = 'python3',
+  JAVASCRIPT = 'javascript',
+  GO = 'go',
+  RUST = 'rust',
+  KOTLIN = 'kotlin',
 }
-
-// Maps frontend language strings to SupportedLanguage enum
 const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
   'cpp17':      SupportedLanguage.CPP17,
   'cpp20':      SupportedLanguage.CPP20,
@@ -22,7 +22,6 @@ const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
   'go':         SupportedLanguage.GO,
   'rust':       SupportedLanguage.RUST,
   'kotlin':     SupportedLanguage.KOTLIN,
-  // also accept the enum values directly (e.g. "CPP17")
   'CPP17':      SupportedLanguage.CPP17,
   'CPP20':      SupportedLanguage.CPP20,
   'JAVA':       SupportedLanguage.JAVA,
@@ -33,17 +32,9 @@ const LANGUAGE_MAP: Record<string, SupportedLanguage> = {
   'KOTLIN':     SupportedLanguage.KOTLIN,
 };
 
-/**
- * POST /api/contests/:contestId/problems/:problemId/submit
- *
- * 1. Validates the contest is live (time-based, not status column)
- * 2. Validates the problem belongs to the contest
- * 3. Validates the problem has a vjudgeId set
- * 4. Creates a Submission row with status PENDING
- * 5. Enqueues it for judging — returns { submissionId } immediately
- */
+
 export async function submitSolution(req: Request, res: Response): Promise<void> {
-  const contestId  = req.params.contestId  as string;
+  const contestId  = req.params.id  as string;
   const problemId  = req.params.problemId  as string;
   const userId     = req.user?.userId;
   const { sourceCode, language } = req.body;
@@ -58,7 +49,7 @@ export async function submitSolution(req: Request, res: Response): Promise<void>
     return;
   }
 
-  const mappedLanguage = LANGUAGE_MAP[language];
+  const mappedLanguage = normalizeLanguage(language);
   if (!mappedLanguage) {
     res.status(400).json({
       error: `Unsupported language "${language}". Supported: ${Object.keys(LANGUAGE_MAP).join(', ')}`,
@@ -76,6 +67,12 @@ export async function submitSolution(req: Request, res: Response): Promise<void>
       res.status(404).json({ error: 'Contest not found.' });
       return;
     }
+     
+    if(contest.status=="ONGOING"){
+
+     const registration = await prisma.contestRegistration.findFirst({
+      where: { userId, contestId },
+    });
 
     const now     = new Date();
     const endTime = new Date(contest.startTime.getTime() + contest.duration * 60 * 1000);
@@ -90,9 +87,44 @@ export async function submitSolution(req: Request, res: Response): Promise<void>
       return;
     }
 
+   
+
+    if (!registration) {
+      res.status(403).json({ error: 'You are not registered for this contest.' });
+      return;
+    }
+  }
+  else if(contest.status=="PAST"){
+     const registration = await prisma.contestRegistration.findFirst({
+      where: { userId, contestId },
+      orderBy : {registeredAt: 'desc'},select : {registeredAt : true,mode : true},
+    });
+         if (!registration) {
+      res.status(403).json({ error: 'You are not registered for this contest.' });
+      return;
+    }
+        const now     = new Date();
+    const endTime = new Date(registration?.registeredAt.getTime() + contest.duration * 60 * 1000);
+   
+  
+
+    if (now >= endTime) {
+      res.status(403).json({ error: 'Contest has ended. Submissions are closed.' });
+      return;
+    }
+
+  }
     const problem = await prisma.problem.findFirst({
-      where: { id: problemId, contestId},
-      select: { id: true, vjudgeId: true },
+      where: { id: problemId, contestId  },
+      select: {
+        id: true,
+        timeLimit: true,
+        memoryLimit: true,
+        testCases: {
+          orderBy: { orderIndex: 'asc' },
+          select: { input: true, expected: true, orderIndex: true },
+        },
+      },
     });
 
     if (!problem) {
@@ -100,21 +132,6 @@ export async function submitSolution(req: Request, res: Response): Promise<void>
       return;
     }
 
-    if (!problem.vjudgeId) {
-      res.status(503).json({ error: 'This problem is not yet configured for judging.' });
-      return;
-    }
-
-    const registration = await prisma.contestRegistration.findFirst({
-      where: { userId, contestId },
-    });
-
-    if (!registration) {
-      res.status(403).json({ error: 'You are not registered for this contest.' });
-      return;
-    }
-
-    // ── 5. Create submission row ──────────────────────────────────────
     const submission = await prisma.submission.create({
       data: {
         code:      sourceCode,
@@ -125,107 +142,71 @@ export async function submitSolution(req: Request, res: Response): Promise<void>
       },
     });
 
-    // 6. Enqueue for judging rplace with bullmq queues for future scaling
-    if (!_queue) {
-      res.status(503).json({ error: 'Judge service not available.' });
-      return;
-    }
+    const testCases = problem.testCases.length > 0 ? problem.testCases : [{ input: '', expected: '', orderIndex: 0 }];
+    const testResults = testCases.map((_, index) => ({
+        index,
+        verdict: Verdict.PENDING,
+        runtime: null,
+        memory: null,
+      }));
 
-    await _queue.enqueue({
-      submissionId: submission.id,
-      problemId,
-      language:     mappedLanguage,
-      sourceCode,
-      contextId:    contestId,
+    await prisma.submission.update({
+      where: { id: submission.id },
+      data: {
+        status: Verdict.PENDING,
+        testResults,
+      },
     });
 
-    // Return submissionId — frontend uses this to subscribe to verdict via WS
-    res.status(202).json({ submissionId: submission.id });
+    const testsPayload = testCases.map((testCase, index) => ({
+      stdin: testCase.input,
+      expectedOutput: testCase.expected,
+      testIndex: index,
+    }));
 
+    await submitBatchToJudge0({
+      sourceCode,
+      language: mappedLanguage,
+      timeLimitMs: problem.timeLimit,
+      memoryLimitKb: Math.max(32 * 1024, problem.memoryLimit * 1024),
+      submissionId: submission.id,
+      tests: testsPayload,
+    });
+
+    res.status(202).json({ submissionId: submission.id, verdict: Verdict.PENDING });
   } catch (err) {
     console.error('[submit] error:', err);
     res.status(500).json({ error: 'Internal server error.' });
   }
 }
 
-/**
- * GET /api/contests/:contestId/problems/:problemId/submissions
- * Returns the current user's submission history for a problem.
- */
-export async function getSubmissions(req: Request, res: Response): Promise<void> {
-  const contestId = req.params.contestId as string;
-  const problemId = req.params.problemId as string;
-  const userId    = req.user?.userId;
+function normalizeLanguage(language: unknown): SupportedLanguage | null {
+  if (typeof language !== 'string') return null;
 
-  if (!userId) {
-    res.status(401).json({ error: 'Unauthorized.' });
-    return;
-  }
-
-  try {
-    const submissions = await prisma.submission.findMany({
-      where: { userId, problemId },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id:        true,
-        language:  true,
-        status:    true,
-        runtime:   true,
-        memory:    true,
-        createdAt: true,
-      },
-    });
-
-    res.status(200).json({ submissions });
-  } catch (err) {
-    console.error('[submissions] error:', err);
-    res.status(500).json({ error: 'Internal server error.' });
-  }
-}
-
-/**
- * GET /api/submissions/:submissionId
- * Returns the full submission including code and verdict.
- * Only the owner can view their own submission.
- */
-export async function getSubmissionById(req: Request, res: Response): Promise<void> {
-  const submissionId = req.params.submissionId as string;
-  const userId       = req.user?.userId;
-
-  if (!userId) {
-    res.status(401).json({ error: 'Unauthorized.' });
-    return;
-  }
-
-  try {
-    const submission = await prisma.submission.findUnique({
-      where: { id: submissionId as string},
-      select: {
-        id:        true,
-        code:      true,
-        language:  true,
-        status:    true,
-        runtime:   true,
-        memory:    true,
-        createdAt: true,
-        userId:    true,
-        problemId: true,
-      },
-    });
-
-    if (!submission) {
-      res.status(404).json({ error: 'Submission not found.' });
-      return;
-    }
-
-    if (submission.userId !== userId) {
-      res.status(403).json({ error: 'Access denied.' });
-      return;
-    }
-
-    res.status(200).json({ submission });
-  } catch (err) {
-    console.error('[submission] error:', err);
-    res.status(500).json({ error: 'Internal server error.' });
+  const normalized = language.trim().toLowerCase();
+  switch (normalized) {
+    case 'cpp':
+    case 'cpp17':
+      return SupportedLanguage.CPP17;
+    case 'cpp20':
+      return SupportedLanguage.CPP20;
+    case 'java':
+      return SupportedLanguage.JAVA;
+    case 'python':
+    case 'python3':
+      return SupportedLanguage.PYTHON3;
+    case 'javascript':
+    case 'js':
+    case 'typescript':
+    case 'ts':
+      return SupportedLanguage.JAVASCRIPT;
+    case 'go':
+      return SupportedLanguage.GO;
+    case 'rust':
+      return SupportedLanguage.RUST;
+    case 'kotlin':
+      return SupportedLanguage.KOTLIN;
+    default:
+      return null;
   }
 }

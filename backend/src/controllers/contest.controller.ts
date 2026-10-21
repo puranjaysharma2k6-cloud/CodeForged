@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { prisma } from "../db/db.js";
-import { ContestStatus, Mode } from "../generated/prisma/enums.js";
+import { ContestStatus, Mode, Verdict } from "../generated/prisma/enums.js";
 
 
 export async function getprevContests(req:Request,res : Response) {
@@ -74,11 +74,11 @@ export async function getContestArena(req: Request, res: Response): Promise<void
     include: {
       
       problems : {
+        where: { published: true },
         select : {
           id:true,
           title:true,
           statement:true,
-
           timeLimit:true,
           memoryLimit:true,
           submissions : true,
@@ -98,83 +98,160 @@ export async function getContestArena(req: Request, res: Response): Promise<void
     },
   });
 
-  const contest = contestData;
-  const registration = contestData?.participants?.[0] ?? null;
+  const registration = contestData?.participants[0] ?? null;
 
-    if (!contest) {
+    if (!contestData) {
       res.status(404).json({ message: "Contest not found." });
       return;
     }
 
+    if (!registration) {
+      res.status(403).json({ message: "Register for this contest before entering the arena." });
+      return;
+    }
 
+    const now = new Date();
+    const virtualEnd = new Date(
+      registration.registeredAt.getTime() + contestData.duration * 60 * 1000,
+    );
+    const canEnterOfficial =
+      registration.mode === Mode.OFFICIAL && contestData.status === ContestStatus.ONGOING;
+    const canEnterVirtual =
+      registration.mode === Mode.VIRTUAL &&
+      contestData.status === ContestStatus.PAST &&
+      now < virtualEnd;
+
+    if (!canEnterOfficial && !canEnterVirtual) {
+      res.status(403).json({ message: "This contest is not currently available to you." });
+      return;
+    }
+
+    const { participants: _participants, ...contest } = contestData;
     res.status(200).json({ contest, registration });
   } catch (e) {
     res.status(500).json({ message: "Internal server error." });
   }
 }
 
-export async function getContestById(req: Request, res: Response): Promise<void> {
-  const contestId  = req.params.id;
-  try{const contest = await prisma.contest.findUnique({
-      where: {
-        id: contestId as string 
-      },
-      include : {
-       problems : true,
-      },
-    
-    });
-
-  if (!contest) {
-    res.status(404).json({ message: "Contest not found" });
-    return;
-  }
-
-  res.status(200).json(contest);}
-   catch(e){
-    res.status(500).json({message : "cannot get contest internal server error"});
-   }
-}
-
-
+/** Returns the requesting user's registration for one contest, if any. */
 export async function getContestRegistration(req: Request, res: Response): Promise<void> {
   const contestId = req.params.id as string;
   const userId = req.user?.userId;
 
   if (!userId) {
-    res.status(401).json({ message: "Invalid user. Check credentials." });
-    return;
-  }
-
-  if (!contestId) {
-    res.status(400).json({ error: "Contest ID is required in URL parameters." });
+    res.status(401).json({ message: "Unauthorized." });
     return;
   }
 
   try {
     const registration = await prisma.contestRegistration.findFirst({
-    where: {
-      userId,
-      contestId,
-    },
-    orderBy: {
-      registeredAt: "desc",
-    },
-    select: {
-      contestId: true,
-      registeredAt: true,
-      mode: true,
-    },
-});
+      where: { userId, contestId },
+      orderBy: { registeredAt: "desc" },
+      select: { contestId: true, registeredAt: true, mode: true },
+    });
 
     res.status(200).json({ registration });
   } catch (error) {
-    console.error("Registration lookup endpoint error:", error);
+    console.error("[contest-registration] error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
 
+/** Returns contest-scoped standings in the shape consumed by the live standings UI. */
+export async function getContestLeaderboard(req: Request, res: Response): Promise<void> {
+  const contestId = req.params.id as string;
+  const userId = req.user?.userId;
 
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized." });
+    return;
+  }
+
+  try {
+    const [contest, registration] = await Promise.all([
+      prisma.contest.findUnique({
+        where: { id: contestId },
+        select: { id: true, startTime: true },
+      }),
+      prisma.contestRegistration.findFirst({
+        where: { contestId, userId },
+        orderBy: { registeredAt: "desc" },
+        select: { contestId: true },
+      }),
+    ]);
+
+    if (!contest) {
+      res.status(404).json({ message: "Contest not found." });
+      return;
+    }
+
+    if (!registration) {
+      res.status(403).json({ message: "Register for this contest before viewing standings." });
+      return;
+    }
+
+    const submissions = await prisma.submission.findMany({
+      where: { problem: { contestId } },
+      orderBy: { createdAt: "asc" },
+      select: {
+        status: true,
+        createdAt: true,
+        problemId: true,
+        user: { select: { id: true, username: true, name: true } },
+      },
+    });
+
+    const entries = new Map<string, {
+      userId: string;
+      username: string;
+      name: string | null;
+      score: number;
+      penalty: number;
+      problemStats: Record<string, { problemId: string; solved: boolean; attempts: number; solvedAt?: number }>;
+    }>();
+
+    for (const submission of submissions) {
+      const entry = entries.get(submission.user.id) ?? {
+        userId: submission.user.id,
+        username: submission.user.username,
+        name: submission.user.name,
+        score: 0,
+        penalty: 0,
+        problemStats: {},
+      };
+      const stat = entry.problemStats[submission.problemId] ?? {
+        problemId: submission.problemId,
+        solved: false,
+        attempts: 0,
+      };
+
+      if (!stat.solved) {
+        stat.attempts += 1;
+        if (submission.status === Verdict.ACCEPTED) {
+          stat.solved = true;
+          stat.solvedAt = Math.max(
+            0,
+            Math.floor((submission.createdAt.getTime() - contest.startTime.getTime()) / 60_000),
+          );
+          entry.score += 1;
+          entry.penalty += stat.solvedAt + (stat.attempts - 1) * 20;
+        }
+      }
+
+      entry.problemStats[submission.problemId] = stat;
+      entries.set(submission.user.id, entry);
+    }
+
+    const leaderboard = [...entries.values()]
+      .sort((a, b) => b.score - a.score || a.penalty - b.penalty || a.username.localeCompare(b.username))
+      .map((entry, index) => ({ rank: index + 1, ...entry }));
+
+    res.status(200).json({ leaderboard });
+  } catch (error) {
+    console.error("[contest-leaderboard] error:", error);
+    res.status(500).json({ message: "Unable to load contest standings." });
+  }
+}
 
 export async function registerForContest(req: Request, res: Response): Promise<void> {
 
@@ -269,9 +346,6 @@ export async function registerForContest(req: Request, res: Response): Promise<v
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
-
-
 
 
 

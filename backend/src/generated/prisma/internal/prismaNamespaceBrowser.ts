@@ -53,6 +53,9 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Problem: 'Problem',
+  ProblemTag: 'ProblemTag',
+  UserTopicStats: 'UserTopicStats',
+  UserTopicAnalysisCache: 'UserTopicAnalysisCache',
   TestCase: 'TestCase',
   Contest: 'Contest',
   Submission: 'Submission',
@@ -96,11 +99,43 @@ export const ProblemScalarFieldEnum = {
   timeLimit: 'timeLimit',
   memoryLimit: 'memoryLimit',
   published: 'published',
-  vjudgeId: 'vjudgeId',
   contestId: 'contestId'
 } as const
 
 export type ProblemScalarFieldEnum = (typeof ProblemScalarFieldEnum)[keyof typeof ProblemScalarFieldEnum]
+
+
+export const ProblemTagScalarFieldEnum = {
+  problemId: 'problemId',
+  tag: 'tag'
+} as const
+
+export type ProblemTagScalarFieldEnum = (typeof ProblemTagScalarFieldEnum)[keyof typeof ProblemTagScalarFieldEnum]
+
+
+export const UserTopicStatsScalarFieldEnum = {
+  userId: 'userId',
+  tag: 'tag',
+  totalAttempts: 'totalAttempts',
+  failedAttempts: 'failedAttempts',
+  lastUpdated: 'lastUpdated'
+} as const
+
+export type UserTopicStatsScalarFieldEnum = (typeof UserTopicStatsScalarFieldEnum)[keyof typeof UserTopicStatsScalarFieldEnum]
+
+
+export const UserTopicAnalysisCacheScalarFieldEnum = {
+  userId: 'userId',
+  targetTag: 'targetTag',
+  verdictAnalysis: 'verdictAnalysis',
+  whatWentWrong: 'whatWentWrong',
+  betterApproach: 'betterApproach',
+  recommendedDataStructure: 'recommendedDataStructure',
+  statsHash: 'statsHash',
+  generatedAt: 'generatedAt'
+} as const
+
+export type UserTopicAnalysisCacheScalarFieldEnum = (typeof UserTopicAnalysisCacheScalarFieldEnum)[keyof typeof UserTopicAnalysisCacheScalarFieldEnum]
 
 
 export const TestCaseScalarFieldEnum = {

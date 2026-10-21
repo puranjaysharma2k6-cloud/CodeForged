@@ -1,12 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Editor from "@monaco-editor/react";
 
-import {ChevronLeft,  Code, Play, Terminal, Settings, CheckCircle, AlertCircle, BookOpen, HelpCircle } from "lucide-react";
+import {ChevronLeft,  Code, Play, Terminal, Settings, AlertCircle, BookOpen, HelpCircle } from "lucide-react";
 import config from "../../config";
 import { fetchwithAuth } from "../../Utils/fetchwithAuth";
-import { useNavigate, useParams,useLocation } from "react-router";
+import { useLocation, useNavigate, useOutletContext, useParams } from "react-router";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import type { ArenaProblem, ContestOutletContext } from "../../layouts/ContestLayout";
 
 // ─── TYPES & CONSTANTS ────────────────────────────────────────────────────────
 
@@ -20,20 +21,37 @@ const SNIPS: Record<Lang, string> = {
   java:       `// Java\nclass Main {\n    public static void main(String[] args) {\n        System.out.println("Hello");\n    }\n}`
 };
 
-// ─── CUSTOM HOOK (logic only, no JSX) ─────────────────────────────────────────
 
 function useCodeEditor() {
   const [lang, setLang] = useState<Lang>("cpp");
   const [code, setCode] = useState(SNIPS.cpp);
   const [run,  setRun]  = useState(false);
   const [logs, setLogs] = useState([{ text: "Console ready. Click 'Run Code'.", type: "info" }]);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
-  const handleLang = (l: Lang) => { setLang(l); setCode(SNIPS[l]); };
+  const codeRef = useRef(code);
+
+  const handleLang = (l: Lang) => {
+    const nextCode = SNIPS[l];
+    setLang(l);
+    setCode(nextCode);
+    codeRef.current = nextCode;
+  };
+
   const clear = () => setLogs([{ text: "Cleared.", type: "info" }]);
+
+  const setCodeValue = (value: string) => {
+    setCode(value);
+    codeRef.current = value;
+  };
+
+  const getCodeValue = () => codeRef.current;
 
   const exec = () => {
     setRun(true);
     setLogs(p => [...p, { text: `> Running ${lang}...`, type: "info" }]);
+    const currentCode = codeRef.current;
+
     setTimeout(() => {
       try {
         if (lang === "python")    setLogs(p => [...p, { text: "Hello Python!", type: "stdout" }]);
@@ -41,7 +59,7 @@ function useCodeEditor() {
         else if (lang === "java") setLogs(p => [...p, { text: "Hello",         type: "stdout" }]);
         else {
           const out: string[] = [];
-          new Function("console", code)({
+          new Function("console", currentCode)({
             log: (...a: any[]) => out.push(a.map(x => typeof x === "object" ? JSON.stringify(x) : x).join(" "))
           });
           if (!out.length) setLogs(p => [...p, { text: "Success (no output).", type: "info" }]);
@@ -54,7 +72,73 @@ function useCodeEditor() {
     }, 600);
   };
 
-  return { lang, handleLang, code, setCode, run, logs, exec, clear };
+  const submitCode = useCallback(async (contestId?: string, problemId?: string) => {
+    const currentCode = codeRef.current;
+
+    if (!contestId || !problemId) {
+      setLogs(p => [...p, { text: "Missing contest/problem context for submission.", type: "stderr" }]);
+      return;
+    }
+
+    if (!currentCode.trim()) {
+      setLogs(p => [...p, { text: "Editor is empty. Write some code first.", type: "stderr" }]);
+      return;
+    }
+
+    setLogs(p => [...p, { text: `> Submitting ${lang} code...`, type: "info" }]);
+
+    try {
+      const response = await fetchwithAuth(`${config.apiUrl}/api/contests/${contestId}/problems/${problemId}/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sourceCode: currentCode, language: lang }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data?.error || "Submission failed");
+
+      setSubmissionId(data.submissionId);
+      setLogs(p => [...p, { text: `Submitted successfully. submissionId: ${data.submissionId}`, type: "stdout" }]);
+      setLogs(p => [...p, { text: "Waiting for judge verdict...", type: "info" }]);
+    } catch (e: any) {
+      setLogs(p => [...p, { text: e.message || "Submission failed", type: "stderr" }]);
+    }
+  }, [lang]);
+
+  useEffect(() => {
+    if (!submissionId) return;
+// ------------------------------------WEB SOCKET-------------------------------------------------------
+    const wsUrl = `${config.apiUrl.replace(/^http/, "ws")}/ws/verdict`;
+    const socket = new WebSocket(wsUrl);
+
+  socket.onopen = () => {
+  socket.send(JSON.stringify({ type: "subscribe", submissionId, lastId: "0" }));
+};
+
+  socket.onmessage = (event) => {
+  try {
+    const payload = JSON.parse(event.data);
+    if (payload.type !== "verdict") return;
+
+    const verdictText = payload.verdict || "UNKNOWN";
+    const label = verdictText === "ACCEPTED" ? "✅ Accepted" : `⚠️ ${verdictText.replace(/_/g, " ")}`;
+    setLogs(p => [...p, {
+      text: `${label} (submission ${payload.submissionId})`,
+      type: payload.verdict === "ACCEPTED" ? "stdout" : "stderr"
+    }]);
+  } catch {
+    // ignore malformed payloads
+  }
+};
+
+socket.onerror = (err) => console.error("WS error", err);
+socket.onclose = () => console.log("WS closed");
+
+
+    return () => socket.close();
+  }, [submissionId]);
+
+  return { lang, handleLang, code, setCode: setCodeValue, getCodeValue, run, logs, exec, clear, submitCode };
 }
 
 // ─── RESIZER ─────────────────────────────────────────────────────────────────
@@ -182,10 +266,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 text-sm text-emerald-400 border border-emerald-500/40 rounded-full px-4 py-1.5 font-medium">
-        <CheckCircle size={16} />
-        Type-Safe Console
-      </div>
+      
     </div>
   );
 };
@@ -240,9 +321,9 @@ const EditorPanel = ({ lang, code, onSel, onCode, className = "" }: {
   </Panel>
 );
 
-const OutputPanel = ({ logs, run, exec, clear, className = "" }: {
+const OutputPanel = ({ logs, run, exec, clear, submit, className = "" }: {
   logs: { text: string; type: string }[];
-  run: boolean; exec: () => void; clear: () => void;
+  run: boolean; exec: () => void; clear: () => void; submit: () => void;
   className?: string;
 }) => (
   <Panel className={`h-full ${className}`}>
@@ -255,6 +336,12 @@ const OutputPanel = ({ logs, run, exec, clear, className = "" }: {
             className="text-zinc-400 text-sm font-medium px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors"
           >
             Clear
+          </button>
+          <button
+            onClick={submit}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold h-10 px-5 py-3 rounded-lg transition-colors"
+          >
+            Submit
           </button>
           <button
             onClick={exec}
@@ -378,10 +465,10 @@ export default function App() {
   const state = useCodeEditor();
   const navigate = useNavigate();
   const location = useLocation();
-  const { contestId } = useParams();
-  
-
-  const problem = location.state?.problemData;
+  const { contestId, problemId } = useParams();
+  const { problems, loading, error } = useOutletContext<ContestOutletContext>();
+  const problemFromNavigation = location.state?.problemData as ArenaProblem | undefined;
+  const problem = problemFromNavigation ?? problems.find(({ id }) => id === problemId);
 
   const [leftPct,   setLeftPct]   = useState(55);
   const [editorPct, setEditorPct] = useState(65);
@@ -390,12 +477,21 @@ export default function App() {
   const leftColRef   = useRef<HTMLDivElement>(null); 
 
   useEffect(() => {
-     //console.log(problem);
-    if (!problem) {
+    if (!loading && !error && !problem) {
       navigate(`/contests/${contestId}`);
     }
-  }, [problem, navigate, contestId]);
+  }, [contestId, error, loading, navigate, problem]);
   
+
+  if (loading) return null;
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#090d16] p-6 text-rose-400">
+        {error}
+      </div>
+    );
+  }
 
   if (!problem) return null; 
 
@@ -439,7 +535,13 @@ export default function App() {
             <Resizer direction="v" onDrag={onVerticalDrag} />
 
             <div className="flex-1 min-h-0">
-              <OutputPanel logs={state.logs} run={state.run} exec={state.exec} clear={state.clear} />
+              <OutputPanel
+                logs={state.logs}
+                run={state.run}
+                exec={state.exec}
+                clear={state.clear}
+                submit={() => void state.submitCode(contestId, problem?.id)}
+              />
             </div>
           </div>
           

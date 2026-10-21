@@ -10,6 +10,9 @@
  */
 export type * from './models/User.js'
 export type * from './models/Problem.js'
+export type * from './models/ProblemTag.js'
+export type * from './models/UserTopicStats.js'
+export type * from './models/UserTopicAnalysisCache.js'
 export type * from './models/TestCase.js'
 export type * from './models/Contest.js'
 export type * from './models/Submission.js'

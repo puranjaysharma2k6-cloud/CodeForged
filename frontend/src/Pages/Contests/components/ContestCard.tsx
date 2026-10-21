@@ -85,7 +85,7 @@ export function ContestCard({ contest, participation }: ContestCardProps) {
       
       try {
         const response = await fetchwithAuth(
-          `${config.apiUrl}/api/contests/${contest.id}/arena`
+          `${config.apiUrl}/api/contests/${contest.id}/registration`
         );
         const data = await response.json().catch(() => null);
 
@@ -113,7 +113,7 @@ export function ContestCard({ contest, participation }: ContestCardProps) {
 
   async function refreshRegistration() {
     const response = await fetchwithAuth(
-      `${config.apiUrl}/api/contests/${contest.id}/arena`
+      `${config.apiUrl}/api/contests/${contest.id}/registration`
     );
     const data = await response.json().catch(() => null);
 

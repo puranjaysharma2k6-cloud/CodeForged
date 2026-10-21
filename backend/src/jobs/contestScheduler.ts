@@ -6,8 +6,8 @@ import { ContestStatus } from "../generated/prisma/enums.js";
  * Schedules the two status transitions for a single contest using
  * precise setTimeout calls — no polling, no cron, no lag.
  *
- *   UPCOMING  →  ONGOING  fires at exactly startTime
- *   ONGOING   →  PAST     fires at exactly startTime + duration minutes
+ *   UPCOMING  to  ONGOING  fires at exactly startTime
+ *   ONGOING   to  PAST     fires at exactly startTime + duration minutes
  *
  * One contest at a time: calling scheduleContest() cancels any
  * previously scheduled timers before setting new ones.
@@ -74,10 +74,10 @@ export function scheduleContest(contest: {
 }
 
 /**
- * Called at server boot.
- * Finds the next relevant contest (UPCOMING or ONGOING) and schedules it.
- * If the server restarted mid-contest, the ONGOING status is corrected
- * and the end timer is set precisely.
+ Called at server boot.
+ Finds the next relevant contest (UPCOMING or ONGOING) and schedules it.
+ If the server restarted mid-contest, the ONGOING status is corrected
+  and the end timer is set precisely.
  */
 export async function scheduleActiveContest(): Promise<void> {
   const now = new Date();
@@ -102,7 +102,7 @@ export async function scheduleActiveContest(): Promise<void> {
       where: { id: contest.id },
       data:  { status: "ONGOING" },
     });
-    console.log(`[scheduler] corrected stale UPCOMING → ONGOING for "${contest.id}"`);
+    console.log(`[scheduler] corrected stale UPCOMING to ONGOING for "${contest.id}"`);
   }
 
   // Server restarted after contest ended but status wasn't flipped

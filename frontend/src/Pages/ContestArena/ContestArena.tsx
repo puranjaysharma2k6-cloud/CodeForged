@@ -1,17 +1,9 @@
 import { NavLink, useParams, useOutletContext } from 'react-router-dom';
 import { useState } from 'react';
-import RealtimeLeaderboard from '../../components/RealTimeLeaderboard/realtimeleaderboard'; // 🟢 Live Standings component
+import RealtimeLeaderboard from '../../components/RealTimeLeaderboard/realtimeleaderboard'; //
 import './ContestArena.css';
 import ToggleBar from '../../components/ToggleBar/ToggleBar';
-type Problem = {
-  id: string;
-  title: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  verdict?: 'ACCEPTED' | 'WRONG_ANSWER' |
-  'TIME_LIMIT_EXCEEDED' | 'MEMORY_LIMIT_EXCEEDED' |
-  'COMPILATION_ERROR' | 'RUNTIME_ERROR' | null;
-  submissions?: Array<{ userId?: string; status?: string | null }>;
-};
+import type { ArenaProblem, ContestOutletContext } from '../../layouts/ContestLayout';
 
 type ArenaTab = 'problems' | 'standings';
 
@@ -48,7 +40,7 @@ const DIFFICULTY_MAP = {
   Hard: "text-rose-400 bg-rose-500/5 border-rose-500/20",
 };
 
-function getSolvedByCount(problem: Problem) {
+function getSolvedByCount(problem: ArenaProblem) {
   const uniqueAcceptedUsers = new Set<string>();
 
   problem.submissions?.forEach((submission) => {
@@ -60,7 +52,7 @@ function getSolvedByCount(problem: Problem) {
   return uniqueAcceptedUsers.size;
 }
 
-function getSubmissionState(problem: Problem) {
+function getSubmissionState(problem: ArenaProblem) {
   const hasAttempt = Boolean(problem.verdict) || problem.submissions?.some((submission) => submission.status && submission.status !== 'PENDING');
 
   if (problem.verdict === 'ACCEPTED') {
@@ -90,7 +82,7 @@ export default function ContestArena() {
   const [activeTab, setActiveTab] = useState<ArenaTab>('problems');
   const { contestId } = useParams();
 
-  const { problems, loading } = useOutletContext<{ problems: Problem[]; loading: boolean }>();
+  const { problems, loading, error } = useOutletContext<ContestOutletContext>();
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#0f1117] p-4 text-white sm:p-8">
@@ -139,14 +131,17 @@ export default function ContestArena() {
             <div className="arena-scroll w-full flex flex-col gap-6 overflow-y-auto px-1">
               {loading ? (
                 <p className="text-center text-[#22d3ee] py-12">Loading problems...</p>
+              ) : error ? (
+                <p className="py-12 text-center text-rose-400">{error}</p>
               ) : problems.length === 0 ? (
                 <p className="text-center text-gray-400 py-12">No problems found.</p>
               ) : (
                 problems.map((problem, index) => {
                   const isAccepted = problem.verdict === 'ACCEPTED';
-                  const activeVerdict = problem.verdict ? VERDICT_MAP[problem.verdict] : null;
+                  const activeVerdict = problem.verdict ? VERDICT_MAP[problem.verdict as keyof typeof VERDICT_MAP] : null;
                   const solvedByCount = getSolvedByCount(problem);
                   const submissionState = getSubmissionState(problem);
+                  const difficultyClass = problem.difficulty ? DIFFICULTY_MAP[problem.difficulty as keyof typeof DIFFICULTY_MAP] : '';
 
                   return (
                     <NavLink
@@ -180,7 +175,7 @@ export default function ContestArena() {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold tracking-wide capitalize ${DIFFICULTY_MAP[problem.difficulty] || ''}`}>
+                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold tracking-wide capitalize ${difficultyClass}`}>
                           {problem.difficulty}
                         </span>
 

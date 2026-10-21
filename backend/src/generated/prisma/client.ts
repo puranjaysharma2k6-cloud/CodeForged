@@ -52,6 +52,21 @@ export type User = Prisma.UserModel
  */
 export type Problem = Prisma.ProblemModel
 /**
+ * Model ProblemTag
+ * 
+ */
+export type ProblemTag = Prisma.ProblemTagModel
+/**
+ * Model UserTopicStats
+ * 
+ */
+export type UserTopicStats = Prisma.UserTopicStatsModel
+/**
+ * Model UserTopicAnalysisCache
+ * 
+ */
+export type UserTopicAnalysisCache = Prisma.UserTopicAnalysisCacheModel
+/**
  * Model TestCase
  * 
  */

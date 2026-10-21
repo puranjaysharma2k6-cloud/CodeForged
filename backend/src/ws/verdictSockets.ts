@@ -145,6 +145,10 @@ async function readLoop(
         // Clean up stream 30s after terminal verdict as streams unlike pub subs store the prev history
         // (late-connecting clients can still read the final state)
         setTimeout(() => writer.del(streamKey).catch(() => {}), 30_000);
+
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.close(1000, 'terminal verdict received');
+        }
         return;
       }
     }

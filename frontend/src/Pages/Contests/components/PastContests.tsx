@@ -75,7 +75,9 @@ async function fetchPastContests(
     const results = await Promise.allSettled(
       contests.map(async c => {
         const r = await fetchwithAuth(`${config.apiUrl}/api/contests/${c.id}/registration`);
-        return r.ok ? r.json() : null;
+        if (!r.ok) return null;
+        const data = await r.json();
+        return data.registration ?? null;
       })
     );
 
@@ -130,7 +132,7 @@ export function PastContests({ initialData }: { initialData?: { contests: Contes
 
   if (state.loading) {
     return (
-      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-center">
+      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
         {Array.from({ length: PAGE_SIZE }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -169,7 +171,7 @@ export function PastContests({ initialData }: { initialData?: { contests: Contes
 
   return (
     <>
-      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(280px,1fr))] justify-center">
+      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(320px,1fr))]">
         {state.contests.map(contest => (
           <ContestCard
             key={contest.id}

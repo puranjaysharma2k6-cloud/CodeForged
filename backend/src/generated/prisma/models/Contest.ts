@@ -411,10 +411,6 @@ export type ContestUpdateOneRequiredWithoutProblemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ContestUpdateToOneWithWhereWithoutProblemsInput, Prisma.ContestUpdateWithoutProblemsInput>, Prisma.ContestUncheckedUpdateWithoutProblemsInput>
 }
 
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
 export type EnumContestStatusFieldUpdateOperationsInput = {
   set?: $Enums.ContestStatus
 }

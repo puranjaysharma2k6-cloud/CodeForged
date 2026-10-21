@@ -386,6 +386,9 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Problem: 'Problem',
+  ProblemTag: 'ProblemTag',
+  UserTopicStats: 'UserTopicStats',
+  UserTopicAnalysisCache: 'UserTopicAnalysisCache',
   TestCase: 'TestCase',
   Contest: 'Contest',
   Submission: 'Submission',
@@ -406,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "problem" | "testCase" | "contest" | "submission" | "contestRegistration" | "contestResult"
+    modelProps: "user" | "problem" | "problemTag" | "userTopicStats" | "userTopicAnalysisCache" | "testCase" | "contest" | "submission" | "contestRegistration" | "contestResult"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -555,6 +558,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.ProblemCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.ProblemCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProblemTag: {
+      payload: Prisma.$ProblemTagPayload<ExtArgs>
+      fields: Prisma.ProblemTagFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProblemTagFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProblemTagFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>
+        }
+        findFirst: {
+          args: Prisma.ProblemTagFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProblemTagFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>
+        }
+        findMany: {
+          args: Prisma.ProblemTagFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>[]
+        }
+        create: {
+          args: Prisma.ProblemTagCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>
+        }
+        createMany: {
+          args: Prisma.ProblemTagCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProblemTagCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>[]
+        }
+        delete: {
+          args: Prisma.ProblemTagDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>
+        }
+        update: {
+          args: Prisma.ProblemTagUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProblemTagDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProblemTagUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProblemTagUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProblemTagUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProblemTagPayload>
+        }
+        aggregate: {
+          args: Prisma.ProblemTagAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProblemTag>
+        }
+        groupBy: {
+          args: Prisma.ProblemTagGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProblemTagGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProblemTagCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProblemTagCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserTopicStats: {
+      payload: Prisma.$UserTopicStatsPayload<ExtArgs>
+      fields: Prisma.UserTopicStatsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserTopicStatsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserTopicStatsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>
+        }
+        findFirst: {
+          args: Prisma.UserTopicStatsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserTopicStatsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>
+        }
+        findMany: {
+          args: Prisma.UserTopicStatsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>[]
+        }
+        create: {
+          args: Prisma.UserTopicStatsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>
+        }
+        createMany: {
+          args: Prisma.UserTopicStatsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserTopicStatsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>[]
+        }
+        delete: {
+          args: Prisma.UserTopicStatsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>
+        }
+        update: {
+          args: Prisma.UserTopicStatsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserTopicStatsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserTopicStatsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserTopicStatsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserTopicStatsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicStatsPayload>
+        }
+        aggregate: {
+          args: Prisma.UserTopicStatsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserTopicStats>
+        }
+        groupBy: {
+          args: Prisma.UserTopicStatsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserTopicStatsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserTopicStatsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserTopicStatsCountAggregateOutputType> | number
+        }
+      }
+    }
+    UserTopicAnalysisCache: {
+      payload: Prisma.$UserTopicAnalysisCachePayload<ExtArgs>
+      fields: Prisma.UserTopicAnalysisCacheFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserTopicAnalysisCacheFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserTopicAnalysisCacheFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>
+        }
+        findFirst: {
+          args: Prisma.UserTopicAnalysisCacheFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserTopicAnalysisCacheFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>
+        }
+        findMany: {
+          args: Prisma.UserTopicAnalysisCacheFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>[]
+        }
+        create: {
+          args: Prisma.UserTopicAnalysisCacheCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>
+        }
+        createMany: {
+          args: Prisma.UserTopicAnalysisCacheCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserTopicAnalysisCacheCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>[]
+        }
+        delete: {
+          args: Prisma.UserTopicAnalysisCacheDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>
+        }
+        update: {
+          args: Prisma.UserTopicAnalysisCacheUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>
+        }
+        deleteMany: {
+          args: Prisma.UserTopicAnalysisCacheDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserTopicAnalysisCacheUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserTopicAnalysisCacheUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>[]
+        }
+        upsert: {
+          args: Prisma.UserTopicAnalysisCacheUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTopicAnalysisCachePayload>
+        }
+        aggregate: {
+          args: Prisma.UserTopicAnalysisCacheAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserTopicAnalysisCache>
+        }
+        groupBy: {
+          args: Prisma.UserTopicAnalysisCacheGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserTopicAnalysisCacheGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserTopicAnalysisCacheCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserTopicAnalysisCacheCountAggregateOutputType> | number
         }
       }
     }
@@ -987,11 +1212,43 @@ export const ProblemScalarFieldEnum = {
   timeLimit: 'timeLimit',
   memoryLimit: 'memoryLimit',
   published: 'published',
-  vjudgeId: 'vjudgeId',
   contestId: 'contestId'
 } as const
 
 export type ProblemScalarFieldEnum = (typeof ProblemScalarFieldEnum)[keyof typeof ProblemScalarFieldEnum]
+
+
+export const ProblemTagScalarFieldEnum = {
+  problemId: 'problemId',
+  tag: 'tag'
+} as const
+
+export type ProblemTagScalarFieldEnum = (typeof ProblemTagScalarFieldEnum)[keyof typeof ProblemTagScalarFieldEnum]
+
+
+export const UserTopicStatsScalarFieldEnum = {
+  userId: 'userId',
+  tag: 'tag',
+  totalAttempts: 'totalAttempts',
+  failedAttempts: 'failedAttempts',
+  lastUpdated: 'lastUpdated'
+} as const
+
+export type UserTopicStatsScalarFieldEnum = (typeof UserTopicStatsScalarFieldEnum)[keyof typeof UserTopicStatsScalarFieldEnum]
+
+
+export const UserTopicAnalysisCacheScalarFieldEnum = {
+  userId: 'userId',
+  targetTag: 'targetTag',
+  verdictAnalysis: 'verdictAnalysis',
+  whatWentWrong: 'whatWentWrong',
+  betterApproach: 'betterApproach',
+  recommendedDataStructure: 'recommendedDataStructure',
+  statsHash: 'statsHash',
+  generatedAt: 'generatedAt'
+} as const
+
+export type UserTopicAnalysisCacheScalarFieldEnum = (typeof UserTopicAnalysisCacheScalarFieldEnum)[keyof typeof UserTopicAnalysisCacheScalarFieldEnum]
 
 
 export const TestCaseScalarFieldEnum = {
@@ -1338,6 +1595,9 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   problem?: Prisma.ProblemOmit
+  problemTag?: Prisma.ProblemTagOmit
+  userTopicStats?: Prisma.UserTopicStatsOmit
+  userTopicAnalysisCache?: Prisma.UserTopicAnalysisCacheOmit
   testCase?: Prisma.TestCaseOmit
   contest?: Prisma.ContestOmit
   submission?: Prisma.SubmissionOmit
