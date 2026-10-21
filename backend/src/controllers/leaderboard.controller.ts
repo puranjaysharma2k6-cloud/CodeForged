@@ -1,16 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../db/db.js";
 
-
-console.log("user requestin leaderboard");
-//ping db
-async function pingdb() {
-  console.time("ping-db");
-await prisma.$queryRaw`SELECT 1`; 
-console.timeEnd("ping-db");
-}
- pingdb();
-
 export async function getLeaderboard(
   req: Request,
   res: Response
@@ -29,7 +19,8 @@ export async function getLeaderboard(
         currentRating: true,
       },
     });
-console.timeEnd("LeaderBoard")
+
+    console.timeEnd("LeaderBoard");
     const rankedLeaderboard = leaderboard.map((user, index) => ({
       rank: index + 1,
       ...user,
@@ -37,7 +28,7 @@ console.timeEnd("LeaderBoard")
 
     res.status(200).json(rankedLeaderboard);
   } catch (error) {
-    console.error(error);
+    console.error("[leaderboard] failed to fetch leaderboard:", error);
     res.status(500).json({
       message: "Failed to fetch leaderboard",
     });

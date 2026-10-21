@@ -42,9 +42,17 @@ async function start() {
   // Verdicts are written to Redis Streams, WebSocket server reads and forwards.
   // const publisher = new RedisStreamVerdictPublisher(redisClient);
 
+  try {
+    await seedCodeforcesProblems();
+  } catch (error) {
+    console.error('[startup] problem seeding failed:', error);
+  }
 
-  await seedCodeforcesProblems();
-  await scheduleActiveContest();
+  try {
+    await scheduleActiveContest();
+  } catch (error) {
+    console.error('[startup] contest scheduler failed:', error);
+  }
 }
 
 start();

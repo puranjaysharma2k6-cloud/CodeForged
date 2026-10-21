@@ -21,10 +21,9 @@ RUN npm install --omit=dev
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 COPY --from=build /app/src ./src
 
-
-
 EXPOSE 8000
-CMD ["npm", "run", "start"]
+CMD ["sh", "-c", "DATABASE_URL=$DATABASE_URL npx prisma migrate deploy --schema prisma/schema.prisma --config prisma.config.ts && npm run start"]
 
