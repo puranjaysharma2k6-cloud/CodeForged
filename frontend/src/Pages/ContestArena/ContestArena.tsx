@@ -34,12 +34,6 @@ const VERDICT_MAP: Record<string, { label: string; styles: string }> = {
   }
 };
 
-const DIFFICULTY_MAP = {
-  Easy: "text-emerald-400 bg-emerald-500/5 border-emerald-500/20",
-  Medium: "text-amber-400 bg-amber-500/5 border-amber-500/20",
-  Hard: "text-rose-400 bg-rose-500/5 border-rose-500/20",
-};
-
 function getSolvedByCount(problem: ArenaProblem) {
   const uniqueAcceptedUsers = new Set<string>();
 
@@ -141,7 +135,6 @@ export default function ContestArena() {
                   const activeVerdict = problem.verdict ? VERDICT_MAP[problem.verdict as keyof typeof VERDICT_MAP] : null;
                   const solvedByCount = getSolvedByCount(problem);
                   const submissionState = getSubmissionState(problem);
-                  const difficultyClass = problem.difficulty ? DIFFICULTY_MAP[problem.difficulty as keyof typeof DIFFICULTY_MAP] : '';
 
                   return (
                     <NavLink
@@ -175,10 +168,7 @@ export default function ContestArena() {
                       </div>
 
                       <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                        <span className={`rounded-full border px-3 py-1 text-xs font-semibold tracking-wide capitalize ${difficultyClass}`}>
-                          {problem.difficulty}
-                        </span>
-
+                        
                         {activeVerdict && (
                           <span className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider ${activeVerdict.styles}`}>
                             {activeVerdict.label}

@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { Trophy, HelpCircle, User } from "lucide-react";
 import config from "../../config";
 import { fetchwithAuth } from "../../Utils/fetchwithAuth";
-import ToggleBar from "../ToggleBar/ToggleBar";
 
 interface ProblemStat {
   problemId: string;

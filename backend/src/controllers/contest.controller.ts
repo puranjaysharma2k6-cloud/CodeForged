@@ -157,7 +157,6 @@ export async function getContestRegistration(req: Request, res: Response): Promi
   }
 }
 
-/** Returns contest-scoped standings in the shape consumed by the live standings UI. */
 export async function getContestLeaderboard(req: Request, res: Response): Promise<void> {
   const contestId = req.params.id as string;
   const userId = req.user?.userId;

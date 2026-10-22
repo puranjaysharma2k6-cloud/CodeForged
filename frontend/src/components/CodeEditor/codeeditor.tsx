@@ -22,12 +22,11 @@ const SNIPS: Record<Lang, string> = {
 };
 
 
-function useCodeEditor() {
+function useCodeEditor(onSubmissionSubmitted?: (submissionId: string) => void) {
   const [lang, setLang] = useState<Lang>("cpp");
   const [code, setCode] = useState(SNIPS.cpp);
   const [run,  setRun]  = useState(false);
   const [logs, setLogs] = useState([{ text: "Console ready. Click 'Run Code'.", type: "info" }]);
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
 
   const codeRef = useRef(code);
 
@@ -39,6 +38,16 @@ function useCodeEditor() {
   };
 
   const clear = () => setLogs([{ text: "Cleared.", type: "info" }]);
+
+  const appendVerdict = useCallback((payload: any) => {
+    const verdictText = payload.verdict || "UNKNOWN";
+    const label = verdictText === "ACCEPTED" ? "✅ Accepted" : `⚠️ ${verdictText.replace(/_/g, " ")}`;
+
+    setLogs((prev) => [...prev, {
+      text: `${label} (submission ${payload.submissionId})`,
+      type: payload.verdict === "ACCEPTED" ? "stdout" : "stderr"
+    }]);
+  }, []);
 
   const setCodeValue = (value: string) => {
     setCode(value);
@@ -97,48 +106,18 @@ function useCodeEditor() {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data?.error || "Submission failed");
 
-      setSubmissionId(data.submissionId);
+      if (onSubmissionSubmitted) {
+        onSubmissionSubmitted(data.submissionId);
+      }
+
       setLogs(p => [...p, { text: `Submitted successfully. submissionId: ${data.submissionId}`, type: "stdout" }]);
       setLogs(p => [...p, { text: "Waiting for judge verdict...", type: "info" }]);
     } catch (e: any) {
       setLogs(p => [...p, { text: e.message || "Submission failed", type: "stderr" }]);
     }
-  }, [lang]);
+  }, [lang, onSubmissionSubmitted]);
 
-  useEffect(() => {
-    if (!submissionId) return;
-// ------------------------------------WEB SOCKET-------------------------------------------------------
-    const wsUrl = `${config.apiUrl.replace(/^http/, "ws")}/ws/verdict`;
-    const socket = new WebSocket(wsUrl);
-
-  socket.onopen = () => {
-  socket.send(JSON.stringify({ type: "subscribe", submissionId, lastId: "0" }));
-};
-
-  socket.onmessage = (event) => {
-  try {
-    const payload = JSON.parse(event.data);
-    if (payload.type !== "verdict") return;
-
-    const verdictText = payload.verdict || "UNKNOWN";
-    const label = verdictText === "ACCEPTED" ? "✅ Accepted" : `⚠️ ${verdictText.replace(/_/g, " ")}`;
-    setLogs(p => [...p, {
-      text: `${label} (submission ${payload.submissionId})`,
-      type: payload.verdict === "ACCEPTED" ? "stdout" : "stderr"
-    }]);
-  } catch {
-    // ignore malformed payloads
-  }
-};
-
-socket.onerror = (err) => console.error("WS error", err);
-socket.onclose = () => console.log("WS closed");
-
-
-    return () => socket.close();
-  }, [submissionId]);
-
-  return { lang, handleLang, code, setCode: setCodeValue, getCodeValue, run, logs, exec, clear, submitCode };
+  return { lang, handleLang, code, setCode: setCodeValue, getCodeValue, run, logs, exec, clear, submitCode, appendVerdict };
 }
 
 // ─── RESIZER ─────────────────────────────────────────────────────────────────
@@ -462,7 +441,56 @@ const ProblemPanel = ({ problem, loading, error, className = "" }: {
 // ROOT 
 
 export default function App() {
-  const state = useCodeEditor();
+  const socketRef = useRef<WebSocket | null>(null);
+
+  const pendingSubscriptionsRef = useRef<string[]>([]);
+
+  const subscribeToSubmission = useCallback((submissionId: string) => {
+    if (!submissionId) return;
+
+    const socket = socketRef.current;
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: "subscribe", submissionId, lastId: "0" }));
+      return;
+    }
+
+    pendingSubscriptionsRef.current.push(submissionId);
+  }, []);
+
+  const state = useCodeEditor(subscribeToSubmission);
+
+  useEffect(() => {
+    const wsUrl = `${config.apiUrl.replace(/^http/, "ws")}/ws/verdict`;
+    const socket = new WebSocket(wsUrl);
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      const pending = pendingSubscriptionsRef.current;
+      pendingSubscriptionsRef.current = [];
+
+      pending.forEach((submissionId) => {
+        socket.send(JSON.stringify({ type: "subscribe", submissionId, lastId: "0" }));
+      });
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.type !== "verdict") return;
+        state.appendVerdict(payload);
+      } catch {
+        // ignore malformed payloads
+      }
+    };
+
+    socket.onerror = (err) => console.error("WS error", err);
+    socket.onclose = () => console.log("Verdict WS closed");
+
+    return () => {
+      socket.close();
+    };
+  }, [state.appendVerdict]);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { contestId, problemId } = useParams();

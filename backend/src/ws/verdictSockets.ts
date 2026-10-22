@@ -55,11 +55,9 @@ export function attachVerdictWebSocket(
   const wss = new WebSocketServer({ server: httpServer, path: '/ws/verdict' });
 
   wss.on('connection', (ws: WebSocket) => {
-    let started = false;
+    const activeSubscriptions = new Set<string>();
 
     ws.on('message', (raw) => {
-      if (started) return; // one subscription per connection
-
       let msg: { type?: string; submissionId?: string; lastId?: string };
       try {
         msg = JSON.parse(raw.toString());
@@ -68,16 +66,37 @@ export function attachVerdictWebSocket(
         return;
       }
 
-      if (msg.type !== 'subscribe' || !msg.submissionId) {
-        ws.send(JSON.stringify({
-          type: 'error',
-          message: 'Expected { type: "subscribe", submissionId: "...", lastId: "0" }',
-        }));
+      const submissionId = msg.submissionId;
+      if (msg.type === 'subscribe' && submissionId) {
+        if (activeSubscriptions.has(submissionId)) {
+          ws.send(JSON.stringify({
+            type: 'info',
+            message: `Already subscribed to submission ${submissionId}`,
+          }));
+          return;
+        }
+
+        activeSubscriptions.add(submissionId);
+        void readLoop(ws, reader, writer, submissionId, msg.lastId ?? '0', () => {
+          activeSubscriptions.delete(submissionId);
+        });
         return;
       }
 
-      started = true;
-      void readLoop(ws, reader, writer, msg.submissionId, msg.lastId ?? '0');
+      if (msg.type === 'unsubscribe' && submissionId) {
+        activeSubscriptions.delete(submissionId);
+        ws.send(JSON.stringify({ type: 'unsubscribed', submissionId }));
+        return;
+      }
+
+      ws.send(JSON.stringify({
+        type: 'error',
+        message: 'Expected { type: "subscribe", submissionId: "...", lastId: "0" }',
+      }));
+    });
+
+    ws.on('close', () => {
+      activeSubscriptions.clear();
     });
 
     ws.on('error', (err) => {
@@ -94,63 +113,65 @@ async function readLoop(
   writer: RedisClientType,
   submissionId: string,
   startId: string,
+  onComplete?: () => void,
 ): Promise<void> {
   const streamKey = `verdict:${submissionId}`;
   let lastId = startId;
 
-  while (ws.readyState === WebSocket.OPEN) {
-    let result: Awaited<ReturnType<typeof reader.xRead>> = null;
+  try {
+    while (ws.readyState === WebSocket.OPEN) {
+      let result: Awaited<ReturnType<typeof reader.xRead>> = null;
 
-    try {
-      //   xRead(key, id, options?) — blocking read from one stream for avoidin race cond, dirty writes
-      result = await reader.xRead(
-        { key: streamKey, id: lastId },
-        { COUNT: 10, BLOCK: BLOCK_MS },
-      );
-    } catch (err: any) {
-      // ETIMEDOUT from Upstash on blocking commands ,just loop again
-      if (err.message?.includes('ETIMEDOUT') || err.message?.includes('timed out')) {
-        continue;
-      }
-      console.error('[verdict-ws] XREAD error:', err.message);
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: 'error', message: 'Stream read failed' }));
-      }
-      break;
-    }
-
-    if (!result || result.length === 0) continue; // timeout, loop
-
-    const messages = result[0].messages;
-
-    for (const { id: entryId, message: fields } of messages) {
-      lastId = entryId;
-
-      if (ws.readyState !== WebSocket.OPEN) return;
-
-      ws.send(JSON.stringify({
-        type:            'verdict',
-        submissionId:    fields.submissionId ?? submissionId,
-        verdict:         fields.verdict,
-        executionTimeMs: fields.executionTimeMs ? Number(fields.executionTimeMs) : undefined,
-        memoryUsedKb:    fields.memoryUsedKb   ? Number(fields.memoryUsedKb)   : undefined,
-        compileError:    fields.compileError   ?? undefined,
-        runtimeError:    fields.runtimeError   ?? undefined,
-        judgedAt:        fields.judgedAt,
-        providerName:    fields.providerName,
-        streamId:        entryId,
-      }));
-
-      if (fields.verdict && TERMINAL_VERDICTS.has(fields.verdict)) {
-        // Clean up stream 30s after terminal verdict as streams unlike pub subs store the prev history
-        // (late-connecting clients can still read the final state)
-        setTimeout(() => writer.del(streamKey).catch(() => {}), 30_000);
-
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.close(1000, 'terminal verdict received');
+      try {
+        //   xRead(key, id, options?) — blocking read from one stream for avoiding race conditions and dirty writes
+        result = await reader.xRead(
+          { key: streamKey, id: lastId },
+          { COUNT: 10, BLOCK: BLOCK_MS },
+        );
+      } catch (err: any) {
+  
+        if (err.message?.includes('ETIMEDOUT') || err.message?.includes('timed out')) {
+          continue;
         }
-        return;
+        console.error('[verdict-ws] XREAD error:', err.message);
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'error', message: 'Stream read failed' }));
+        }
+        break;
+      }
+
+      if (!result || result.length === 0) continue; 
+
+      const messages = result[0].messages;
+
+      for (const { id: entryId, message: fields } of messages) {
+        lastId = entryId;
+
+        if (ws.readyState !== WebSocket.OPEN) return;
+
+        ws.send(JSON.stringify({
+          type:            'verdict',
+          submissionId:    fields.submissionId ?? submissionId,
+          verdict:         fields.verdict,
+          executionTimeMs: fields.executionTimeMs ? Number(fields.executionTimeMs) : undefined,
+          memoryUsedKb:    fields.memoryUsedKb   ? Number(fields.memoryUsedKb)   : undefined,
+          compileError:    fields.compileError   ?? undefined,
+          runtimeError:    fields.runtimeError   ?? undefined,
+          judgedAt:        fields.judgedAt,
+          providerName:    fields.providerName,
+          streamId:        entryId,
+        }));
+
+        if (fields.verdict && TERMINAL_VERDICTS.has(fields.verdict)) {
+          // Clean up stream 30s after terminal verdict as streams unlike pub subs store the prev history
+          // (late-connecting clients can still read the final state)
+          await writer.expire(streamKey, 9000); // 15 mins
+          
+          return;
+        }
       }
     }
+  } finally {
+    onComplete?.();
   }
 }

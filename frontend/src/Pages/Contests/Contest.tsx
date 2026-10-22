@@ -1,7 +1,6 @@
 import { Suspense, useState } from 'react';
 import { Await, useLoaderData } from 'react-router-dom';
 import type { Contest } from './Contests.loader';
-import  ContestsTabs  from '../../components/ToggleBar/ToggleBar';
 import { UpcomingContests } from './components/UpcomingContests';
 import { PastContests } from './components/PastContests';
 import ToggleBar from '../../components/ToggleBar/ToggleBar';
