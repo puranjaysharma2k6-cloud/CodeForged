@@ -37,7 +37,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8080:8000"  #note dont use port mapping 8000:8000 (exposes it to all people from outside not just local machine bind it with 127.0.0.1 this binds the port to only this machine)
+      
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@app-db:5432/${POSTGRES_DB}
       REDIS_URL: redis://app-redis:6379

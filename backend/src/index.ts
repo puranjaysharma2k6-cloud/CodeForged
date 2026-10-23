@@ -15,7 +15,15 @@ import { seedCodeforcesProblems } from './utils/problemSeed.js';
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;
 
-app.use(cors({ origin: process.env.CLIENT_URL ?? 'http://localhost:5173' }));
+const localFrontendOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || origin === process.env.CLIENT_URL || localFrontendOrigin.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
+}));
 app.use(express.json());
 
 app.get('/health', (_req, res) => {
