@@ -1,4 +1,6 @@
-import 'dotenv/config';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
 import { createServer } from 'http';
 import cors from 'cors';
 import express from 'express';
@@ -11,6 +13,13 @@ import { attachVerdictWebSocket } from './ws/verdictSockets.js';
 
 import { connectRedis, redisClient, redisReader } from './redis/redis.js';
 import { seedCodeforcesProblems } from './utils/problemSeed.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '..', '..');
+
+dotenv.config({ path: path.resolve(projectRoot, '.env') });
+dotenv.config({ path: path.resolve(projectRoot, '.env.local') });
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8000;

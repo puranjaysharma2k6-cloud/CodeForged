@@ -17,7 +17,7 @@ ENV NODE_ENV=production
 ENV PORT=8000
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma

@@ -1,244 +1,128 @@
+import bcrypt from 'bcrypt';
 import { prisma } from '../db/db.js';
 import { ContestStatus } from '../generated/prisma/enums.js';
 
-interface CodeforcesProblemSeed {
-  title: string;
-  statement: string;
-  timeLimit: number;
-  memoryLimit: number;
-  testCases?: Array<{
-    input: string;
-    expected: string;
-    isSample: boolean;
-    orderIndex: number;
-  }>;
-}
+const demoPassword = 'codeforged-demo';
 
-interface CodeforcesApiResponse {
-  result: {
-    problems: Array<{
-      contestId: number;
-      index: string;
-      name: string;
-      type: string;
-      points?: number;
-    }>;
-  };
-}
+const users = [
+  { username: 'alina_codes', name: 'Alina Rao', email: 'alina@example.test', rating: 1480 },
+  { username: 'byte_ninja', name: 'Kabir Shah', email: 'kabir@example.test', rating: 1320 },
+  { username: 'graph_guru', name: 'Mira Sen', email: 'mira@example.test', rating: 1710 },
+  { username: 'loopster', name: 'Dev Mehta', email: 'dev@example.test', rating: 1100 },
+];
 
-const FALLBACK_SEEDS: CodeforcesProblemSeed[] = [
+const contests = [
   {
-    title: 'A. Watermelon',
-    statement:
-      'One hot summer day Pete and his friend Billy decided to buy a watermelon. They chose the biggest one, but it had to be divided between them. The watermelon weighs w kilograms. Pete and Billy want to split the watermelon into two parts so that each part weighs an even number of kilograms. Determine whether it is possible to split the watermelon into two parts with even weights.',
-    timeLimit: 1000,
-    memoryLimit: 256,
-    testCases: [
-      { input: '8\n', expected: 'YES\n', isSample: true, orderIndex: 0 },
-      { input: '5\n', expected: 'NO\n', isSample: true, orderIndex: 1 },
+    title: 'CodeForged Spring Warmup',
+    startTime: new Date('2026-03-14T09:00:00.000Z'),
+    duration: 120,
+    problems: [
+      {
+        title: 'A. Watermelon',
+        statement: `# A. Watermelon\n\nYou are given the weight w of a watermelon in kilograms. Decide whether it can be split into two positive integer parts so that each part has an even weight.\n\n## Input\nA single integer w (1 ≤ w ≤ 100).\n\n## Output\nPrint YES if such a split is possible, otherwise print NO.`,
+        cases: [['8', 'YES'], ['5', 'NO'], ['1', 'NO'], ['100', 'YES'], ['2', 'NO']],
+      },
+      {
+        title: 'B. Way Too Long Words',
+        statement: `# B. Way Too Long Words\n\nA word is too long if its length is strictly greater than 10. Replace every too-long word with its first letter, followed by the number of omitted letters, followed by its last letter. Leave all other words unchanged.\n\n## Input\nThe first line contains n (1 ≤ n ≤ 100). Each of the next n lines contains a lowercase word of length at most 100.\n\n## Output\nPrint the transformed words, one per line.`,
+        cases: [['4\nword\nlocalization\ninternationalization\npneumonoultramicroscopicsilicovolcanoconiosis', 'word\nl10n\ni18n\np43s']],
+      },
     ],
   },
   {
-    title: 'B. Two Arrays And Swaps',
-    statement:
-      'You are given two arrays a and b and an integer k. In one operation, choose one element from array a and one from array b, and swap them. Find the maximum possible sum of the first array after at most k swaps.',
-    timeLimit: 2000,
-    memoryLimit: 512,
-    testCases: [
-      { input: '3 2\n1 2 3\n3 1\n', expected: '7\n', isSample: true, orderIndex: 0 },
-      { input: '4 1\n1 2 3 4\n4\n', expected: '11\n', isSample: true, orderIndex: 1 },
+    title: 'CodeForged Array and Grid Contest',
+    startTime: new Date('2026-04-11T09:00:00.000Z'),
+    duration: 150,
+    problems: [
+      {
+        title: 'A. Team',
+        statement: `# A. Team\n\nThree friends decide whether to implement a problem. Each friend independently says whether they are sure of the solution. They implement it only when at least two are sure. Given their answers for each problem, count how many problems they will implement.\n\n## Input\nThe first line contains n (1 ≤ n ≤ 1000). Each of the next n lines contains three integers, each either 0 or 1.\n\n## Output\nPrint the number of problems they will implement.`,
+        cases: [['3\n1 1 0\n1 1 1\n1 0 0', '2'], ['4\n0 0 0\n0 1 1\n1 1 1\n1 0 1', '3'], ['1\n0 0 0', '0']],
+      },
+      {
+        title: 'B. Domino Piling',
+        statement: `# B. Domino Piling\n\nGiven an m by n rectangular board and unlimited 2 by 1 dominoes, find the maximum number of dominoes that can be placed without overlap. Dominoes may be rotated and must cover exactly two unit squares.\n\n## Input\nOne line contains m and n (1 ≤ m, n ≤ 16).\n\n## Output\nPrint the maximum number of dominoes.`,
+        cases: [['2 4', '4'], ['3 3', '4'], ['1 1', '0'], ['1 16', '8'], ['5 4', '10']],
+      },
     ],
   },
   {
-    title: 'A. Team',
-    statement:
-      'The team consists of three programmers. Determine the maximum number of teams that can be formed from n programmers.',
-    timeLimit: 1000,
-    memoryLimit: 256,
-    testCases: [
-      { input: '6 3\n1 1 1 1 1 1\n', expected: '2\n', isSample: true, orderIndex: 0 },
-      { input: '5 2\n1 1 1 1 1\n', expected: '2\n', isSample: true, orderIndex: 1 },
-    ],
-  },
-  {
-    title: 'B. Gift Fixing',
-    statement:
-      'You are given two arrays of positive integers. You may perform operations by decreasing one element from each array. Determine the minimum number of operations required.',
-    timeLimit: 1500,
-    memoryLimit: 256,
-    testCases: [
-      { input: '3\n1 2 3\n3 2 1\n', expected: '2\n', isSample: true, orderIndex: 0 },
-      { input: '2\n5 5\n5 5\n', expected: '0\n', isSample: true, orderIndex: 1 },
+    title: 'CodeForged String Skills',
+    startTime: new Date('2026-05-09T09:00:00.000Z'),
+    duration: 120,
+    problems: [
+      {
+        title: 'A. Beautiful Matrix',
+        statement: `# A. Beautiful Matrix\n\nA 5 by 5 matrix contains twenty-four zeroes and one one. In one move, you may swap two adjacent rows or two adjacent columns. Find the minimum number of moves needed to bring the one to the center cell.\n\n## Input\nFive lines each contain five integers, with exactly one integer equal to 1 and all others equal to 0.\n\n## Output\nPrint the minimum number of moves.`,
+        cases: [['0 0 0 0 0\n0 0 0 0 0\n0 0 1 0 0\n0 0 0 0 0\n0 0 0 0 0', '0'], ['1 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0', '4'], ['0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 0\n0 0 0 0 1', '4']],
+      },
+      {
+        title: 'B. Petya and Strings',
+        statement: `# B. Petya and Strings\n\nCompare two strings of equal length lexicographically without regard to letter case.\n\n## Input\nTwo lines contain strings of equal length (1 to 100), made of English letters.\n\n## Output\nPrint -1 if the first string is smaller, 1 if it is greater, or 0 if they are equal ignoring case.`,
+        cases: [['aaaa\naaaA', '0'], ['abs\nAbz', '-1'], ['abcdefg\nAbCdEfF', '1'], ['Code\ncode', '0']],
+      },
     ],
   },
 ];
 
-const CUSTOM_PROBLEM_SEED = {
-  title: 'A. Two Sum',
-  statement: `# A. Two Sum
-
-You are given two integers a and b.
-Print the value of a + b.
-
-## Input
-The input contains two integers a and b.
-
-## Output
-Print the sum of a and b.
-
-## Example 1
-Input
-2 3
-
-Output
-5
-
-## Example 2
-Input
-10 20
-
-Output
-30`,
-  timeLimit: 1000,
-  memoryLimit: 256,
-  testCases: [
-    {
-      input: '2 3\n',
-      expected: '5\n',
-      isSample: true,
-      orderIndex: 0,
-    },
-    {
-      input: '10 20\n',
-      expected: '30\n',
-      isSample: true,
-      orderIndex: 1,
-    },
-    {
-      input: '7 8\n',
-      expected: '15\n',
-      isSample: false,
-      orderIndex: 2,
-    },
-    {
-      input: '-5 9\n',
-      expected: '4\n',
-      isSample: false,
-      orderIndex: 3,
-    },
-  ],
-};
-
-async function fetchCodeforcesProblems(): Promise<CodeforcesProblemSeed[]> {
-  try {
-    const res = await fetch('https://codeforces.com/api/problemset.problems');
-    if (!res.ok) throw new Error(`Codeforces API status ${res.status}`);
-    const data = (await res.json()) as CodeforcesApiResponse;
-    const candidates = (data.result?.problems ?? []).filter((p) => p.type === 'A' || p.type === 'B');
-
-    return candidates.slice(0, 4).map((problem) => ({
-      title: `${problem.index}. ${problem.name}`,
-      statement: `Imported from Codeforces contest ${problem.contestId}. This problem is seeded into the local database for contest testing and practice.`,
-      timeLimit: 1000,
-      memoryLimit: 256,
-      testCases: [
-        {
-          input: '1\n',
-          expected: '1\n',
-          isSample: true,
-          orderIndex: 0,
-        },
-      ],
-    }));
-  } catch (error) {
-    console.warn('[seed] Codeforces API unavailable, using bundled fallback problems:', error);
-    return FALLBACK_SEEDS;
-  }
-}
-
 export async function seedCodeforcesProblems(): Promise<void> {
-  const existingContest = await prisma.contest.findFirst({
-    where: { title: 'Codeforces Warmup Contest' },
-    select: { id: true },
-  });
+  const passwordHash = await bcrypt.hash(demoPassword, 10);
 
-  const contest = existingContest ?? (await prisma.contest.create({
-    data: {
-      title: 'Codeforces Warmup Contest',
-      startTime: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      duration: 180,
-      status: ContestStatus.PAST,
-      editorial: 'Seeded from Codeforces problems for local testing.',
-    },
-  }));
-
-  const seeds = await fetchCodeforcesProblems();
-
-  let seeded = 0;
-  for (const seed of seeds) {
-    const existing = await prisma.problem.findFirst({
-      where: { contestId: contest.id, title: seed.title },
-      select: { id: true },
+  for (const user of users) {
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: {},
+      create: {
+        email: user.email,
+        username: user.username,
+        name: user.name,
+        currentRating: user.rating,
+        passwordHash,
+      },
     });
+  }
 
-    if (existing) continue;
-
-    await prisma.problem.create({
+  for (const contestSeed of contests) {
+    const existingContest = await prisma.contest.findFirst({ where: { title: contestSeed.title } });
+    const contest = existingContest ?? await prisma.contest.create({
       data: {
-        title: seed.title,
-        statement: seed.statement,
-        timeLimit: seed.timeLimit,
-        memoryLimit: seed.memoryLimit,
-        published: true,
-        contestId: contest.id,
-        testCases: {
-          create: (seed.testCases ?? [
-            {
-              input: '1\n',
-              expected: '1\n',
-              isSample: true,
-              orderIndex: 0,
-            },
-          ]).map((testCase) => ({
-            input: testCase.input,
-            expected: testCase.expected,
-            isSample: testCase.isSample,
-            orderIndex: testCase.orderIndex,
-          })),
-        },
+        title: contestSeed.title,
+        startTime: contestSeed.startTime,
+        duration: contestSeed.duration,
+        status: ContestStatus.PAST,
+        editorial: null,
       },
     });
 
-    seeded += 1;
-  }
-
-  const customProblemExists = await prisma.problem.findFirst({
-    where: { contestId: contest.id, title: CUSTOM_PROBLEM_SEED.title },
-    select: { id: true },
-  });
-
-  if (!customProblemExists) {
-    await prisma.problem.create({
-      data: {
-        title: CUSTOM_PROBLEM_SEED.title,
-        statement: CUSTOM_PROBLEM_SEED.statement,
-        timeLimit: CUSTOM_PROBLEM_SEED.timeLimit,
-        memoryLimit: CUSTOM_PROBLEM_SEED.memoryLimit,
-        published: true,
-        contestId: contest.id,
-        testCases: {
-          create: CUSTOM_PROBLEM_SEED.testCases.map((testCase) => ({
-            input: testCase.input,
-            expected: testCase.expected,
-            isSample: testCase.isSample,
-            orderIndex: testCase.orderIndex,
-          })),
+    for (const problemSeed of contestSeed.problems) {
+      const existingProblem = await prisma.problem.findFirst({
+        where: { contestId: contest.id, title: problemSeed.title },
+      });
+      const problem = existingProblem ?? await prisma.problem.create({
+        data: {
+          title: problemSeed.title,
+          statement: problemSeed.statement,
+          timeLimit: 1000,
+          memoryLimit: 256,
+          published: true,
+          contestId: contest.id,
         },
-      },
-    });
+      });
 
-    seeded += 1;
+      const caseCount = await prisma.testCase.count({ where: { problemId: problem.id } });
+      if (caseCount === 0) {
+        await prisma.testCase.createMany({
+          data: problemSeed.cases.map(([input, expected], orderIndex) => ({
+            problemId: problem.id,
+            input: `${input}\n`,
+            expected: `${expected}\n`,
+            isSample: orderIndex === 0,
+            orderIndex,
+          })),
+        });
+      }
+    }
   }
 
-  console.log(`[seed] inserted ${seeded} problems into contest ${contest.id}`);
+  console.log(`[seed] ensured ${contests.length} contests, ${users.length} demo users, and 6 problems`);
 }

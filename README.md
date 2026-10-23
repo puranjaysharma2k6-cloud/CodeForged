@@ -14,73 +14,60 @@ Codeforged is a competitive programming platform featuring sandboxed code execut
 
 PostgreSQL remains the persistent database, while Redis handles performance-sensitive leaderboard operations and event distribution.
 
-## Setup and Run Locally
+## Local Setup
 
 ### Prerequisites
 
-- Node.js and npm
+- Git
 - Docker and Docker Compose
+- Node.js and npm
 
-### 1. Clone the Repository
+### 1. Clone the repository with Judge0
 
-Clone the repository and navigate to the project directory.
-
-### 2. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-POSTGRES_USER=your_db_user
-POSTGRES_PASSWORD=your_db_password
-POSTGRES_DB=your_database
-
-JWT_ACCESS_SECRET=your_access_secret
-JWT_REFRESH_SECRET=your_refresh_secret
-CALLBACK_SECRET=your_callback_secret
-
-BACKEND_URL=http://backend:8000
-```
-
-Replace the placeholder values with your own credentials and secrets. Do not commit your `.env` file to Git.
-
-Database and Redis URLs are configured directly in Docker Compose using the internal service names `app-db` and `app-redis`.
-
-### 3. Start the Backend and Supporting Services
-
-From the project root, run:
+Judge0 is included as a Git submodule. Clone recursively so its files are checked out too:
 
 ```bash
-docker compose -p codeforged up -d
+git clone --recurse-submodules <repository-url>
+cd CodeForged
 ```
 
-### 4. Start Judge0
-
-Navigate to the Judge0 directory:
+If you already cloned without submodules, initialize them from the project root:
 
 ```bash
-cd judge0
-docker compose -p codeforged up -d
+git submodule update --init --recursive
 ```
 
-The `-p codeforged` flag gives both Compose stacks the same project name, allowing them to share the default Docker network when neither configuration overrides it.
+### 2. Configure the application
 
-This allows services to communicate using their service names, such as `backend` and `server`.
+Create a `.env` file in the project root and set `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `CALLBACK_SECRET`, and `BACKEND_URL`.
 
-### 5. Start the Frontend
+In `judge0/judge0.conf`, set `POSTGRES_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD`, and `REDIS_PASSWORD`. Keep the Judge0 database credentials the same after startup because they must match the credentials stored in its persistent database volume. Do not commit secrets.
 
-Navigate to the frontend directory and install its dependencies:
+### 3. Start the backend and Judge0
+
+From the project root:
 
 ```bash
+docker compose -p codeforged up -d --build
+docker compose -p codeforged -f judge0/docker-compose.yml up -d
+```
+
+Both Compose stacks use the `codeforged` project name so the backend can reach Judge0 at `http://server:2358`.
+
+### 4. Start the frontend
+
+```bash
+cd frontend
 npm install
-```
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-Configure the frontend API base URL to `http://localhost:8000`.
+Open the local URL printed by Vite.
 
-Your local Codeforged instance is now running, and you can start making submissions.
+On backend startup, Codeforged seeds three contests, six problems with test cases, and four demo users. All demo accounts use the password `codeforged-demo`:
+
+- `alina_codes` (`alina@example.test`)
+- `byte_ninja` (`kabir@example.test`)
+- `graph_guru` (`mira@example.test`)
+- `loopster` (`dev@example.test`)
 
