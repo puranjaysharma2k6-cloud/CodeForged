@@ -4,7 +4,7 @@
 
 Codeforged is a competitive programming platform featuring sandboxed code execution, real-time verdict updates, and a live leaderboard.
 
-- **Real-time verdicts:** Uses WebSockets instead of polling to push submission verdicts to clients, reducing repeated requests and unnecessary network traffic.
+- **Real-time verdicts:** Uses WebSockets instead of polling to fetch submission verdicts from DB ( multiple queries increases API requests unnecessarry overhead), reducing repeated requests and unnecessary network traffic.
 - **Sandboxed execution:** Runs untrusted submissions in isolated environments to reduce the risk of submitted code affecting the application or host system.
 - **Redis-powered leaderboard:** Uses Redis, an in-memory data store, to serve frequently accessed leaderboard data with low latency, avoiding repeated expensive database queries and sorting operations.
 - **Redis Streams:** Distributes verdict events across multiple server instances. Unlike Redis Pub/Sub's fire-and-forget delivery, Streams retain messages for consumers to read and process, supporting more reliable event handling.
