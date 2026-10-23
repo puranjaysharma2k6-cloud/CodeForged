@@ -1,4 +1,18 @@
-# Codeforged
+## Codeforged
+
+# About Codeforged
+
+Codeforged is a competitive programming platform featuring sandboxed code execution, real-time verdict updates, and a live leaderboard.
+
+- **Real-time verdicts:** Uses WebSockets instead of polling to push submission verdicts to clients, reducing repeated requests and unnecessary network traffic.
+- **Sandboxed execution:** Runs untrusted submissions in isolated environments to reduce the risk of submitted code affecting the application or host system.
+- **Redis-powered leaderboard:** Uses Redis, an in-memory data store, to serve frequently accessed leaderboard data with low latency, avoiding repeated expensive database queries and sorting operations.
+- **Redis Streams:** Distributes verdict events across multiple server instances. Unlike Redis Pub/Sub's fire-and-forget delivery, Streams retain messages for consumers to read and process, supporting more reliable event handling.
+- **Paginated leaderboard:** Uses `LIMIT` and `OFFSET` to fetch only the requested leaderboard entries instead of loading the entire dataset, reducing unnecessary data transfer and application memory usage.
+- **Real-time rankings:** Reflects score changes as submissions are evaluated, keeping leaderboard rankings responsive to ongoing contest activity.
+- **Database scalability:** Frequent score updates and rating recalculations can increase PostgreSQL write load through row updates, index maintenance, and transaction contention. Serving leaderboard reads from Redis reduces pressure on PostgreSQL, allowing it to focus on persistent application data and writes.
+
+PostgreSQL remains the persistent database, while Redis handles performance-sensitive leaderboard operations and event distribution.
 
 ## Setup and Run Locally
 
