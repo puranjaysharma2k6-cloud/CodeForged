@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  getMe,
   login,
   refresh,
   register,
@@ -9,12 +8,11 @@ import { authenticate } from "../../middlewares/auth.middleware.js";
 
 const router = Router();
 
-// Public auth routes — match frontend fetch paths (/api/login, /api/register)
-router.post("/login", login);
+// Public
+router.post("/login",    login);
 router.post("/register", register);
-router.post("/refresh", refresh);
-
-// Protected auth routes
-router.get("/me", authenticate, getMe);
+// NOTE: /api/refresh (root-level) is the canonical refresh endpoint used by the
+// frontend. This path exists only for clients that call /api/auth/refresh.
+router.post("/refresh",  refresh);
 
 export default router;

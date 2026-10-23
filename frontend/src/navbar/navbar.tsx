@@ -12,9 +12,7 @@ interface NavItem {
 const MAIN_NAV_ITEMS: NavItem[] = [
   { to: "/", label: "Home", end: true },
   { to: "/contests", label: "Contests" },
-  { to: "/announcements", label: "Announcements" },
   { to: "/leaderboard", label: "Leaderboard" },
-  { to: "/help", label: "Help" },
 ];
 
 interface NavLinkItemProps {
@@ -52,7 +50,7 @@ export default function Navbar() {
         <div className="navbar-row">
 
           <div className="navbar-left">
-            <NavLink to="/" className="navbar-brand">MyApp</NavLink>
+            <NavLink to="/" className="navbar-brand">CodeForged</NavLink>
             <div className="nav-menu">
               <ul className="nav-list">
                 {MAIN_NAV_ITEMS.map((item) => (

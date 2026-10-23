@@ -2,14 +2,7 @@ import { WebSocket } from "ws";
 
 /*
   Tracks open WebSocket connections grouped by contestId.
- 
-  When a client connects to the arena it registers itself here.
-  When a contest ends, closeContest() broadcasts CONTEST_ENDED to every
-  socket in that room and terminates the connections.
- 
-  This is a single-process in-memory map — fine for one server instance.
-  For multi-instance you'd need Redis to coordinate, but that's a
-  scale-up concern, not a day-one concern.
+
  */
 export class ContestRoomManager {
   // contestId is the Set of open sockets in that contest's arena
