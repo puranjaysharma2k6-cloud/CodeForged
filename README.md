@@ -1,8 +1,13 @@
-## Codeforged
+# Codeforged
 
-# About Codeforged
+## About Codeforged
+## What is Codeforged?
 
-Codeforged is a competitive programming platform featuring sandboxed code execution, real-time verdict updates, and a live leaderboard.
+Codeforged is a competitive programming platform inspired by Codeforces. It supports both live contests and virtual contests, allowing users to compete in real time or practice past contests at their own pace.
+It features a **real-time leaderboard** that updates scores as submissions are evaluated, along with an overall leaderboard to track rankings and compare performance across users.
+
+
+## Technical Features
 
 - **Real-time verdicts:** Uses WebSockets instead of polling to fetch submission verdicts from DB ( multiple queries increases API requests unnecessarry overhead), reducing repeated requests and unnecessary network traffic.
 - **Sandboxed execution:** Runs untrusted submissions in isolated environments to reduce the risk of submitted code affecting the application or host system.
@@ -14,6 +19,10 @@ Codeforged is a competitive programming platform featuring sandboxed code execut
 
 PostgreSQL remains the persistent database, while Redis handles performance-sensitive leaderboard operations and event distribution.
 
+## In development Features
+ - An AI diagnosis pipeline that give suggested contests / problems based on your performance also suggstions on which topics to strenghten 
+
+ 
 ## Local Setup
 
 ### Prerequisites
