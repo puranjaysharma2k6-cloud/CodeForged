@@ -1,15 +1,24 @@
 import bcrypt from 'bcrypt';
 import { prisma } from '../db/db.js';
-import { ContestStatus } from '../generated/prisma/enums.js';
+import { ContestStatus, Mode, Verdict } from '../generated/prisma/enums.js';
 
 const demoPassword = 'codeforged-demo';
 
 const users = [
-  { username: 'alina_codes', name: 'Alina Rao', email: 'alina@example.test', rating: 1480 },
-  { username: 'byte_ninja', name: 'Kabir Shah', email: 'kabir@example.test', rating: 1320 },
-  { username: 'graph_guru', name: 'Mira Sen', email: 'mira@example.test', rating: 1710 },
-  { username: 'loopster', name: 'Dev Mehta', email: 'dev@example.test', rating: 1100 },
+  { username: 'alina_codes', name: 'Alina Rao', email: 'alina@example.test', rating: 1480, ratings: [1260, 1370, 1480], solved: [[true, true], [true, false], [true, true]] },
+  { username: 'byte_ninja', name: 'Kabir Shah', email: 'kabir@example.test', rating: 1320, ratings: [1180, 1260, 1320], solved: [[true, false], [true, true], [false, true]] },
+  { username: 'graph_guru', name: 'Mira Sen', email: 'mira@example.test', rating: 1710, ratings: [1580, 1650, 1710], solved: [[true, true], [true, true], [true, true]] },
+  { username: 'loopster', name: 'Dev Mehta', email: 'dev@example.test', rating: 1100, ratings: [980, 1040, 1100], solved: [[false, true], [true, false], [true, false]] },
 ];
+
+const solutions: Record<string, string> = {
+  'A. Watermelon': 'w = int(input())\nprint("YES" if w > 2 and w % 2 == 0 else "NO")',
+  'B. Way Too Long Words': 'n = int(input())\nfor _ in range(n):\n    word = input().strip()\n    print(word if len(word) <= 10 else f"{word[0]}{len(word) - 2}{word[-1]}")',
+  'A. Team': 'n = int(input())\nprint(sum(sum(map(int, input().split())) >= 2 for _ in range(n)))',
+  'B. Domino Piling': 'm, n = map(int, input().split())\nprint(m * n // 2)',
+  'A. Beautiful Matrix': 'grid = [list(map(int, input().split())) for _ in range(5)]\nfor row in range(5):\n    for col in range(5):\n        if grid[row][col] == 1:\n            print(abs(row - 2) + abs(col - 2))',
+  'B. Petya and Strings': 'first = input().lower()\nsecond = input().lower()\nprint((first > second) - (first < second))',
+};
 
 const contests = [
   {
@@ -67,11 +76,12 @@ const contests = [
 
 export async function seedCodeforcesProblems(): Promise<void> {
   const passwordHash = await bcrypt.hash(demoPassword, 10);
+  const seededUsers: Array<{ id: string; seed: (typeof users)[number] }> = [];
 
   for (const user of users) {
-    await prisma.user.upsert({
+    const savedUser = await prisma.user.upsert({
       where: { email: user.email },
-      update: {},
+      update: { name: user.name, currentRating: user.rating },
       create: {
         email: user.email,
         username: user.username,
@@ -79,10 +89,12 @@ export async function seedCodeforcesProblems(): Promise<void> {
         currentRating: user.rating,
         passwordHash,
       },
+      select: { id: true },
     });
+    seededUsers.push({ id: savedUser.id, seed: user });
   }
 
-  for (const contestSeed of contests) {
+  for (const [contestIndex, contestSeed] of contests.entries()) {
     const existingContest = await prisma.contest.findFirst({ where: { title: contestSeed.title } });
     const contest = existingContest ?? await prisma.contest.create({
       data: {
@@ -94,6 +106,7 @@ export async function seedCodeforcesProblems(): Promise<void> {
       },
     });
 
+    const seededProblems = [];
     for (const problemSeed of contestSeed.problems) {
       const existingProblem = await prisma.problem.findFirst({
         where: { contestId: contest.id, title: problemSeed.title },
@@ -119,6 +132,69 @@ export async function seedCodeforcesProblems(): Promise<void> {
             isSample: orderIndex === 0,
             orderIndex,
           })),
+        });
+      }
+
+      seededProblems.push({ id: problem.id, title: problemSeed.title });
+    }
+
+    for (const [userIndex, seededUser] of seededUsers.entries()) {
+      const solveMap = Object.fromEntries(seededProblems.map((problem, problemIndex) => [
+        problem.id,
+        {
+          solved: seededUser.seed.solved[contestIndex][problemIndex],
+          attempts: seededUser.seed.solved[contestIndex][problemIndex] ? 1 : 0,
+          penalty: seededUser.seed.solved[contestIndex][problemIndex] ? 20 + problemIndex * 10 : 0,
+        },
+      ]));
+      const solvedCount = Object.values(solveMap).filter((result) => result.solved).length;
+      const resultData = {
+        title: contestSeed.title,
+        score: solvedCount * 500,
+        penalty: solvedCount * 30 + userIndex * 7,
+        newRating: seededUser.seed.ratings[contestIndex],
+        finalRank: userIndex + 1,
+        problemStats: solveMap,
+      };
+
+      await prisma.contestResult.upsert({
+        where: {
+          userId_contestId_mode: {
+            userId: seededUser.id,
+            contestId: contest.id,
+            mode: Mode.OFFICIAL,
+          },
+        },
+        update: resultData,
+        create: {
+          ...resultData,
+          userId: seededUser.id,
+          contestId: contest.id,
+          mode: Mode.OFFICIAL,
+        },
+      });
+
+      for (const [problemIndex, problem] of seededProblems.entries()) {
+        if (!seededUser.seed.solved[contestIndex][problemIndex]) continue;
+
+        const code = solutions[problem.title];
+        const existingSubmission = await prisma.submission.findFirst({
+          where: { userId: seededUser.id, problemId: problem.id, code },
+          select: { id: true },
+        });
+        if (existingSubmission) continue;
+
+        await prisma.submission.create({
+          data: {
+            userId: seededUser.id,
+            problemId: problem.id,
+            code,
+            language: 'python3',
+            status: Verdict.ACCEPTED,
+            runtime: 12 + userIndex * 3 + problemIndex,
+            memory: 2048 + userIndex * 128,
+            createdAt: new Date(contestSeed.startTime.getTime() + (25 + problemIndex * 12 + userIndex * 3) * 60_000),
+          },
         });
       }
     }

@@ -5,15 +5,16 @@ import { prisma } from "../db/db.js"
 interface RatingData {
   contestName: string;
   newRating: number;
+  date: string;
 }
 
 interface ProfileLoaderData {
   username: string;
-  name: string; // Added to match your Prisma select
+  handle: string;
   avatarUrl: string | null;
   currentRating: number;
   problemsSolved: number;
-  rank: number;
+  globalRank: number;
   ratingHistory: RatingData[];
 }
 
@@ -46,18 +47,8 @@ export async function getUser(req: Request, res: Response): Promise<void> {
       where: { id: userId },
       select: {
         username: true,
-        name: true,
         avatarUrl: true,
-        ratingHistory: {
-           orderBy: {
-             contestId: 'asc',
-           },
-          select: {
-            newRating: true,
-            title : true,
-            
-          },
-        },
+        currentRating: true,
       },
     });
     console.timeEnd("userINFO");
@@ -67,8 +58,16 @@ export async function getUser(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const totalContests = user.ratingHistory.length;
-    const currentRating = totalContests > 0 ? user.ratingHistory[totalContests - 1].newRating : 1500; // 1500 as baseline default
+    const ratingHistory = await prisma.contestResult.findMany({
+      where: { userId, mode: 'OFFICIAL' },
+      select: {
+        newRating: true,
+        title: true,
+        contest: { select: { startTime: true } },
+      },
+    });
+    ratingHistory.sort((a, b) => a.contest.startTime.getTime() - b.contest.startTime.getTime());
+    const currentRating = ratingHistory.at(-1)?.newRating ?? user.currentRating;
 
     const rank = await prisma.user.count({
       where: {
@@ -79,20 +78,20 @@ export async function getUser(req: Request, res: Response): Promise<void> {
     }) + 1;
 
 
-    const formattedRatingHistory: RatingData[] = (
-      user.ratingHistory).map((result) => ({
+    const formattedRatingHistory: RatingData[] = ratingHistory.map((result) => ({
       contestName: result.title,
       newRating: result.newRating,
+      date: result.contest.startTime.toISOString(),
     }));
 
     const result: ProfileLoaderData = {
       username: user.username,
-      name: user.name ?? "",
+      handle: user.username,
       avatarUrl: user.avatarUrl,
       currentRating: currentRating,
       problemsSolved: problemsSolvedCount,
-      rank: rank,
-      ratingHistory: formattedRatingHistory 
+      globalRank: rank,
+      ratingHistory: formattedRatingHistory,
     };
 
     res.json(result);
